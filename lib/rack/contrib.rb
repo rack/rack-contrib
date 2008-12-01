@@ -7,6 +7,7 @@ module Rack
   end
 
   autoload :ContentLength, "rack/content_length"
+  autoload :ETag, "rack/etag"
   autoload :MailExceptions, "rack/mailexceptions"
   autoload :Sendfile, "rack/sendfile"
 end
