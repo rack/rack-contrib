@@ -1,7 +1,7 @@
 require 'rack/mock'
 require 'rack/content_length'
 
-context "Rack::Sendfile" do
+context "Rack::ContentLength" do
   specify "sets Content-Length if none is set" do
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, "Hello, World!"] }
     response = Rack::ContentLength.new(app).call({})
