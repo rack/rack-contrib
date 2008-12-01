@@ -5,4 +5,7 @@ module Rack
       "0.4"
     end
   end
+
+  autoload :MailExceptions, "rack/mailexceptions"
+  autoload :Sendfile, "rack/sendfile"
 end
