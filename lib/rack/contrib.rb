@@ -8,8 +8,8 @@ module Rack
   
   autoload :ContentLength,              "rack/content_length"
   autoload :ETag,                       "rack/etag"
-  autoload :MailExceptions,             "rack/mailexceptions"
-  autoload :Sendfile,                   "rack/sendfile"
   autoload :JSONP,                      "rack/jsonp"
+  autoload :MailExceptions,             "rack/mailexceptions"
   autoload :PostBodyContentTypeParser,  "rack/post_body_content_type_parser"
+  autoload :Sendfile,                   "rack/sendfile"
 end
