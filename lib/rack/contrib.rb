@@ -9,6 +9,7 @@ module Rack
   autoload :ContentLength,              "rack/content_length"
   autoload :ETag,                       "rack/etag"
   autoload :JSONP,                      "rack/jsonp"
+  autoload :LighttpdScriptNameFix,      "rack/lighttpd_script_name_fix"
   autoload :MailExceptions,             "rack/mailexceptions"
   autoload :PostBodyContentTypeParser,  "rack/post_body_content_type_parser"
   autoload :Sendfile,                   "rack/sendfile"
