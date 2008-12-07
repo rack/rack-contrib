@@ -14,4 +14,5 @@ module Rack
   autoload :MailExceptions,             "rack/mailexceptions"
   autoload :PostBodyContentTypeParser,  "rack/post_body_content_type_parser"
   autoload :Sendfile,                   "rack/sendfile"
+  autoload :TimeZone,                   "rack/time_zone"
 end
