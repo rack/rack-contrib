@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
 
   s.name = 'rack-contrib'
   s.version = '0.4.0'
-  s.date = '2008-12-08'
+  s.date = '2008-12-09'
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
     COPYING
     README.rdoc
     Rakefile
-    lib/rack/content_length.rb
     lib/rack/contrib.rb
     lib/rack/etag.rb
     lib/rack/jsonp.rb
@@ -30,7 +29,6 @@ Gem::Specification.new do |s|
     lib/rack/time_zone.rb
     rack-contrib.gemspec
     test/mail_settings.rb
-    test/spec_rack_content_length.rb
     test/spec_rack_contrib.rb
     test/spec_rack_etag.rb
     test/spec_rack_jsonp.rb
