@@ -5,60 +5,6 @@ require 'rake/testtask'
 desc "Run all the tests"
 task :default => [:test]
 
-desc "Do predistribution stuff"
-task :predist => [:changelog, :rdoc]
-
-desc "Make an archive as .tar.gz"
-task :dist => [:fulltest, :predist] do
-  sh "git archive --format=tar --prefix=#{release}/ HEAD^{tree} >#{release}.tar"
-  sh "pax -waf #{release}.tar -s ':^:#{release}/:' RDOX ChangeLog doc"
-  sh "gzip -f -9 #{release}.tar"
-end
-
-# Helper to retrieve the "revision number" of the git tree.
-def git_tree_version
-  if File.directory?(".git")
-    @tree_version ||= `git describe`.strip.sub('-', '.')
-    @tree_version << ".0"  unless @tree_version.count('.') == 2
-  else
-    $: << "lib"
-    require 'rack/contrib'
-    @tree_version = Rack::Contrib.release
-  end
-  @tree_version
-end
-
-def gem_version
-  git_tree_version.gsub(/-.*/, '')
-end
-
-def release
-  "rack-contrib-#{git_tree_version}"
-end
-
-def manifest
-  `git ls-files`.split("\n")
-end
-
-
-desc "Generate a ChangeLog"
-task :changelog do
-  File.open("ChangeLog", "w") { |out|
-    `git log -z`.split("\0").map { |chunk|
-      author = chunk[/Author: (.*)/, 1].strip
-      date = chunk[/Date: (.*)/, 1].strip
-      desc, detail = $'.strip.split("\n", 2)
-      detail ||= ""
-      detail.rstrip!
-      out.puts "#{date}  #{author}"
-      out.puts "  * #{desc.strip}"
-      out.puts detail  unless detail.empty?
-      out.puts
-    }
-  }
-end
-
-
 desc "Generate RDox"
 task "RDOX" do
   sh "specrb -Ilib:test -a --rdox >RDOX"
@@ -87,3 +33,52 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/rack/*/*.rb')
 end
 task :rdoc => ["RDOX"]
+
+
+# PACKAGING =================================================================
+
+# load gemspec like github's gem builder to surface any SAFE issues.
+require 'rubygems/specification'
+$spec = eval(File.read('rack-contrib.gemspec'))
+
+def package(ext='')
+  "pkg/rack-contrib-#{$spec.version}" + ext
+end
+
+desc 'Build packages'
+task :package => %w[.gem .tar.gz].map {|e| package(e)}
+
+desc 'Build and install as local gem'
+task :install => package('.gem') do
+  sh "gem install #{package('.gem')}"
+end
+
+directory 'pkg/'
+
+file package('.gem') => %w[pkg/ rack-contrib.gemspec] + $spec.files do |f|
+  sh "gem build rack-contrib.gemspec"
+  mv File.basename(f.name), f.name
+end
+
+file package('.tar.gz') => %w[pkg/] + $spec.files do |f|
+  sh "git archive --format=tar HEAD | gzip > #{f.name}"
+end
+
+# GEMSPEC ===================================================================
+
+file 'rack-contrib.gemspec' => FileList['{lib,test}/**','Rakefile', 'README'] do |f|
+  # read spec file and split out manifest section
+  spec = File.read(f.name)
+  parts = spec.split("  # = MANIFEST =\n")
+  fail 'bad spec' if parts.length != 3
+  # determine file list from git ls-files
+  files = `git ls-files`.
+    split("\n").sort.reject{ |file| file =~ /^\./ }.
+    map{ |file| "    #{file}" }.join("\n")
+  # piece file back together and write...
+  parts[1] = "  s.files = %w[\n#{files}\n  ]\n"
+  spec = parts.join("  # = MANIFEST =\n")
+  spec.sub!(/s.date = '.*'/, "s.date = '#{Time.now.strftime("%Y-%m-%d")}'")
+  File.open(f.name, 'w') { |io| io.write(spec) }
+  puts "updated #{f.name}"
+end
