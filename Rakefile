@@ -27,7 +27,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
     '--title' << 'Rack Contrib Documentation' <<
     '--charset' << 'utf-8'
   rdoc.rdoc_dir = "doc"
-  rdoc.rdoc_files.include 'README'
+  rdoc.rdoc_files.include 'README.rdoc'
   rdoc.rdoc_files.include 'RDOX'
   rdoc.rdoc_files.include('lib/rack/*.rb')
   rdoc.rdoc_files.include('lib/rack/*/*.rb')
@@ -66,7 +66,7 @@ end
 
 # GEMSPEC ===================================================================
 
-file 'rack-contrib.gemspec' => FileList['{lib,test}/**','Rakefile', 'README'] do |f|
+file 'rack-contrib.gemspec' => FileList['{lib,test}/**','Rakefile', 'README.rdoc'] do |f|
   # read spec file and split out manifest section
   spec = File.read(f.name)
   parts = spec.split("  # = MANIFEST =\n")

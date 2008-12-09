@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   # = MANIFEST =
   s.files = %w[
     COPYING
-    README
+    README.rdoc
     Rakefile
     lib/rack/content_length.rb
     lib/rack/contrib.rb
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
 
   s.test_files = s.files.select {|path| path =~ /^test\/spec_.*\.rb/}
 
-  s.extra_rdoc_files = %w[README COPYING RDOX]
+  s.extra_rdoc_files = %w[README.rdoc COPYING]
   s.add_dependency 'rack', '~> 0.4'
   s.add_dependency 'tmail', '>= 1.2'
   s.add_dependency 'json', '>= 1.1'
