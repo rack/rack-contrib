@@ -2,21 +2,34 @@ require 'rack/file'
 
 module Rack
   class File #:nodoc:
-    alias :to_file :path
+    alias :to_path :path
   end
 
   # = Sendfile
   #
   # The Sendfile middleware intercepts responses whose body is being
   # served from a file and replaces it with a server specific X-Sendfile
-  # header.
+  # header. The web server is then responsible for writing the file contents
+  # to the client. This can dramatically reduce the amount of work required
+  # by the Ruby backend and takes advantage of the web servers optimized file
+  # delivery code.
   #
-  # When the response body responds to +to_file+ and the request includes
-  # an X-Sendfile-Type header.
+  # In order to take advantage of this middleware, the response body must
+  # respond to +to_path+ and the request must include an X-Sendfile-Type
+  # header. Rack::File and other components implement +to_path+ so there's
+  # rarely anything you need to do in your application. The X-Sendfile-Type
+  # header is typically set in your web servers configuration. The following
+  # sections attempt to document
   #
   # === Nginx
   #
-  # Nginx supports the X-Accel-Redirect header.
+  # Nginx supports the X-Accel-Redirect header. This is similar to X-Sendfile
+  # but requires parts of the filesystem to be mapped into a private URL
+  # hierarachy.
+  #
+  # The following example shows the Nginx configuration required to create
+  # a private "/files/" area, enable X-Accel-Redirect, and pass the special
+  # X-Sendfile-Type and X-Accel-Mapping headers to the backend:
   #
   #   location /files/ {
   #     internal;
@@ -36,12 +49,19 @@ module Rack
   #     proxy_pass         http://127.0.0.1:8080/;
   #   }
   #
-  # http://wiki.codemongers.com/NginxXSendfile
+  # Note that the X-Sendfile-Type header must be set exactly as shown above. The
+  # X-Accel-Mapping header should specify the name of the private URL pattern,
+  # followed by an equals sign (=), followed by the location on the file system
+  # that it maps to. The middleware performs a simple substitution on the
+  # resulting path.
+  #
+  # See Also: http://wiki.codemongers.com/NginxXSendfile
   #
   # === lighttpd
   #
   # Lighttpd has supported some variation of the X-Sendfile header for some
-  # time. The following example
+  # time, although only recent version support X-Sendfile in a reverse proxy
+  # configuration.
   #
   #   $HTTP["host"] == "example.com" {
   #      proxy-core.protocol = "http"
@@ -58,13 +78,20 @@ module Rack
   #      )
   #    }
   #
-  # http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModProxyCore
+  # See Also: http://redmine.lighttpd.net/wiki/lighttpd/Docs:ModProxyCore
   #
   # === Apache
   #
-  #   XSendFile on
+  # X-Sendfile is supported under Apache 2.x using a separate module:
   #
   # http://tn123.ath.cx/mod_xsendfile/
+  #
+  # Once the module is compiled and installed, you can enable it using
+  # XSendFile config directive:
+  #
+  #   RequestHeader Set X-Sendfile-Type X-Sendfile
+  #   ProxyPassReverse / http://localhost:8001/
+  #   XSendFile on
 
   class Sendfile
     F = ::File
@@ -76,19 +103,19 @@ module Rack
 
     def call(env)
       status, headers, body = @app.call(env)
-      if body.respond_to?(:to_file)
+      if body.respond_to?(:to_path)
         case type = variation(env)
         when 'X-Accel-Redirect'
-          file = F.expand_path(body.to_file)
-          if url = map_accel_path(env, file)
+          path = F.expand_path(body.to_path)
+          if url = map_accel_path(env, path)
             headers[type] = url
             body = []
           else
             env['rack.errors'] << "X-Accel-Mapping header missing"
           end
         when 'X-Sendfile', 'X-Lighttpd-Send-File'
-          file = F.expand_path(body.to_file)
-          headers[type] = file
+          path = F.expand_path(body.to_path)
+          headers[type] = path
           body = []
         when '', nil
         else

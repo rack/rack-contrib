@@ -2,15 +2,15 @@ require 'rack/mock'
 require 'rack/sendfile'
 
 context "Rack::File" do
-  specify "should respond to #to_file" do
-    Rack::File.new(Dir.pwd).should.respond_to :to_file
+  specify "should respond to #to_path" do
+    Rack::File.new(Dir.pwd).should.respond_to :to_path
   end
 end
 
 context "Rack::Sendfile" do
   def sendfile_body
     res = ['Hello World']
-    def res.to_file ; "/tmp/hello.txt" ; end
+    def res.to_path ; "/tmp/hello.txt" ; end
     res
   end
 
@@ -75,7 +75,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify 'does nothing when body does not respond to #to_file' do
+  specify 'does nothing when body does not respond to #to_path' do
     @request = Rack::MockRequest.new(sendfile_app(['Not a file...']))
     request 'HTTP_X_SENDFILE_TYPE' => 'X-Sendfile' do |response|
       response.body.should.equal 'Not a file...'
