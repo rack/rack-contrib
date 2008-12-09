@@ -22,7 +22,7 @@ module Rack
       def profile(env)
         RubyProf.measure_mode = RubyProf.const_get(env['rack.profiler.measure_mode'].upcase)
         result = RubyProf.profile { @app.call(env) }
-        [200, calltree_headers(env), calltree_body(env)]
+        [200, calltree_headers(env), calltree_body(env, result)]
       end
 
       def profiling?(env)
@@ -30,14 +30,16 @@ module Rack
           false
         else
           request = Rack::Request.new(env)
-          mode = request.params.delete('profile')
-
-          if MODES.include?(mode)
-            env['rack.profiler.measure_mode'] = request.params.delete('profile')
-            env['rack.profiler.min_precent'] = (request.params.delete('min_percent') || 0.01).to_f
-            true
+          if mode = request.params.delete('profile')
+            if MODES.include?(mode)
+              env['rack.profiler.measure_mode'] = mode
+              env['rack.profiler.min_precent'] = (request.params.delete('min_percent') || 0.01).to_f
+              true
+            else
+              env['rack.errors'] << "Invalid RubyProf measure_mode: #{mode}. Use one of #{MODES.to_a.join(', ')}"
+              false
+            end
           else
-            env['rack.errors'] << "Invalid RubyProf measure_mode: #{mode}. Use one of #{MODES.to_a.join(', ')}"
             false
           end
         end
@@ -45,10 +47,10 @@ module Rack
 
       def calltree_headers(env)
         { 'Content-Type' => 'application/octet-stream',
-          'Content-Disposition' => %(attachment; filename="#{File.basename(env['PATH_INFO'])}.#{env['rack.profiler.measure_mode']}.tree") }
+          'Content-Disposition' => %(attachment; filename="#{::File.basename(env['PATH_INFO'])}.#{env['rack.profiler.measure_mode']}.tree") }
       end
 
-      def calltree_body(result, min_percent)
+      def calltree_body(env, result)
         body = StringIO.new
         RubyProf::CallTreePrinter.new(result).print(body, :min_percent => env['rack.profiler.min_percent'])
         body.rewind
