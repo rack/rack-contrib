@@ -1,35 +1,58 @@
 require 'ruby-prof'
+require 'set'
 
-class Profiler
-  class ErrorWrapper
-    def initialize(error)
-      @error = error
+module Rack
+  # Set the profile=process_time query parameter to download a calltree profile of the request.
+  class Profiler
+    MODES = %w(process_time wall_time cpu_time allocations memory gc_runs gc_time).to_set
+
+    def initialize(app)
+      @app = app
     end
 
-    def <<(str)
-      @error.write str
-      @error.flush
+    def call(env)
+      if profiling?(env)
+        profile(env)
+      else
+        @app.call(env)
+      end
     end
-  end
 
-  def initialize(app, measure_mode = RubyProf::PROCESS_TIME, logger = nil)
-    RubyProf.measure_mode = measure_mode
-    @app = app
-    @logger = logger
-  end
+    private
+      def profile(env)
+        RubyProf.measure_mode = RubyProf.const_get(env['rack.profiler.measure_mode'].upcase)
+        result = RubyProf.profile { @app.call(env) }
+        [200, calltree_headers(env), calltree_body(env)]
+      end
 
-  def call(env)
-    RubyProf.start
-    status, headers, body = @app.call(env)
-    result = RubyProf.stop
-    print_result(env, result)
-    [status, headers, body]
-  end
+      def profiling?(env)
+        if RubyProf.running?
+          false
+        else
+          request = Rack::Request.new(env)
+          mode = request.params.delete('profile')
 
-  private
-    def print_result(env, result)
-      logger ||= ErrorWrapper.new(env["rack.errors"])
-      printer = RubyProf::FlatPrinter.new(result)
-      printer.print(logger, 0)
-    end
+          if MODES.include?(mode)
+            env['rack.profiler.measure_mode'] = request.params.delete('profile')
+            env['rack.profiler.min_precent'] = (request.params.delete('min_percent') || 0.01).to_f
+            true
+          else
+            env['rack.errors'] << "Invalid RubyProf measure_mode: #{mode}. Use one of #{MODES.to_a.join(', ')}"
+            false
+          end
+        end
+      end
+
+      def calltree_headers(env)
+        { 'Content-Type' => 'application/octet-stream',
+          'Content-Disposition' => %(attachment; filename="#{File.basename(env['PATH_INFO'])}.#{env['rack.profiler.measure_mode']}.tree") }
+      end
+
+      def calltree_body(result, min_percent)
+        body = StringIO.new
+        RubyProf::CallTreePrinter.new(result).print(body, :min_percent => env['rack.profiler.min_percent'])
+        body.rewind
+        body
+      end
+  end
 end
