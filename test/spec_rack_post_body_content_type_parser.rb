@@ -27,5 +27,5 @@ begin
   end
 rescue LoadError => e
   # Missing dependency JSON, skipping tests.
-  STDERR.puts "skipping ostBodyContentTypeParser tests - install the JSON gem to enable"
+  STDERR.puts "WARN: Skipping Rack::PostBodyContentTypeParser tests (json not installed)"
 end
