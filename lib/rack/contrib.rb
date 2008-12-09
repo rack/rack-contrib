@@ -6,7 +6,6 @@ module Rack
     end
   end
 
-  autoload :ContentLength,              "rack/content_length"
   autoload :ETag,                       "rack/etag"
   autoload :JSONP,                      "rack/jsonp"
   autoload :LighttpdScriptNameFix,      "rack/lighttpd_script_name_fix"

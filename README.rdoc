@@ -3,8 +3,6 @@
 This package includes a variety of add-on components for Rack, a Ruby web server
 interface:
 
-* Rack::ContentLength - Automatically sets the Content-Length header on
-  all String bodies.
 * Rack::ETag - Automatically sets the ETag header on all String bodies.
 * Rack::JSONP - Adds JSON-P support by stripping out the callback param
   and padding the response with the appropriate callback format.
@@ -44,7 +42,6 @@ components included. The following example shows what a simple rackup
   use Rack::Profiler if ENV['RACK_ENV'] == 'development'
 
   use Rack::ETag
-  use Rack::ContentLength
   use Rack::MailExceptions
 
   run theapp
