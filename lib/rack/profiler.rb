@@ -1,4 +1,4 @@
-gem 'ruby-prof', '>= 0.7.1'
+gem 'ruby-prof', '>= 0.7.3'
 require 'ruby-prof'
 require 'set'
 
@@ -27,11 +27,7 @@ module Rack
     # defaulting to :calltree.
     def initialize(app, options = {})
       @app = app
-
-      @printer = options[:printer] || RubyProf::CallTreePrinter
-      unless @printer.is_a?(Class)
-        @printer = RubyProf.const_get("#{@printer.to_s.upcase}Printer")
-      end
+      @printer = parse_printer(options) || RubyProf::CallTreePrinter
     end
 
     def call(env)
@@ -81,6 +77,23 @@ module Rack
             "filename=\"#{filename}.#{mode}.tree\")"
         end
         headers
+      end
+
+      def parse_printer(options)
+        return options[:printer] if options[:printer].is_a?(Class)
+        
+        case options[:printer]
+        when :calltree
+          RubyProf::CallTreePrinter
+        when :graphhtml
+          RubyProf::GraphHtmlPrinter
+        when :grap
+          RubyProf::GraphPrinter
+        when :flat
+          RubyProf::FlatPrinter
+        else
+          nil
+        end
       end
   end
 end
