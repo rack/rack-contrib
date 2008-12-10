@@ -23,9 +23,15 @@ module Rack
       RubyProf::CallTreePrinter => 'application/octet-stream'
     }
 
-    def initialize(app, printer = RubyProf::GraphHtmlPrinter)
+    # Accepts a :printer => [:calltree|:graphhtml|:graph|:flat] option
+    # defaulting to :calltree.
+    def initialize(app, options = {})
       @app = app
-      @printer = printer
+
+      @printer = options[:printer] || RubyProf::CallTreePrinter
+      unless @printer.is_a?(Class)
+        @printer = RubyProf.const_get("#{@printer.to_s.upcase}Printer")
+      end
     end
 
     def call(env)
