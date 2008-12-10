@@ -87,7 +87,7 @@ module Rack
           RubyProf::CallTreePrinter
         when :graphhtml
           RubyProf::GraphHtmlPrinter
-        when :grap
+        when :graph
           RubyProf::GraphPrinter
         when :flat
           RubyProf::FlatPrinter
