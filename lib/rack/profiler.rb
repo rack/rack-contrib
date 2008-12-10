@@ -1,13 +1,31 @@
+gem 'ruby-prof', '>= 0.7.1'
 require 'ruby-prof'
 require 'set'
 
 module Rack
-  # Set the profile=process_time query parameter to download a calltree profile of the request.
+  # Set the profile=process_time query parameter to download a
+  # calltree profile of the request.
   class Profiler
-    MODES = %w(process_time wall_time cpu_time allocations memory gc_runs gc_time).to_set
+    MODES = %w(
+      process_time
+      wall_time
+      cpu_time
+      allocations
+      memory
+      gc_runs
+      gc_time
+    ).to_set
 
-    def initialize(app)
+    PRINTER_CONTENT_TYPE = {
+      RubyProf::FlatPrinter => 'text/plain',
+      RubyProf::GraphPrinter => 'text/plain',
+      RubyProf::GraphHtmlPrinter => 'text/html',
+      RubyProf::CallTreePrinter => 'application/octet-stream'
+    }
+
+    def initialize(app, printer = RubyProf::GraphHtmlPrinter)
       @app = app
+      @printer = printer
     end
 
     def call(env)
@@ -19,12 +37,6 @@ module Rack
     end
 
     private
-      def profile(env, mode)
-        RubyProf.measure_mode = RubyProf.const_get(mode.upcase)
-        result = RubyProf.profile { @app.call(env) }
-        [200, calltree_headers(env, mode), calltree_body(env, result)]
-      end
-
       def profiling?(env)
         unless RubyProf.running?
           request = Rack::Request.new(env)
@@ -32,23 +44,37 @@ module Rack
             if MODES.include?(mode)
               mode
             else
-              env['rack.errors'] << "Invalid RubyProf measure_mode: #{mode}. Use one of #{MODES.to_a.join(', ')}"
+              env['rack.errors'].write "Invalid RubyProf measure_mode: " +
+                "#{mode}. Use one of #{MODES.to_a.join(', ')}"
               false
             end
           end
         end
       end
 
-      def calltree_headers(env, mode)
-        { 'Content-Type' => 'application/octet-stream',
-          'Content-Disposition' => %(attachment; filename="#{::File.basename(env['PATH_INFO'])}.#{mode}.tree") }
+      def profile(env, mode)
+        RubyProf.measure_mode = RubyProf.const_get(mode.upcase)
+        result = RubyProf.profile { @app.call(env) }
+        headers = headers(@printer, env, mode)
+        body = print(@printer, result)
+        [200, headers, body]
       end
 
-      def calltree_body(env, result)
+      def print(printer, result)
         body = StringIO.new
-        RubyProf::CallTreePrinter.new(result).print(body, :min_percent => 0.01)
+        printer.new(result).print(body, :min_percent => 0.01)
         body.rewind
         body
+      end
+
+      def headers(printer, env, mode)
+        headers = { 'Content-Type' => PRINTER_CONTENT_TYPE[printer] }
+        if printer == RubyProf::CallTreePrinter
+          filename = ::File.basename(env['PATH_INFO'])
+          headers['Content-Disposition'] = "attachment; " +
+            "filename=\"#{filename}.#{mode}.tree\")"
+        end
+        headers
       end
   end
 end
