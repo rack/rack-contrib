@@ -1,10 +1,11 @@
 gem 'ruby-prof', '>= 0.7.3'
 require 'ruby-prof'
-require 'set'
 
 module Rack
   # Set the profile=process_time query parameter to download a
   # calltree profile of the request.
+  #
+  # Pass the :printer option to pick a different result format.
   class Profiler
     MODES = %w(
       process_time
@@ -14,20 +15,22 @@ module Rack
       memory
       gc_runs
       gc_time
-    ).to_set
+    )
+
+    DEFAULT_PRINTER = RubyProf::CallTreePrinter
+    DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
     PRINTER_CONTENT_TYPE = {
       RubyProf::FlatPrinter => 'text/plain',
       RubyProf::GraphPrinter => 'text/plain',
-      RubyProf::GraphHtmlPrinter => 'text/html',
-      RubyProf::CallTreePrinter => 'application/octet-stream'
+      RubyProf::GraphHtmlPrinter => 'text/html'
     }
 
-    # Accepts a :printer => [:calltree|:graphhtml|:graph|:flat] option
-    # defaulting to :calltree.
+    # Accepts a :printer => [:call_tree|:graph_html|:graph|:flat] option
+    # defaulting to :call_tree.
     def initialize(app, options = {})
       @app = app
-      @printer = parse_printer(options) || RubyProf::CallTreePrinter
+      @printer = parse_printer(options[:printer])
     end
 
     def call(env)
@@ -43,7 +46,7 @@ module Rack
         unless RubyProf.running?
           request = Rack::Request.new(env)
           if mode = request.params.delete('profile')
-            if MODES.include?(mode)
+            if RubyProf.const_defined?(mode.upcase)
               mode
             else
               env['rack.errors'].write "Invalid RubyProf measure_mode: " +
@@ -70,7 +73,7 @@ module Rack
       end
 
       def headers(printer, env, mode)
-        headers = { 'Content-Type' => PRINTER_CONTENT_TYPE[printer] }
+        headers = { 'Content-Type' => PRINTER_CONTENT_TYPE[printer] || DEFAULT_CONTENT_TYPE }
         if printer == RubyProf::CallTreePrinter
           filename = ::File.basename(env['PATH_INFO'])
           headers['Content-Disposition'] = "attachment; " +
@@ -79,21 +82,23 @@ module Rack
         headers
       end
 
-      def parse_printer(options)
-        return options[:printer] if options[:printer].is_a?(Class)
-        
-        case options[:printer]
-        when :calltree
-          RubyProf::CallTreePrinter
-        when :graphhtml
-          RubyProf::GraphHtmlPrinter
-        when :graph
-          RubyProf::GraphPrinter
-        when :flat
-          RubyProf::FlatPrinter
+      def parse_printer(printer)
+        if printer.nil?
+          DEFAULT_PRINTER
+        elsif printer.is_a?(Class)
+          printer
         else
-          nil
+          name = "#{camel_case(printer)}Printer"
+          if RubyProf.const_defined?(name)
+            RubyProf.const_get(name)
+          else
+            DEFAULT_PRINTER
+          end
         end
+      end
+
+      def camel_case(word)
+        word.to_s.gsub(/(?:^|_)(.)/) { $1.upcase }
       end
   end
 end

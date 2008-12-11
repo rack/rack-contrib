@@ -24,7 +24,7 @@ context 'Rack::Profiler' do
   end
   
   specify 'GraphHtmlPrinter has Content-Type text/html' do
-    headers = Rack::Profiler.new(app, :printer => :graphhtml).call(request)[1]
+    headers = Rack::Profiler.new(app, :printer => :graph_html).call(request)[1]
     headers.should == {"Content-Type"=>"text/html"}
   end
 end
