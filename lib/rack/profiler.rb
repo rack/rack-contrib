@@ -1,4 +1,3 @@
-gem 'ruby-prof', '>= 0.7.3'
 require 'ruby-prof'
 
 module Rack
