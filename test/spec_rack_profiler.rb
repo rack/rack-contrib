@@ -2,24 +2,21 @@ require 'rack/mock'
 require 'rack/profiler'
 
 context 'Rack::Profiler' do
-
+  
+  app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
+  request = Rack::MockRequest.env_for("/", :input => "profile=process_time")
+  
   specify 'printer defaults to RubyProf::CallTreePrinter' do
     profiler = Rack::Profiler.new(nil)
     profiler.instance_variable_get('@printer').should == RubyProf::CallTreePrinter
   end
   
-  specify 'CallTreePrinter has correct headers' do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
-    request = Rack::MockRequest.env_for("/", :input => "profile=process_time")
+  specify 'CallTreePrinter has correct headers' do  
     headers = Rack::Profiler.new(app).call(request)[1]
-    
     headers.should == {"Content-Disposition"=>"attachment; filename=\"/.process_time.tree\")", "Content-Type"=>"application/octet-stream"}
   end
   
   specify 'FlatPrinter and GraphPrinter has Content-Type text/plain' do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
-    request = Rack::MockRequest.env_for("/", :input => "profile=process_time")
-    
     %w(flat graph).each do |printer|
       headers = Rack::Profiler.new(app, :printer => printer.to_sym).call(request)[1]
       headers.should == {"Content-Type"=>"text/plain"}
@@ -27,10 +24,7 @@ context 'Rack::Profiler' do
   end
   
   specify 'GraphHtmlPrinter has Content-Type text/html' do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
-    request = Rack::MockRequest.env_for("/", :input => "profile=process_time")
     headers = Rack::Profiler.new(app, :printer => :graphhtml).call(request)[1]
-    
     headers.should == {"Content-Type"=>"text/html"}
   end
 end
