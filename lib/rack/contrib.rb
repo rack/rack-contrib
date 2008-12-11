@@ -6,6 +6,7 @@ module Rack
     end
   end
 
+  autoload :BounceFavicon,              "rack/bounce_favicon"
   autoload :ETag,                       "rack/etag"
   autoload :JSONP,                      "rack/jsonp"
   autoload :LighttpdScriptNameFix,      "rack/lighttpd_script_name_fix"
