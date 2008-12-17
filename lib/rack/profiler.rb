@@ -75,8 +75,8 @@ module Rack
         headers = { 'Content-Type' => PRINTER_CONTENT_TYPE[printer] || DEFAULT_CONTENT_TYPE }
         if printer == RubyProf::CallTreePrinter
           filename = ::File.basename(env['PATH_INFO'])
-          headers['Content-Disposition'] = "attachment; " +
-            "filename=\"#{filename}.#{mode}.tree\")"
+          headers['Content-Disposition'] =
+            %(attachment; filename="#{filename}.#{mode}.tree")
         end
         headers
       end
