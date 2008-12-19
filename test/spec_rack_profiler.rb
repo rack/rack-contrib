@@ -9,6 +9,7 @@ context 'Rack::Profiler' do
   specify 'printer defaults to RubyProf::CallTreePrinter' do
     profiler = Rack::Profiler.new(nil)
     profiler.instance_variable_get('@printer').should == RubyProf::CallTreePrinter
+    profiler.instance_variable_get('@times').should == 1
   end
   
   specify 'CallTreePrinter has correct headers' do  

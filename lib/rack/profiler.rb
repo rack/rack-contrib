@@ -30,6 +30,7 @@ module Rack
     def initialize(app, options = {})
       @app = app
       @printer = parse_printer(options[:printer])
+      @times = (options[:times] || 1).to_i
     end
 
     def call(env)
@@ -58,10 +59,12 @@ module Rack
 
       def profile(env, mode)
         RubyProf.measure_mode = RubyProf.const_get(mode.upcase)
-        result = RubyProf.profile { @app.call(env) }
-        headers = headers(@printer, env, mode)
-        body = print(@printer, result)
-        [200, headers, body]
+
+        result = RubyProf.profile do
+          @times.times { @app.call(env) }
+        end
+
+        [200, headers(@printer, env, mode), print(@printer, result)]
       end
 
       def print(printer, result)
