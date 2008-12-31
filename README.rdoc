@@ -16,6 +16,8 @@ interface:
 * Rack::PostBodyContentTypeParser - Adds support for JSON request bodies. The
   Rack parameter hash is populated by deserializing the JSON data provided in
   the request body when the Content-Type is application/json.
+* Rack::ProcTitle - Displays request information in process title ($0) for
+  monitoring/inspection with ps(1).
 * Rack::Profiler - Uses ruby-prof to measure request time.
 * Rack::Sendfile - Enables X-Sendfile support for bodies that can be served
   from file.

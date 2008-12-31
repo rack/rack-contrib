@@ -13,6 +13,7 @@ module Rack
   autoload :Locale,                     "rack/locale"
   autoload :MailExceptions,             "rack/mailexceptions"
   autoload :PostBodyContentTypeParser,  "rack/post_body_content_type_parser"
+  autoload :ProcTitle,                  "rack/proctitle"
   autoload :Profiler,                   "rack/profiler"
   autoload :Sendfile,                   "rack/sendfile"
   autoload :TimeZone,                   "rack/time_zone"
