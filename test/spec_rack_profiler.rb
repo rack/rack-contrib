@@ -14,7 +14,7 @@ context 'Rack::Profiler' do
   
   specify 'CallTreePrinter has correct headers' do  
     headers = Rack::Profiler.new(app).call(request)[1]
-    headers.should == {"Content-Disposition"=>"attachment; filename=\"/.process_time.tree\")", "Content-Type"=>"application/octet-stream"}
+    headers.should == {"Content-Disposition"=>"attachment; filename=\"/.process_time.tree\"", "Content-Type"=>"application/octet-stream"}
   end
   
   specify 'FlatPrinter and GraphPrinter has Content-Type text/plain' do
