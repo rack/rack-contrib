@@ -6,9 +6,9 @@ module Rack
     end
 
     def call(env)
-      res = @app.call(env)
+      @app.call(env)
+    ensure
       GC.start
-      res
     end
   end
 end
