@@ -8,6 +8,7 @@ module Rack
 
   autoload :BounceFavicon,              "rack/bounce_favicon"
   autoload :ETag,                       "rack/etag"
+  autoload :GarbageCollector,           "rack/garbagecollector"
   autoload :JSONP,                      "rack/jsonp"
   autoload :LighttpdScriptNameFix,      "rack/lighttpd_script_name_fix"
   autoload :Locale,                     "rack/locale"
