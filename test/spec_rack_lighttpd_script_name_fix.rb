@@ -1,5 +1,5 @@
 require 'rack/mock'
-require 'rack/lighttpd_script_name_fix'
+require 'rack/contrib/lighttpd_script_name_fix'
 
 context "Rack::LighttpdScriptNameFix" do
   specify "corrects SCRIPT_NAME and PATH_INFO set by lighttpd " do

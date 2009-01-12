@@ -1,7 +1,7 @@
 require 'rack/mock'
 
 begin
-  require 'rack/post_body_content_type_parser'
+  require 'rack/contrib/post_body_content_type_parser'
   
   context "Rack::PostBodyContentTypeParser" do
     

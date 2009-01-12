@@ -1,5 +1,5 @@
 require 'rack/mock'
-require 'rack/garbagecollector'
+require 'rack/contrib/garbagecollector'
 
 context 'Rack::GarbageCollector' do
 

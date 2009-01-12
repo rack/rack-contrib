@@ -2,7 +2,7 @@ require 'rack/mock'
 
 begin
   require 'tmail'
-  require 'rack/mailexceptions'
+  require 'rack/contrib/mailexceptions'
 
   require File.dirname(__FILE__) + '/mail_settings.rb'
 

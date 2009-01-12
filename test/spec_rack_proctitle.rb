@@ -1,5 +1,5 @@
 require 'rack/mock'
-require 'rack/proctitle'
+require 'rack/contrib/proctitle'
 
 context "Rack::ProcTitle" do
   F = ::File

@@ -6,16 +6,16 @@ module Rack
     end
   end
 
-  autoload :BounceFavicon,              "rack/bounce_favicon"
-  autoload :ETag,                       "rack/etag"
-  autoload :GarbageCollector,           "rack/garbagecollector"
-  autoload :JSONP,                      "rack/jsonp"
-  autoload :LighttpdScriptNameFix,      "rack/lighttpd_script_name_fix"
-  autoload :Locale,                     "rack/locale"
-  autoload :MailExceptions,             "rack/mailexceptions"
-  autoload :PostBodyContentTypeParser,  "rack/post_body_content_type_parser"
-  autoload :ProcTitle,                  "rack/proctitle"
-  autoload :Profiler,                   "rack/profiler"
-  autoload :Sendfile,                   "rack/sendfile"
-  autoload :TimeZone,                   "rack/time_zone"
+  autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
+  autoload :ETag,                       "rack/contrib/etag"
+  autoload :GarbageCollector,           "rack/contrib/garbagecollector"
+  autoload :JSONP,                      "rack/contrib/jsonp"
+  autoload :LighttpdScriptNameFix,      "rack/contrib/lighttpd_script_name_fix"
+  autoload :Locale,                     "rack/contrib/locale"
+  autoload :MailExceptions,             "rack/contrib/mailexceptions"
+  autoload :PostBodyContentTypeParser,  "rack/contrib/post_body_content_type_parser"
+  autoload :ProcTitle,                  "rack/contrib/proctitle"
+  autoload :Profiler,                   "rack/contrib/profiler"
+  autoload :Sendfile,                   "rack/contrib/sendfile"
+  autoload :TimeZone,                   "rack/contrib/time_zone"
 end

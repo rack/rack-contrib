@@ -1,5 +1,5 @@
 require 'rack/mock'
-require 'rack/profiler'
+require 'rack/contrib/profiler'
 
 context 'Rack::Profiler' do
   

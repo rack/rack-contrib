@@ -1,5 +1,5 @@
 require 'rack/mock'
-require 'rack/jsonp'
+require 'rack/contrib/jsonp'
 
 context "Rack::JSONP" do
   
