@@ -18,4 +18,5 @@ module Rack
   autoload :Profiler,                   "rack/contrib/profiler"
   autoload :Sendfile,                   "rack/contrib/sendfile"
   autoload :TimeZone,                   "rack/contrib/time_zone"
+  autoload :Evil,                       "rack/contrib/evil"
 end
