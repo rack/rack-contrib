@@ -17,8 +17,22 @@ class Pacify
 end
 
 class Finale
-  def call(env)
-    $hax_logger = 'lol'
+  def call(response)
+    status, headers, body = response
+
+    headers['last'] = 'Finale'
+    $old_status = status
+
+    [201, headers, body]
+  end
+end
+
+class TheEnd
+  def call(response)
+    status, headers, body = response
+
+    headers['last'] = 'TheEnd'
+    [201, headers, body]
   end
 end
 
@@ -31,6 +45,7 @@ context "Rack::Callbacks" do
       run lambda {|env| [200, {}, env['flame'] + env['peace']] }
 
       after Finale
+      after TheEnd
     end
 
     app = Rack::Builder.new do
@@ -38,7 +53,9 @@ context "Rack::Callbacks" do
     end.to_app
 
     response = Rack::MockRequest.new(app).get("/")
-    response.body.to_s.should.equal 'F Lifo..with love'
-    $hax_logger.should.equal 'lol'
+
+    response.body.should.equal 'F Lifo..with love'
+    $old_status.should.equal 200
+    response.headers['last'].should.equal 'TheEnd'
   end
 end

@@ -28,9 +28,10 @@ module Rack
 
     def call(env)
       @before.each {|c| c.call(env) }
+
       response = @app.call(env)
-      @after.each {|c| c.call(env) }
-      response
+
+      @after.inject(response) {|r, c| c.call(r) }
     end
   end
 end
