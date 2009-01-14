@@ -55,7 +55,10 @@ context "Rack::Callbacks" do
     response = Rack::MockRequest.new(app).get("/")
 
     response.body.should.equal 'F Lifo..with love'
+
     $old_status.should.equal 200
+    response.status.should.equal 201
+
     response.headers['last'].should.equal 'TheEnd'
   end
 end
