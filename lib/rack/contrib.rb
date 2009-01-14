@@ -1,4 +1,5 @@
 require 'rack'
+
 module Rack
   module Contrib
     def self.release
@@ -20,4 +21,5 @@ module Rack
   autoload :TimeZone,                   "rack/contrib/time_zone"
   autoload :Evil,                       "rack/contrib/evil"
   autoload :Callbacks,                  "rack/contrib/callbacks"
+  autoload :NestedParams,               "rack/contrib/nested_params"
 end

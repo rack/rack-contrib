@@ -13,6 +13,8 @@ interface:
 * Rack::MailExceptions - Rescues exceptions raised from the app and
   sends a useful email with the exception, stacktrace, and contents of the
   environment.
+* Rack::NestedParams - parses form params with subscripts (e.g., * "post[title]=Hello")
+  into a nested/recursive Hash structure (based on Rails' implementation).
 * Rack::PostBodyContentTypeParser - Adds support for JSON request bodies. The
   Rack parameter hash is populated by deserializing the JSON data provided in
   the request body when the Content-Type is application/json.
