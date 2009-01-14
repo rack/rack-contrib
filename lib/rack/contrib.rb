@@ -19,4 +19,5 @@ module Rack
   autoload :Sendfile,                   "rack/contrib/sendfile"
   autoload :TimeZone,                   "rack/contrib/time_zone"
   autoload :Evil,                       "rack/contrib/evil"
+  autoload :Callbacks,                  "rack/contrib/callbacks"
 end
