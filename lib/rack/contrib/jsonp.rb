@@ -18,7 +18,10 @@ module Rack
     def call(env)
       status, headers, response = @app.call(env)
       request = Rack::Request.new(env)
-      response = pad(request.params.delete('callback'), response) if request.params.include?('callback')
+      if request.params.include?('callback')
+        response = pad(request.params.delete('callback'), response)
+        headers['Content-Length'] = response.length.to_s
+      end
       [status, headers, response]
     end
     
@@ -26,7 +29,7 @@ module Rack
     # JSON-P spec/requirements.
     # 
     # The Rack response spec indicates that it should be enumerable. The method
-    # of combining all of the data into a sinle string makes sense since JSON
+    # of combining all of the data into a single string makes sense since JSON
     # is returned as a full string.
     # 
     def pad(callback, response, body = "")
