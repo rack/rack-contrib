@@ -1,3 +1,4 @@
+require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/nested_params'
 require 'rack/methodoverride'
