@@ -8,6 +8,7 @@ module Rack
   end
 
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
+  autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :ETag,                       "rack/contrib/etag"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"

@@ -29,6 +29,8 @@ interface:
 * Rack::Callbacks - Implements DLS for pure before/after filter like Middlewares.
 * Rack::Config - Shared configuration for cooperative middleware.
 * Rack::NotFound - A default 404 application.
+* Rack::CSSHTTPRequest - Adds CSSHTTPRequest support by encoding responses as
+  CSS for cross-site AJAX-style data loading
 
 === Use
 
