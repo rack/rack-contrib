@@ -64,6 +64,14 @@ file package('.tar.gz') => %w[pkg/] + $spec.files do |f|
   sh "git archive --format=tar HEAD | gzip > #{f.name}"
 end
 
+desc 'Publish gem and tarball to rubyforge'
+task 'publish:gem' => [package('.gem'), package('.tar.gz')] do |t|
+  sh <<-end
+    rubyforge add_release rack rack-contrib #{$spec.version} #{package('.gem')} &&
+    rubyforge add_file    rack rack-contrib #{$spec.version} #{package('.tar.gz')}
+  end
+end
+
 # GEMSPEC ===================================================================
 
 file 'rack-contrib.gemspec' => FileList['{lib,test}/**','Rakefile', 'README.rdoc'] do |f|
