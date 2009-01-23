@@ -1,14 +1,14 @@
 require 'csshttprequest'
 
 module Rack
-  
+
   # A Rack middleware for providing CSSHTTPRequest responses.
   class CSSHTTPRequest
-    
+
     def initialize(app)
       @app = app
     end
-    
+
     # Proxies the request to the application then encodes the response with
     # the CSSHTTPRequest encoder
     def call(env)
@@ -20,6 +20,6 @@ module Rack
       headers['Content-Type'] = 'text/css'
       [status, headers, encoded_response]
     end
-    
+
   end
 end
