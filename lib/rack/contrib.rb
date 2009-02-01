@@ -22,4 +22,5 @@ module Rack
   autoload :Evil,                       "rack/contrib/evil"
   autoload :Callbacks,                  "rack/contrib/callbacks"
   autoload :NestedParams,               "rack/contrib/nested_params"
+  autoload :Config,                     "rack/contrib/config"
 end
