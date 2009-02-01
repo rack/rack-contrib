@@ -27,6 +27,7 @@ interface:
   a variable in Rack's environment with the offset from UTC.
 * Rack::Evil - Lets the rack application return a response to the client from any place.
 * Rack::Callbacks - Implements DLS for pure before/after filter like Middlewares.
+* Rack::Config - Shared configuration for cooperative middleware.
 
 === Use
 
