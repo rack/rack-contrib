@@ -23,4 +23,5 @@ module Rack
   autoload :Callbacks,                  "rack/contrib/callbacks"
   autoload :NestedParams,               "rack/contrib/nested_params"
   autoload :Config,                     "rack/contrib/config"
+  autoload :NotFound,                   "rack/contrib/not_found"
 end
