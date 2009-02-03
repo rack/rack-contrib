@@ -1,4 +1,4 @@
-require 'spec/test'
+require 'test/spec'
 require 'rack/mock'
 
 begin
