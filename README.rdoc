@@ -33,6 +33,7 @@ interface:
 * Rack::NotFound - A default 404 application.
 * Rack::CSSHTTPRequest - Adds CSSHTTPRequest support by encoding responses as
   CSS for cross-site AJAX-style data loading
+* Rack::Deflect - Helps protect against DoS attacks.
 
 === Use
 
