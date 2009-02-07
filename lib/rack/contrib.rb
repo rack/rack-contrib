@@ -26,4 +26,5 @@ module Rack
   autoload :NestedParams,               "rack/contrib/nested_params"
   autoload :Config,                     "rack/contrib/config"
   autoload :NotFound,                   "rack/contrib/not_found"
+  autoload :ResponseCache,              "rack/contrib/response_cache"
 end
