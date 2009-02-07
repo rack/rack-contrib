@@ -23,6 +23,8 @@ interface:
 * Rack::Profiler - Uses ruby-prof to measure request time.
 * Rack::Sendfile - Enables X-Sendfile support for bodies that can be served
   from file.
+* Rack::Signals - Installs signal handlers that are safely processed after
+  a request
 * Rack::TimeZone - Detects the clients timezone using JavaScript and sets
   a variable in Rack's environment with the offset from UTC.
 * Rack::Evil - Lets the rack application return a response to the client from any place.

@@ -19,6 +19,7 @@ module Rack
   autoload :ProcTitle,                  "rack/contrib/proctitle"
   autoload :Profiler,                   "rack/contrib/profiler"
   autoload :Sendfile,                   "rack/contrib/sendfile"
+  autoload :Signals,                    "rack/contrib/signals"
   autoload :TimeZone,                   "rack/contrib/time_zone"
   autoload :Evil,                       "rack/contrib/evil"
   autoload :Callbacks,                  "rack/contrib/callbacks"
