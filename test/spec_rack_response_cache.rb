@@ -23,9 +23,9 @@ context Rack::ResponseCache do
 
   specify "should cache results to disk if cache is a string" do
     request(:cache=>@def_disk_cache)
-    F.read(F.join(@def_disk_cache, 'path', 'to', 'blah.html')).should == @def_value.first
+    F.read(F.join(@def_disk_cache, 'path', 'to', 'blah.html')).should.equal @def_value.first
     request(:path=>'/path/3', :cache=>@def_disk_cache)
-    F.read(F.join(@def_disk_cache, 'path', '3.html')).should == @def_value.first
+    F.read(F.join(@def_disk_cache, 'path', '3.html')).should.equal @def_value.first
   end
 
   specify "should cache results to given cache if cache is not a string" do
@@ -84,9 +84,9 @@ context Rack::ResponseCache do
   specify "should pass the environment and response to the block" do
     e, r = nil, nil
     request(:rc_block=>proc{|env,res| e, r = env, res; nil})
-    e['PATH_INFO'].should == @def_path
-    e['REQUEST_METHOD'].should == 'GET'
-    e['QUERY_STRING'].should == ''
+    e['PATH_INFO'].should.equal @def_path
+    e['REQUEST_METHOD'].should.equal 'GET'
+    e['QUERY_STRING'].should.equal ''
     r.should.equal([200, {"Content-Type"=>"text/html"}, ["rack-response-cache"]])
   end
 
