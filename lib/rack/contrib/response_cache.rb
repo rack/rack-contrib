@@ -23,13 +23,12 @@ class Rack::ResponseCache
     end
   end
 
-  # Initialize a new DiskCache object with the given arguments.  Either
-  # a dir or a block must be provided. Arguments:
+  # Initialize a new ReponseCache object with the given arguments.  Arguments:
   # * app : The next middleware in the chain.  This is always called.
   # * cache : The place to cache responses.  If a string is provided, a disk
   #   cache is used, and all cached files will use this directory as the root directory.
   #   If anything other than a string is provided, it should respond to []=, which will
-  #   be called a path string and a body value (the 3rd part of a rack response).
+  #   be called with a path string and a body value (the 3rd element of the response).
   # * &block : If provided, it is called with the environment and the response from the next middleware.
   #   It should return nil or false if the path should not be cached, and should return
   #   the pathname to use as a string if the result should be cached.
