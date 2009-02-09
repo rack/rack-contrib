@@ -34,6 +34,10 @@ interface:
 * Rack::CSSHTTPRequest - Adds CSSHTTPRequest support by encoding responses as
   CSS for cross-site AJAX-style data loading
 * Rack::Deflect - Helps protect against DoS attacks.
+* Rack::ResponseCache - Caches responses to requests without query strings
+  to Disk or a user provider Ruby object. Similar to Rails' page caching.
+* Rack::RelativeRedirect - Transforms relative paths in redirects to
+  absolute URLs.
 
 === Use
 
