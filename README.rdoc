@@ -38,6 +38,8 @@ interface:
   to Disk or a user provider Ruby object. Similar to Rails' page caching.
 * Rack::RelativeRedirect - Transforms relative paths in redirects to
   absolute URLs.
+* Rack::Backstage - Returns content of specified file if it exists, which makes
+  it convenient for putting up maintenance pages.
 
 === Use
 
