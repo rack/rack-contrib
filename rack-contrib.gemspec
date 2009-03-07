@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
   s.name = 'rack-contrib'
-  s.version = '0.9.0'
-  s.date = '2009-01-23'
+  s.version = '0.9.1'
+  s.date = '2009-03-07'
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
@@ -18,8 +18,13 @@ Gem::Specification.new do |s|
     README.rdoc
     Rakefile
     lib/rack/contrib.rb
+    lib/rack/contrib/accept_format.rb
+    lib/rack/contrib/backstage.rb
     lib/rack/contrib/bounce_favicon.rb
     lib/rack/contrib/callbacks.rb
+    lib/rack/contrib/config.rb
+    lib/rack/contrib/csshttprequest.rb
+    lib/rack/contrib/deflect.rb
     lib/rack/contrib/etag.rb
     lib/rack/contrib/evil.rb
     lib/rack/contrib/garbagecollector.rb
@@ -28,16 +33,27 @@ Gem::Specification.new do |s|
     lib/rack/contrib/locale.rb
     lib/rack/contrib/mailexceptions.rb
     lib/rack/contrib/nested_params.rb
+    lib/rack/contrib/not_found.rb
     lib/rack/contrib/post_body_content_type_parser.rb
     lib/rack/contrib/proctitle.rb
     lib/rack/contrib/profiler.rb
+    lib/rack/contrib/relative_redirect.rb
+    lib/rack/contrib/response_cache.rb
     lib/rack/contrib/route_exceptions.rb
     lib/rack/contrib/sendfile.rb
+    lib/rack/contrib/signals.rb
     lib/rack/contrib/time_zone.rb
     rack-contrib.gemspec
+    test/404.html
+    test/Maintenance.html
     test/mail_settings.rb
+    test/spec_rack_accept_format.rb
+    test/spec_rack_backstage.rb
     test/spec_rack_callbacks.rb
+    test/spec_rack_config.rb
     test/spec_rack_contrib.rb
+    test/spec_rack_csshttprequest.rb
+    test/spec_rack_deflect.rb
     test/spec_rack_etag.rb
     test/spec_rack_evil.rb
     test/spec_rack_garbagecollector.rb
@@ -45,9 +61,12 @@ Gem::Specification.new do |s|
     test/spec_rack_lighttpd_script_name_fix.rb
     test/spec_rack_mailexceptions.rb
     test/spec_rack_nested_params.rb
+    test/spec_rack_not_found.rb
     test/spec_rack_post_body_content_type_parser.rb
     test/spec_rack_proctitle.rb
     test/spec_rack_profiler.rb
+    test/spec_rack_relative_redirect.rb
+    test/spec_rack_response_cache.rb
     test/spec_rack_sendfile.rb
   ]
   # = MANIFEST =
