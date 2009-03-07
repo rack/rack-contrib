@@ -43,7 +43,7 @@ context "Rack::Callbacks" do
       before Flame
       before Pacify, "with love"
 
-      run lambda {|env| [200, {}, env['flame'] + env['peace']] }
+      run lambda {|env| [200, {}, [env['flame'], env['peace']]] }
 
       after Finale
       after TheEnd

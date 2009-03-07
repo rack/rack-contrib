@@ -8,7 +8,7 @@ context "Rack::LighttpdScriptNameFix" do
       "PATH_INFO" => "/foo/bar/baz",
       "SCRIPT_NAME" => "/hello"
     }
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, "Hello, World!"] }
+    app = lambda { |_| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
     response = Rack::LighttpdScriptNameFix.new(app).call(env)
     env['SCRIPT_NAME'].should.be.empty
     env['PATH_INFO'].should.equal '/hello/foo/bar/baz'
