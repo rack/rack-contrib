@@ -8,7 +8,7 @@ module Rack
   #     puts "Exiting now"
   #     exit
   #   }
-  # 
+  #
   #   trap_when_ready 'USR1', lambda {
   #     puts "Exiting when ready"
   #     exit

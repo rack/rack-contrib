@@ -52,7 +52,7 @@ context Rack::ResponseCache do
     request(:path=>'/?id=1')
     @cache.should.equal({})
   end
-   
+
   specify "should cache results if there is an empty query string" do
     request(:path=>'/?')
     @cache.should.equal('/index.html'=>@def_value)

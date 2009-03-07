@@ -2,7 +2,7 @@ require 'fileutils'
 require 'rack'
 
 # Rack::ResponseCache is a Rack middleware that caches responses for successful
-# GET requests with no query string to disk or any ruby object that has an 
+# GET requests with no query string to disk or any ruby object that has an
 # []= method (so it works with memcached).  When caching to disk, it works similar to
 # Rails' page caching, allowing you to cache dynamic pages to static files that can
 # be served directly by a front end webserver.
