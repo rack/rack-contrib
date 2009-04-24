@@ -26,7 +26,7 @@ module Rack
     end
 
     def encode(response, assembled_body="")
-      response.each { |s| assembled_body << s } # call down the stack
+      response.each { |s| assembled_body << s.to_s } # call down the stack
       return ::CSSHTTPRequest.encode(assembled_body)
     end
 

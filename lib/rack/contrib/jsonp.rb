@@ -33,7 +33,7 @@ module Rack
     # is returned as a full string.
     #
     def pad(callback, response, body = "")
-      response.each{ |s| body << s }
+      response.each{ |s| body << s.to_s }
       "#{callback}(#{body})"
     end
 
