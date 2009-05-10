@@ -8,6 +8,7 @@ module Rack
   end
 
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
+  autoload :Cookies,                    "rack/contrib/cookies"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
   autoload :ETag,                       "rack/contrib/etag"
