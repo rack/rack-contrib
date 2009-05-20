@@ -12,6 +12,30 @@ context "Rack::AcceptFormat" do
     body.should == "/resource.json"
   end
 
+  context "default extention" do
+    specify "should allow custom default" do
+      request = Rack::MockRequest.env_for("/resource")
+      body = Rack::AcceptFormat.new(app, '.xml').call(request).last
+      body.should == "/resource.xml"
+    end
+
+    specify "should default to html" do
+      request = Rack::MockRequest.env_for("/resource")
+      body = Rack::AcceptFormat.new(app).call(request).last
+      body.should == "/resource.html"
+    end
+
+    specify "should notmalize custom extention" do
+      request = Rack::MockRequest.env_for("/resource")
+
+      body = Rack::AcceptFormat.new(app,'xml').call(request).last #no dot prefix
+      body.should == "/resource.xml"
+
+      body = Rack::AcceptFormat.new(app, :xml).call(request).last
+      body.should == "/resource.xml"
+    end
+  end
+
   context "there is no format extension" do
     Rack::Mime::MIME_TYPES.clear
 
@@ -24,12 +48,6 @@ context "Rack::AcceptFormat" do
       request = Rack::MockRequest.env_for("/resource")
       body = Rack::AcceptFormat.new(app).call(request).last
       body.should == "/resource.html"
-    end
-
-    specify "should use custom default extension" do
-      request = Rack::MockRequest.env_for("/resource")
-      body = Rack::AcceptFormat.new(app, '.xml').call(request).last
-      body.should == "/resource.xml"
     end
 
     specify "should add the default extension if the Accept header is not registered in the Mime::Types" do

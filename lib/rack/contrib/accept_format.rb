@@ -26,7 +26,8 @@ module Rack
   class AcceptFormat
 
     def initialize(app, default_extention = '.html')
-      @ext = default_extention
+      @ext = default_extention.to_s.strip
+      @ext = ".#{@ext}" unless @ext[0] == ?.
       @app = app
     end
 
