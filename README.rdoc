@@ -40,7 +40,7 @@ interface:
   absolute URLs.
 * Rack::Backstage - Returns content of specified file if it exists, which makes
   it convenient for putting up maintenance pages.
-* Rack::Format - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
+* Rack::AcceptFormat - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
 * Rack::HostMeta - Configures /host-meta using a block
 * Rack::Cookies - Adds simple cookie jar hash to env
 
