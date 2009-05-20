@@ -32,11 +32,13 @@ module Rack
 
     def call(env)
       req = Rack::Request.new(env)
-      unless req.path_info =~ /(.*)\.(.+)/
+
+      if ::File.extname(req.path_info).empty?
         accept = env['HTTP_ACCEPT'].to_s.scan(/[^;,\s]*\/[^;,\s]*/)[0].to_s
         extension =  Rack::Mime::MIME_TYPES.invert[accept] || @ext
         req.path_info = req.path_info+"#{extension}"
       end
+
       @app.call(env)
     end
   end

@@ -4,8 +4,9 @@ require 'rack/contrib/accept_format'
 require 'rack/mime'
 
 context "Rack::AcceptFormat" do
+  app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, env['PATH_INFO']] }
+
   specify "should do nothing when a format extension is already provided" do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, env['PATH_INFO']] }
     request = Rack::MockRequest.env_for("/resource.json")
     body = Rack::AcceptFormat.new(app).call(request).last
     body.should == "/resource.json"
@@ -13,7 +14,7 @@ context "Rack::AcceptFormat" do
 
   context "there is no format extension" do
     Rack::Mime::MIME_TYPES.clear
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, env['PATH_INFO']] }
+
     def mime(ext, type)
       ext = ".#{ext}" unless ext.to_s[0] == ?.
       Rack::Mime::MIME_TYPES[ext.to_s] = type
@@ -43,5 +44,11 @@ context "Rack::AcceptFormat" do
       body = Rack::AcceptFormat.new(app).call(request).last
       body.should == "/resource.json"
     end
+  end
+
+  specify "shouldn't confuse extention when there are dots in path" do
+    request = Rack::MockRequest.env_for("/parent.resource/resource")
+    body = Rack::AcceptFormat.new(app, '.html').call(request).last
+    body.should == "/parent.resource/resource.html"
   end
 end
