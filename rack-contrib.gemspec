@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
   s.name = 'rack-contrib'
-  s.version = '0.9.1'
+  s.version = '0.9.2'
   s.date = '2009-03-07'
 
   s.description = "Contributed Rack Middleware and Utilities"
@@ -74,7 +74,7 @@ Gem::Specification.new do |s|
   s.test_files = s.files.select {|path| path =~ /^test\/spec_.*\.rb/}
 
   s.extra_rdoc_files = %w[README.rdoc COPYING]
-  s.add_dependency 'rack', '~> 0.9.1'
+  s.add_dependency 'rack', '>= 0.9.1'
   s.add_dependency 'test-spec', '~> 0.9.0'
   s.add_development_dependency 'tmail', '>= 1.2'
   s.add_development_dependency 'json', '>= 1.1'
