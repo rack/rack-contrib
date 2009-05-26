@@ -25,6 +25,8 @@ interface:
   from file.
 * Rack::Signals - Installs signal handlers that are safely processed after
   a request
+* Rack::StaticCache - Modifies the response headers to facilitiate client and proxy caching for
+  static files that minimizes http requests and improves overall load times for second time visitors.
 * Rack::TimeZone - Detects the clients timezone using JavaScript and sets
   a variable in Rack's environment with the offset from UTC.
 * Rack::Evil - Lets the rack application return a response to the client from any place.
