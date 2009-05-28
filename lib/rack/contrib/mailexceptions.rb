@@ -70,7 +70,7 @@ module Rack
       env['mail.sent'] = true
       return if smtp[:server] == 'example.com'
 
-      Net::SMTP.start smtp[:address], smtp[:port], smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication] do |server|
+      Net::SMTP.start smtp[:server], smtp[:port], smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication] do |server|
         mail.to.each do |recipient|
           server.send_message mail.to_s, mail.from, recipient
         end
