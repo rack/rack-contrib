@@ -60,9 +60,11 @@ module Rack
       def profile(env, mode)
         RubyProf.measure_mode = RubyProf.const_get(mode.upcase)
 
+        GC.enable_stats if GC.respond_to?(:enable_stats)
         result = RubyProf.profile do
           @times.times { @app.call(env) }
         end
+        GC.disable_stats if GC.respond_to?(:disable_stats)
 
         [200, headers(@printer, env, mode), print(@printer, result)]
       end
