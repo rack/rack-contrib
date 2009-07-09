@@ -13,6 +13,7 @@ module Rack
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
   autoload :ETag,                       "rack/contrib/etag"
+  autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
   autoload :LighttpdScriptNameFix,      "rack/contrib/lighttpd_script_name_fix"
