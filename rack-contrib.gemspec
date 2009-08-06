@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     lib/rack/contrib/bounce_favicon.rb
     lib/rack/contrib/callbacks.rb
     lib/rack/contrib/config.rb
+    lib/rack/contrib/cookies.rb
     lib/rack/contrib/csshttprequest.rb
     lib/rack/contrib/deflect.rb
     lib/rack/contrib/etag.rb
