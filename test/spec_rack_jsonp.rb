@@ -11,7 +11,7 @@ context "Rack::JSONP" do
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :input => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
-      body.join.should.equal "#{callback}(#{test_body})"
+      body.should.equal "#{callback}(#{test_body})"
     end
 
     specify "should modify the content length to the correct value" do
@@ -25,7 +25,7 @@ context "Rack::JSONP" do
   end
 
   specify "should not change anything if no callback param is provided" do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, '{"bar":"foo"}'] }
+    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, ['{"bar":"foo"}']] }
     request = Rack::MockRequest.env_for("/", :input => "foo=bar")
     body = Rack::JSONP.new(app).call(request).last
     body.join.should.equal '{"bar":"foo"}'

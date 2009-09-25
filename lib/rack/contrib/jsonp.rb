@@ -22,7 +22,7 @@ module Rack
         response = pad(request.params.delete('callback'), response)
         headers['Content-Length'] = response.length.to_s
       end
-      [status, headers, [response]]
+      [status, headers, response]
     end
 
     # Pads the response with the appropriate callback format according to the
