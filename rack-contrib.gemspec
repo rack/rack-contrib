@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
   s.name = 'rack-contrib'
-  s.version = '0.9.2'
-  s.date = '2009-03-07'
+  s.version = '0.9.3'
+  s.date = '2010-01-10'
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     Rakefile
     lib/rack/contrib.rb
     lib/rack/contrib/accept_format.rb
+    lib/rack/contrib/access.rb
     lib/rack/contrib/backstage.rb
     lib/rack/contrib/bounce_favicon.rb
     lib/rack/contrib/callbacks.rb
@@ -49,6 +50,7 @@ Gem::Specification.new do |s|
     test/Maintenance.html
     test/mail_settings.rb
     test/spec_rack_accept_format.rb
+    test/spec_rack_access.rb
     test/spec_rack_backstage.rb
     test/spec_rack_callbacks.rb
     test/spec_rack_config.rb

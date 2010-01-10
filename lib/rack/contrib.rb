@@ -8,6 +8,7 @@ module Rack
   end
 
   autoload :AcceptFormat,               "rack/contrib/accept_format"
+  autoload :Access,                     "rack/contrib/access"
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
   autoload :Cookies,                    "rack/contrib/cookies"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
