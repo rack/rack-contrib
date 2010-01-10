@@ -3,14 +3,12 @@ require "ipaddr"
 module Rack
 
   ##
-  # Rack middleware for limiting access based on IP address, password cookie or a token
+  # Rack middleware for limiting access based on IP address
   #
   #
   # === Options:
   #
   #   :allow_ipmasks      Array of remote addresses which are allowed to access
-  #   :password
-  #   :secret_key
   #
   # === Examples:
   #
@@ -25,9 +23,7 @@ module Rack
     def initialize(app, options = {})
       @app = app
       @options = {
-        :allow_ipmasks => ["127.0.0.1"],
-        :password => nil,
-        :secret_key => nil
+        :allow_ipmasks => ["127.0.0.1"]
       }.merge(options)
       @options[:allow_ipmasks].collect! do |ipmask|
         ipmask.is_a?(IPAddr) ? ipmask : IPAddr.new(ipmask)
@@ -52,7 +48,6 @@ module Rack
         ip_mask.include?(IPAddr.new(@original_request.ip))
       end
     end
-
 
   end
 end
