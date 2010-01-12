@@ -35,35 +35,35 @@ context "Rack::Access" do
   end
 
   specify "should allow remote addresses in allow_ipmasking" do
-    app = middleware(:allow_ipmasks => [@mock_addr_1])
+    app = middleware('/' => [@mock_addr_1])
     status, headers, body = app.call(mock_env(@mock_addr_1))
     status.should.equal 200
     body.should.equal 'hello'
   end
 
   specify "should deny remote addresses not in allow_ipmasks" do
-    app = middleware(:allow_ipmasks => [@mock_addr_1])
+    app = middleware('/' => [@mock_addr_1])
     status, headers, body = app.call(mock_env(@mock_addr_2))
     status.should.equal 403
     body.should.equal ''
   end
 
   specify "should allow remote addresses in allow_ipmasks range" do
-    app = middleware(:allow_ipmasks => [@mock_addr_range])
+    app = middleware('/' => [@mock_addr_range])
     status, headers, body = app.call(mock_env(@mock_addr_2))
     status.should.equal 200
     body.should.equal 'hello'
   end
 
   specify "should deny remote addresses not in allow_ipmasks range" do
-    app = middleware(:allow_ipmasks => [@mock_addr_range])
+    app = middleware('/' => [@mock_addr_range])
     status, headers, body = app.call(mock_env(@mock_addr_1))
     status.should.equal 403
     body.should.equal ''
   end
 
   specify "should allow remote addresses in one of allow_ipmasking" do
-    app = middleware(:allow_ipmasks => [@mock_addr_range, @mock_addr_localhost])
+    app = middleware('/' => [@mock_addr_range, @mock_addr_localhost])
 
     status, headers, body = app.call(mock_env(@mock_addr_2))
     status.should.equal 200
@@ -75,10 +75,80 @@ context "Rack::Access" do
   end
 
   specify "should deny remote addresses not in one of allow_ipmasks" do
-    app = middleware(:allow_ipmasks => [@mock_addr_range, @mock_addr_localhost])
+    app = middleware('/' => [@mock_addr_range, @mock_addr_localhost])
     status, headers, body = app.call(mock_env(@mock_addr_1))
     status.should.equal 403
     body.should.equal ''
   end
 
+  specify "handles paths correctly" do
+    app = middleware({
+      'http://foo.org/bar' => [@mock_addr_localhost],
+      '/foo' => [@mock_addr_localhost],
+      '/foo/bar' => [@mock_addr_range, @mock_addr_localhost]
+    })
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/qux"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/bar"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/bar"))
+    status.should.equal 200
+    body.should.equal 'hello'
+    status, headers, body = app.call(mock_env(@mock_addr_2, "/foo/bar"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/bar/"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/bar/"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo///bar//quux"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo///bar//quux"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/quux"))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/quux"))
+    status.should.equal 200
+    body.should.equal 'hello'
+
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/bar"))
+    status.should.equal 200
+    body.should.equal 'hello'
+    status, headers, body = app.call(mock_env(@mock_addr_1, "/bar").merge('HTTP_HOST' => 'foo.org'))
+    status.should.equal 403
+    body.should.equal ''
+    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/bar").merge('HTTP_HOST' => 'foo.org'))
+    status.should.equal 200
+    body.should.equal 'hello'
+  end
 end
