@@ -26,7 +26,7 @@ module Rack
       @mapping = remap(mapping)
     end
 
-     def remap(mapping)
+    def remap(mapping)
       mapping.map { |location, ipmasks|
         if location =~ %r{\Ahttps?://(.*?)(/.*)}
           host, location = $1, $2
@@ -47,7 +47,7 @@ module Rack
       }.sort_by { |(h, l, m, a)| [h ? -h.size : (-1.0 / 0.0), -l.size] }  # Longest path first
     end
 
-   def call(env)
+    def call(env)
       @original_request = Request.new(env)
       ipmasks = ipmasks_for_path(env)
       return forbidden! unless ip_authorized?(ipmasks)
@@ -55,12 +55,12 @@ module Rack
       [status, headers, body]
     end
 
-   def ipmasks_for_path(env)
+    def ipmasks_for_path(env)
       path = env["PATH_INFO"].to_s
       hHost, sName, sPort = env.values_at('HTTP_HOST','SERVER_NAME','SERVER_PORT')
       @mapping.each do |host, location, match, ipmasks|
         next unless (hHost == host || sName == host \
-          || (host.nil? && (hHost == sName || hHost == sName+':'+sPort)))
+            || (host.nil? && (hHost == sName || hHost == sName+':'+sPort)))
         next unless path =~ match && rest = $1
         next unless rest.empty? || rest[0] == ?/
 
