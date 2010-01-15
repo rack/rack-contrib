@@ -45,6 +45,7 @@ interface:
 * Rack::AcceptFormat - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
 * Rack::HostMeta - Configures /host-meta using a block
 * Rack::Cookies - Adds simple cookie jar hash to env
+* Rack::Access - Limit access based on IP address
 
 === Use
 
