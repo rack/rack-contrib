@@ -27,6 +27,7 @@ module Rack
   autoload :Runtime,                    "rack/contrib/runtime"
   autoload :Sendfile,                   "rack/contrib/sendfile"
   autoload :Signals,                    "rack/contrib/signals"
+  autoload :SimpleEndpoint,             "rack/contrib/simple_endpoint"
   autoload :TimeZone,                   "rack/contrib/time_zone"
   autoload :Evil,                       "rack/contrib/evil"
   autoload :Callbacks,                  "rack/contrib/callbacks"

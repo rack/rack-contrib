@@ -47,6 +47,7 @@ interface:
 * Rack::Cookies - Adds simple cookie jar hash to env
 * Rack::Access - Limit access based on IP address
 * Rack::ResponseHeaders - Manipulate response headers object at runtime
+* Rack::SimpleEndpoint - Create simple endpoints with routing rules, similar to Sinatra actions
 
 === Use
 
