@@ -46,6 +46,7 @@ interface:
 * Rack::HostMeta - Configures /host-meta using a block
 * Rack::Cookies - Adds simple cookie jar hash to env
 * Rack::Access - Limit access based on IP address
+* Rack::ResponseHeaders - Manipulate response headers object at runtime
 
 === Use
 

@@ -23,6 +23,7 @@ module Rack
   autoload :PostBodyContentTypeParser,  "rack/contrib/post_body_content_type_parser"
   autoload :ProcTitle,                  "rack/contrib/proctitle"
   autoload :Profiler,                   "rack/contrib/profiler"
+  autoload :ResponseHeaders,            "rack/contrib/response_headers"
   autoload :Runtime,                    "rack/contrib/runtime"
   autoload :Sendfile,                   "rack/contrib/sendfile"
   autoload :Signals,                    "rack/contrib/signals"
