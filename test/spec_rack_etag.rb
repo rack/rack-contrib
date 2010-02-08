@@ -8,7 +8,7 @@ require 'digest/sha2'
 context "Rack::ETag" do
 
   body   = 'Hello, World!'
-  
+
   context('if no ETag is set on a String body') do
     before(:each) do
       @app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, body] }

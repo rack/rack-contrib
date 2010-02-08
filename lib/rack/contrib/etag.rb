@@ -22,9 +22,9 @@ module Rack
 
       [status, headers, body]
     end
-    
+
     private
-    
+
     def load_digest(digest)
       case digest
       when :md5
@@ -37,11 +37,11 @@ module Rack
         raise ArgumentError.new("Digest #{digest} is not supported.")
       end
     end
-    
+
     def md5_hash(body)
       Digest::MD5.hexdigest(body)
     end
-    
+
     def sha1_hash(body)
       Digest::SHA1.hexdigest(body)
     end
