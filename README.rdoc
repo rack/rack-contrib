@@ -3,7 +3,6 @@
 This package includes a variety of add-on components for Rack, a Ruby web server
 interface:
 
-* Rack::ETag - Automatically sets the ETag header on all String bodies.
 * Rack::JSONP - Adds JSON-P support by stripping out the callback param
   and padding the response with the appropriate callback format.
 * Rack::LighttpdScriptNameFix - Fixes how lighttpd sets the SCRIPT_NAME
