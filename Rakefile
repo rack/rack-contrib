@@ -42,38 +42,31 @@ task :rdoc => ["RDOX"]
 
 # PACKAGING =================================================================
 
-# load gemspec like github's gem builder to surface any SAFE issues.
-require 'rubygems/specification'
-$spec = eval(File.read('rack-contrib.gemspec'))
+if defined?(Gem)
+  # load gemspec
+  $spec = eval(File.read('rack-contrib.gemspec'))
 
-def package(ext='')
-  "pkg/rack-contrib-#{$spec.version}" + ext
-end
+  def package(ext='')
+    "pkg/rack-contrib-#{$spec.version}" + ext
+  end
 
-desc 'Build packages'
-task :package => %w[.gem .tar.gz].map {|e| package(e)}
+  desc 'Build packages'
+  task :package => %w[.gem .tar.gz].map {|e| package(e)}
 
-desc 'Build and install as local gem'
-task :install => package('.gem') do
-  sh "gem install #{package('.gem')}"
-end
+  desc 'Build and install as local gem'
+  task :install => package('.gem') do
+    sh "gem install #{package('.gem')}"
+  end
 
-directory 'pkg/'
+  directory 'pkg/'
 
-file package('.gem') => %w[pkg/ rack-contrib.gemspec] + $spec.files do |f|
-  sh "gem build rack-contrib.gemspec"
-  mv File.basename(f.name), f.name
-end
+  file package('.gem') => %w[pkg/ rack-contrib.gemspec] + $spec.files do |f|
+    sh "gem build rack-contrib.gemspec"
+    mv File.basename(f.name), f.name
+  end
 
-file package('.tar.gz') => %w[pkg/] + $spec.files do |f|
-  sh "git archive --format=tar HEAD | gzip > #{f.name}"
-end
-
-desc 'Publish gem and tarball to rubyforge'
-task 'publish:gem' => [package('.gem'), package('.tar.gz')] do |t|
-  sh <<-end
-    rubyforge add_release rack rack-contrib #{$spec.version} #{package('.gem')} &&
-    rubyforge add_file    rack rack-contrib #{$spec.version} #{package('.tar.gz')}
+  file package('.tar.gz') => %w[pkg/] + $spec.files do |f|
+    sh "git archive --format=tar HEAD | gzip > #{f.name}"
   end
 end
 
