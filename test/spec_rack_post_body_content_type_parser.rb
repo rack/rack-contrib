@@ -16,7 +16,7 @@ begin
 
     specify "should change nothing when the POST body content type isn't application/json" do
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-      body = app.call(Rack::MockRequest.env_for("/", :input => "body=asdf&status=12")).last
+      body = Rack::PostBodyContentTypeParser.new(app).call(Rack::MockRequest.env_for("/", {:method => 'POST', :params => "body=asdf&status=12"})).last
       body['body'].should.equal "asdf"
       body['status'].should.equal "12"
     end

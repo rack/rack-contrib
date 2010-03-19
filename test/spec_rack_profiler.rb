@@ -6,7 +6,7 @@ begin
 
   context 'Rack::Profiler' do
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
-    request = Rack::MockRequest.env_for("/", :input => "profile=process_time")
+    request = Rack::MockRequest.env_for("/", :params => "profile=process_time")
 
     specify 'printer defaults to RubyProf::CallTreePrinter' do
       profiler = Rack::Profiler.new(nil)

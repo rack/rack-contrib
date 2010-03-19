@@ -44,7 +44,7 @@ module Rack
     private
       def profiling?(env)
         unless RubyProf.running?
-          request = Rack::Request.new(env)
+          request = Rack::Request.new(env.clone)
           if mode = request.params.delete('profile')
             if RubyProf.const_defined?(mode.upcase)
               mode

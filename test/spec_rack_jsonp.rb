@@ -9,7 +9,7 @@ context "Rack::JSONP" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
-      request = Rack::MockRequest.env_for("/", :input => "foo=bar&callback=#{callback}")
+      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
       body.should.equal "#{callback}(#{test_body})"
     end
@@ -18,7 +18,7 @@ context "Rack::JSONP" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
-      request = Rack::MockRequest.env_for("/", :input => "foo=bar&callback=#{callback}")
+      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       headers = Rack::JSONP.new(app).call(request)[1]
       headers['Content-Length'].should.equal((test_body.length + callback.length + 2).to_s) # 2 parentheses
     end
@@ -26,7 +26,7 @@ context "Rack::JSONP" do
 
   specify "should not change anything if no callback param is provided" do
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, ['{"bar":"foo"}']] }
-    request = Rack::MockRequest.env_for("/", :input => "foo=bar")
+    request = Rack::MockRequest.env_for("/", :params => "foo=bar")
     body = Rack::JSONP.new(app).call(request).last
     body.join.should.equal '{"bar":"foo"}'
   end
