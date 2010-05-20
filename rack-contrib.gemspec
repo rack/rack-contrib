@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
     lib/rack/contrib/cookies.rb
     lib/rack/contrib/csshttprequest.rb
     lib/rack/contrib/deflect.rb
-    lib/rack/contrib/etag.rb
     lib/rack/contrib/evil.rb
     lib/rack/contrib/garbagecollector.rb
     lib/rack/contrib/jsonp.rb
@@ -57,7 +56,6 @@ Gem::Specification.new do |s|
     test/spec_rack_contrib.rb
     test/spec_rack_csshttprequest.rb
     test/spec_rack_deflect.rb
-    test/spec_rack_etag.rb
     test/spec_rack_evil.rb
     test/spec_rack_garbagecollector.rb
     test/spec_rack_jsonp.rb
