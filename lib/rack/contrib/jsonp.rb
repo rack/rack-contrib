@@ -17,10 +17,12 @@ module Rack
     #
     def call(env)
       status, headers, response = @app.call(env)
-      request = Rack::Request.new(env)
-      if request.params.include?('callback')
-        response = pad(request.params.delete('callback'), response)
-        headers['Content-Length'] = response.length.to_s
+      if env['HTTP_ACCEPT'] =~ /application\/json/ && headers['Content-Type'] =~ /application\/json/
+        request = Rack::Request.new(env)
+        if request.params.include?('callback')
+          response = pad(request.params.delete('callback'), response)
+          headers['Content-Length'] = response.length.to_s
+        end
       end
       [status, headers, response]
     end

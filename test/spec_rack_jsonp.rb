@@ -8,8 +8,8 @@ context "Rack::JSONP" do
     specify "should wrap the response body in the Javascript callback" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
-      app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
-      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+      app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}", 'HTTP_ACCEPT' => 'application/json')
       body = Rack::JSONP.new(app).call(request).last
       body.should.equal "#{callback}(#{test_body})"
     end
@@ -17,18 +17,34 @@ context "Rack::JSONP" do
     specify "should modify the content length to the correct value" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
-      app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
-      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+      app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}", 'HTTP_ACCEPT' => 'application/json')
       headers = Rack::JSONP.new(app).call(request)[1]
       headers['Content-Length'].should.equal((test_body.length + callback.length + 2).to_s) # 2 parentheses
     end
   end
 
   specify "should not change anything if no callback param is provided" do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, ['{"bar":"foo"}']] }
-    request = Rack::MockRequest.env_for("/", :params => "foo=bar")
+    app = lambda { |env| [200, {'Content-Type' => 'application/json'}, ['{"bar":"foo"}']] }
+    request = Rack::MockRequest.env_for("/", :params => "foo=bar", 'HTTP_ACCEPT' => 'application/json')
     body = Rack::JSONP.new(app).call(request).last
     body.join.should.equal '{"bar":"foo"}'
+  end
+
+  specify "should not change anything if it's not a json request" do
+    test_body = '{"bar":"foo"}'
+    app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+    request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/html')
+    body = Rack::JSONP.new(app).call(request).last
+    body.should.equal [test_body]
+  end
+
+  specify "should not change anything if it's not a json response" do
+    test_body = '<html><body>404 Not Found</body></html>'
+    app = lambda { |env| [404, {'Content-Type' => 'text/html'}, [test_body]] }
+    request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
+    body = Rack::JSONP.new(app).call(request).last
+    body.should.equal [test_body]
   end
 
 end
