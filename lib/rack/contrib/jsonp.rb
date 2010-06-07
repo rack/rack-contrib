@@ -6,6 +6,11 @@ module Rack
   #
   class JSONP
 
+    CALLBACK_PARAM = 'callback'
+    HTTP_ACCEPT = 'HTTP_ACCEPT'.freeze
+    CONTENT_TYPE = 'Content-Type'.freeze
+    APPLICATION_JSON = /application\/json/.freeze
+
     def initialize(app)
       @app = app
     end
@@ -17,10 +22,13 @@ module Rack
     #
     def call(env)
       status, headers, response = @app.call(env)
-      request = Rack::Request.new(env)
-      if request.params.include?('callback')
-        response = pad(request.params.delete('callback'), response)
-        headers['Content-Length'] = response.length.to_s
+      if env[HTTP_ACCEPT] =~ APPLICATION_JSON && headers[CONTENT_TYPE] =~ APPLICATION_JSON
+        request = Rack::Request.new(env)
+        if request.params.include?(CALLBACK_PARAM)
+          response = pad(request.params.delete(CALLBACK_PARAM), response)
+          headers['Content-Length'] = response.length.to_s
+          response = [response]
+        end
       end
       [status, headers, response]
     end
