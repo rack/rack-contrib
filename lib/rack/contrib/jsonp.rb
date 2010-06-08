@@ -31,8 +31,6 @@ module Rack
         
         # Set new Content-Length, if it was set before we mutated the response body
         if headers['Content-Length']
-          # Code from Rack::ContentLength
-          response = [response] if response.respond_to?(:to_str) # rack 0.4 compat
           length = response.to_ary.inject(0) { |len, part| len + bytesize(part) }
           headers['Content-Length'] = length.to_s
         end
