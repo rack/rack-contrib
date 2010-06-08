@@ -6,6 +6,7 @@ module Rack
   #
   class JSONP
     include Rack::Utils
+
     def initialize(app)
       @app = app
     end
@@ -18,10 +19,11 @@ module Rack
     #
     def call(env)
       status, headers, response = @app.call(env)
+
       headers = HeaderHash.new(headers)
       request = Rack::Request.new(env)
       
-      if is_json?(headers['Content-Type']) && has_callback?(request.params)
+      if is_json?(headers) && has_callback?(request)
         response = pad(request.params.delete('callback'), response)
 
         # No longer json, its javascript!
@@ -40,24 +42,24 @@ module Rack
     
     private
     
-    def is_json?(header)
-      header.include?('application/json')
+    def is_json?(headers)
+      headers['Content-Type'].include?('application/json')
     end
     
-    def has_callback?(params)
-      params.include?('callback')
+    def has_callback?(request)
+      request.params.include?('callback')
     end
 
     # Pads the response with the appropriate callback format according to the
     # JSON-P spec/requirements.
     #
-    # The Rack response spec indicates that it should be enumerable. The method
-    # of combining all of the data into a single string makes sense since JSON
-    # is returned as a full string.
+    # The Rack response spec indicates that it should be enumerable. The
+    # method of combining all of the data into a single string makes sense
+    # since JSON is returned as a full string.
     #
     def pad(callback, response, body = "")
       response.each{ |s| body << s.to_s }
-      "#{callback}(#{body})"
+      ["#{callback}(#{body})"]
     end
 
   end

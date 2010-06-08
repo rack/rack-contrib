@@ -63,7 +63,7 @@ module Rack
     end
 
     def deflect!
-      [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, '']
+      [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
     end
 
     def deflect? env
