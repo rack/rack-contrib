@@ -3,7 +3,7 @@ require 'rack'
 module Rack
   module Contrib
     def self.release
-      "0.9.1"
+      "1.0.1"
     end
   end
 
@@ -35,5 +35,5 @@ module Rack
   autoload :NotFound,                   "rack/contrib/not_found"
   autoload :ResponseCache,              "rack/contrib/response_cache"
   autoload :RelativeRedirect,           "rack/contrib/relative_redirect"
-  autoload :StaticCache,           	"rack/contrib/static_cache"
+  autoload :StaticCache,                "rack/contrib/static_cache"
 end
