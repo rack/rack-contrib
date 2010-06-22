@@ -185,4 +185,13 @@ describe "Rack::JSONP" do
     body.must_equal [test_body]
   end  
 
+  specify "should not change anything if the request doesn't have a body" do
+    app1 = lambda { |env| [100, {}, []] }
+    app2 = lambda { |env| [204, {}, []] }
+    app3 = lambda { |env| [304, {}, []] }
+    request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
+    Rack::JSONP.new(app1).call(request).must_equal app1.call({})
+    Rack::JSONP.new(app2).call(request).must_equal app2.call({})
+    Rack::JSONP.new(app3).call(request).must_equal app3.call({})
+  end
 end
