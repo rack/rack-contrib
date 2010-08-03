@@ -27,7 +27,7 @@ module Rack
         response = pad(request.params.delete('callback'), response)
 
         # No longer json, its javascript!
-        headers['Content-Type'].gsub!('json', 'javascript')
+        headers['Content-Type'] = headers['Content-Type'].gsub('json', 'javascript')
         
         # Set new Content-Length, if it was set before we mutated the response body
         if headers['Content-Length']
