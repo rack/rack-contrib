@@ -26,7 +26,7 @@ interface:
   a request
 * Rack::StaticCache - Modifies the response headers to facilitiate client and proxy caching for
   static files that minimizes http requests and improves overall load times for second time visitors.
-* Rack::TimeZone - Detects the clients timezone using JavaScript and sets
+* Rack::TimeZone - Detects the client's timezone using JavaScript and sets
   a variable in Rack's environment with the offset from UTC.
 * Rack::Evil - Lets the rack application return a response to the client from any place.
 * Rack::Callbacks - Implements DSL for pure before/after filter like Middlewares.
@@ -44,9 +44,9 @@ interface:
 * Rack::AcceptFormat - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
 * Rack::HostMeta - Configures /host-meta using a block
 * Rack::Cookies - Adds simple cookie jar hash to env
-* Rack::Access - Limit access based on IP address
-* Rack::ResponseHeaders - Manipulate response headers object at runtime
-* Rack::SimpleEndpoint - Create simple endpoints with routing rules, similar to Sinatra actions
+* Rack::Access - Limits access based on IP address
+* Rack::ResponseHeaders - Manipulates response headers object at runtime
+* Rack::SimpleEndpoint - Creates simple endpoints with routing rules, similar to Sinatra actions
 
 === Use
 
