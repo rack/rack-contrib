@@ -69,5 +69,13 @@ context "Rack::JSONP" do
     body = Rack::JSONP.new(app).call(request).last
     body.should.equal [test_body]
   end
+  
+  specify "should not change anything if there is no Content-Type header" do
+    test_body = '<html><body>404 Not Found</body></html>'
+    app = lambda { |env| [404, {}, [test_body]] }
+    request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
+    body = Rack::JSONP.new(app).call(request).last
+    body.should.equal [test_body]
+  end  
 
 end

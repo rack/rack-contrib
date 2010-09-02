@@ -41,7 +41,7 @@ module Rack
     private
     
     def is_json?(headers)
-      headers['Content-Type'].include?('application/json')
+      headers.key?('Content-Type') && headers['Content-Type'].include?('application/json')
     end
     
     def has_callback?(request)
