@@ -16,13 +16,13 @@ module Rack
       gc_time
     )
 
-    DEFAULT_PRINTER = RubyProf::CallTreePrinter
+    DEFAULT_PRINTER = ::RubyProf::CallTreePrinter
     DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
     PRINTER_CONTENT_TYPE = {
-      RubyProf::FlatPrinter => 'text/plain',
-      RubyProf::GraphPrinter => 'text/plain',
-      RubyProf::GraphHtmlPrinter => 'text/html'
+      ::RubyProf::FlatPrinter => 'text/plain',
+      ::RubyProf::GraphPrinter => 'text/plain',
+      ::RubyProf::GraphHtmlPrinter => 'text/html'
     }
 
     # Accepts a :printer => [:call_tree|:graph_html|:graph|:flat] option
