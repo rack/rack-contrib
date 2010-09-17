@@ -91,6 +91,80 @@ begin
       STDERR.puts 'WARN: Skipping SMTP tests (edit test/mail_settings.rb to enable)'
     end
 
+    context 'for tls enabled smtp' do
+      setup do
+        @smtp_settings.merge!(TEST_SMTP_TLS)
+        @mailer = 
+          Rack::MailExceptions.new(@app) do |mail|
+            mail.to TEST_SMTP_TLS.values_at(:user_name, :domain).join('@')
+            mail.from 'bar@example.org'
+            mail.subject '[ERROR] %s'
+            mail.smtp @smtp_settings.merge( :enable_starttls_auto => true)
+          end
+      end
+
+      describe 'with :enable_starttls_auto set to :auto' do
+        specify 'sends mail' do
+          @mailer.smtp.merge(:enable_starttls_auto => :auto)
+          lambda { @mailer.call(@env) }.should.raise(TestError)
+          @env['mail.sent'].should.be true
+        end
+      end
+
+      describe 'with :enable_starttls_auto set to true' do
+        specify 'sends mail' do
+          @mailer.smtp.merge(:enable_starttls_auto => true)
+          lambda { @mailer.call(@env) }.should.raise(TestError)
+          @env['mail.sent'].should.be true
+        end
+      end
+    end if defined?(TEST_SMTP_TLS)
+
+    describe 'for tls enabled fake smtp' do
+      class FakeSMTP
+        def initialize(*args); @@_tls = nil; end
+        def start(*args);  end
+        def enable_starttls_auto; @@_tls = :auto; end
+        def enable_starttls; @@_tls = true; end
+        def send_message(*args); end
+        def self.tls; @@_tls; end
+      end
+
+      setup do
+        Rack::MailExceptions.class_eval { def service; FakeSMTP; end}
+        @mailer = 
+          Rack::MailExceptions.new(@app) do |mail|
+            mail.to 'foo@example.org'
+            mail.from 'bar@example.org'
+            mail.subject '[ERROR] %s'
+            mail.smtp @smtp_settings.merge( :server => 'server.com')
+          end
+      end
+
+      context 'with :enable_starttls_auto unset' do
+        specify 'sends mail' do
+          @mailer.smtp[:enable_starttls_auto] = nil
+          lambda { @mailer.call(@env) }.should.raise(TestError)
+          FakeSMTP.tls.should.be nil
+        end
+      end
+
+      context 'with :enable_starttls_auto set to true' do
+        specify 'sends mail' do
+          @mailer.smtp[:enable_starttls_auto] = true
+          lambda { @mailer.call(@env) }.should.raise(TestError)
+          FakeSMTP.tls.should == true
+        end
+      end
+
+      context 'with :enable_starttls_auto set to :auto' do
+        specify 'sends mail' do
+          @mailer.smtp[:enable_starttls_auto] = :auto
+          lambda { @mailer.call(@env) }.should.raise(TestError)
+          FakeSMTP.tls.should == :auto
+        end
+      end
+    end
   end
 rescue LoadError => boom
   STDERR.puts "WARN: Skipping Rack::MailExceptions tests (tmail not installed)"
