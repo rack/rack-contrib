@@ -10,3 +10,11 @@ TEST_SMTP = nil
 #   :user_name      => nil,
 #   :password       => nil
 # }
+#TEST_SMTP_TLS = {
+#    :server         => 'smtp.gmail.com',
+#    :domain         => 'gmail.com',
+#    :port           => 587,
+#    :authentication => 'plain',
+#    :user_name      => nil,
+#    :password       => nil,
+#}

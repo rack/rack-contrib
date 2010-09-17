@@ -70,11 +70,23 @@ module Rack
       env['mail.sent'] = true
       return if smtp[:server] == 'example.com'
 
-      Net::SMTP.start smtp[:server], smtp[:port], smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication] do |server|
-        mail.to.each do |recipient|
-          server.send_message mail.to_s, mail.from, recipient
-        end
+      server = service.new(smtp[:server], smtp[:port])
+
+      if smtp[:enable_starttls_auto] == :auto
+        server.enable_starttls_auto 
+      elsif smtp[:enable_starttls_auto]
+        server.enable_starttls 
       end
+
+      server.start smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication]
+
+      mail.to.each do |recipient|
+        server.send_message mail.to_s, mail.from, recipient
+      end
+    end
+
+    def service
+      Net::SMTP
     end
 
     def extract_body(env)
