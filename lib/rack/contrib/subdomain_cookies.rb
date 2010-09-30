@@ -1,4 +1,5 @@
 module Rack
+  # Rack middleware to use the same cookies inside domain and all subdomains.
   class SubdomainCookies
     DOMAIN_REGEXP = /([^.]*)\.([^.]*|..\...|...\...)$/
     LOCALHOST_OR_IP_REGEXP = /^([\d.]+(:\d+)?|localhost)$/
