@@ -1,34 +1,41 @@
 module Rack
-  # Rack middleware to use the same cookies inside domain and all subdomains.
+  # Rack middleware to use common cookies across domain and subdomains.
   class CommonCookies
-    DOMAIN_REGEXP = /([^.]*)\.([^.]*|..\...|...\...)$/
-    LOCALHOST_OR_IP_REGEXP = /^([\d.]+(:\d+)?|localhost)$/
+    DOMAIN_REGEXP = /([^.]*)\.([^.]*|..\...|...\...|..\....)$/
+    LOCALHOST_OR_IP_REGEXP = /^([\d.]+|localhost)$/
+    PORT = /:\d+$/
 
     def initialize(app)
       @app = app
     end
 
-    def domain(env)
-      env['HTTP_HOST'] =~ DOMAIN_REGEXP
-      ".#{$1}.#{$2}"
-    end
-
-    def update_domain(env, headers)
-      headers['Set-Cookie'] &&= rewrite cookies if env['HTTP_HOST'] !~ LOCALHOST_OR_IP_REGEXP
-    end
-
     def call(env)
-      @app.call(env).tap {|(status, headers, response)| update_domain(env, headers) }
+      @app.call(env).tap do |(status, headers, response)|
+        @host = env['HTTP_HOST'].sub PORT, ''
+        share_cookie headers
+      end
     end
 
     private
 
-    def cookies
-      Array[*headers['Set-Cookie']].join "\n"
+    def domain
+      @domain ||= begin
+        @host =~ DOMAIN_REGEXP
+        ".#{$1}.#{$2}"
+      end
     end
 
-    def rewrite(cookies)
-      *set_cookies.gsub(/; domain=[^;]*/, '').gsub(/$/, "; domain=#{domain(env)}").split("\n")
+    def share_cookie(headers)
+      headers['Set-Cookie'] &&= common_cookie(headers) if @host !~ LOCALHOST_OR_IP_REGEXP
+    end
+
+    def cookie(headers)
+      cookies = headers['Set-Cookie']
+      cookies.is_a?(Array) ? cookies.join("\n") : cookies
+    end
+
+    def common_cookie(headers)
+      cookie(headers).gsub(/; domain=[^;]*/, '').gsub(/$/, "; domain=#{domain}")
     end
   end
 end
