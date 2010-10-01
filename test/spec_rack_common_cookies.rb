@@ -89,4 +89,19 @@ context Rack::CommonCookies do
     response = make_request 'sub.domain.bz', "key=value; domain=domain.bz"
     response.headers['Set-Cookie'].should == "key=value; domain=.domain.bz"
   end
+
+  specify 'should not touch cookies if domain is localhost' do
+    response = make_request 'localhost'
+    response.headers['Set-Cookie'].should == "key=value"
+  end
+
+  specify 'should not touch cookies if domain is ip address' do
+    response = make_request '127.0.0.1'
+    response.headers['Set-Cookie'].should == "key=value"
+  end
+
+  specify 'should use .domain.com for cookies from subdomain.domain.com:3000' do
+    response = make_request 'subdomain.domain.com:3000'
+    response.headers['Set-Cookie'].should == "key=value; domain=.domain.com"
+  end
 end
