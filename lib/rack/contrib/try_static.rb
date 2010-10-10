@@ -1,13 +1,13 @@
 module Rack
 
-  # The Rack::TryStatic middleware delegates requests to Rack::Static middleware 
+  # The Rack::TryStatic middleware delegates requests to Rack::Static middleware
   # trying to match a static file
-  # 
+  #
   # Examples
   #
-  # use Rack::TryStatic, 
+  # use Rack::TryStatic,
   #   :root => "public",  # static files root dir
-  #   :urls => %w[/],     # match all requests 
+  #   :urls => %w[/],     # match all requests
   #   :try => ['.html', 'index.html', '/index.html'] # try these postfixes sequentially
   #
   #   uses same options as Rack::Static with extra :try option which is an array
@@ -19,7 +19,7 @@ module Rack
       @app = app
       @try = ['', *options.delete(:try)]
       @static = ::Rack::Static.new(
-        lambda { [404, {}, []] }, 
+        lambda { [404, {}, []] },
         options)
     end
 
@@ -29,7 +29,7 @@ module Rack
       @try.each do |path|
         resp = @static.call(env.merge!({'PATH_INFO' => orig_path + path}))
         break if 404 != resp[0] && found = resp
-      end 
+      end
       found or @app.call(env.merge!('PATH_INFO' => orig_path))
     end
   end

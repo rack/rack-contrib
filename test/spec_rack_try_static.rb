@@ -10,10 +10,10 @@ def request(options = {})
     :root => ::File.expand_path(::File.dirname(__FILE__)),
   })
 
-  @request = 
+  @request =
     Rack::MockRequest.new(
-      Rack::TryStatic.new( 
-        lambda {[200, {}, ["Hello World"]]}, 
+      Rack::TryStatic.new(
+        lambda {[200, {}, ["Hello World"]]},
         options))
 end
 
