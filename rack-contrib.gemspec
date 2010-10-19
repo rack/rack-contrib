@@ -3,8 +3,8 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
   s.name = 'rack-contrib'
-  s.version = '1.0.1'
-  s.date = '2010-06-09'
+  s.version = '1.1.0'
+  s.date = '2010-10-19'
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     lib/rack/contrib/backstage.rb
     lib/rack/contrib/bounce_favicon.rb
     lib/rack/contrib/callbacks.rb
+    lib/rack/contrib/common_cookies.rb
     lib/rack/contrib/config.rb
     lib/rack/contrib/cookies.rb
     lib/rack/contrib/csshttprequest.rb
@@ -51,15 +52,20 @@ Gem::Specification.new do |s|
     lib/rack/contrib/simple_endpoint.rb
     lib/rack/contrib/static_cache.rb
     lib/rack/contrib/time_zone.rb
+    lib/rack/contrib/try_static.rb
     rack-contrib.gemspec
     test/404.html
     test/Maintenance.html
+    test/documents/existing.html
+    test/documents/index.htm
+    test/documents/index.html
     test/documents/test
     test/mail_settings.rb
     test/spec_rack_accept_format.rb
     test/spec_rack_access.rb
     test/spec_rack_backstage.rb
     test/spec_rack_callbacks.rb
+    test/spec_rack_common_cookies.rb
     test/spec_rack_config.rb
     test/spec_rack_contrib.rb
     test/spec_rack_cookies.rb
@@ -84,6 +90,7 @@ Gem::Specification.new do |s|
     test/spec_rack_sendfile.rb
     test/spec_rack_simple_endpoint.rb
     test/spec_rack_static_cache.rb
+    test/spec_rack_try_static.rb
     test/statics/test
   ]
   # = MANIFEST =
