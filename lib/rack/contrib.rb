@@ -13,6 +13,7 @@ module Rack
   autoload :Cookies,                    "rack/contrib/cookies"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
+  autoload :ErrorPages,                 "rack/contrib/error_pages"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
