@@ -6,9 +6,9 @@ begin
 
   context "Rack::PostBodyContentTypeParser" do
 
-    specify "should handle requests with POST body Content-Type of application/json" do
+    specify "should handle requests with POST body Content-Type of 'application/json; charset=utf-8'" do
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-      env = env_for_post_with_headers('/', {'Content_Type'.upcase => 'application/json'}, {:body => "asdf", :status => "12"}.to_json)
+      env = env_for_post_with_headers('/', {'Content_Type'.upcase => 'application/json; charset=utf-8'}, {:body => "asdf", :status => "12"}.to_json)
       body = Rack::PostBodyContentTypeParser.new(app).call(env).last
       body['body'].should.equal "asdf"
       body['status'].should.equal "12"
