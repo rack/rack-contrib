@@ -6,26 +6,34 @@ begin
 
   context "Rack::PostBodyContentTypeParser" do
 
-    specify "should handle requests with POST body Content-Type of 'application/json; charset=utf-8'" do
-      app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-      env = env_for_post_with_headers('/', {'Content_Type'.upcase => 'application/json; charset=utf-8'}, {:body => "asdf", :status => "12"}.to_json)
-      body = Rack::PostBodyContentTypeParser.new(app).call(env).last
-      body['body'].should.equal "asdf"
-      body['status'].should.equal "12"
+    specify "should parse 'application/json' requests" do
+      params = params_for_request '{"key":"value"}', "application/json"
+      params['key'].should.equal "value"
     end
 
-    specify "should change nothing when the POST body content type isn't application/json" do
-      app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-      body = Rack::PostBodyContentTypeParser.new(app).call(Rack::MockRequest.env_for("/", {:method => 'POST', :params => "body=asdf&status=12"})).last
-      body['body'].should.equal "asdf"
-      body['status'].should.equal "12"
+    specify "should parse 'application/json; charset=utf-8' requests" do
+      params = params_for_request '{"key":"value"}', "application/json; charset=utf-8"
+      params['key'].should.equal "value"
+    end
+    
+    specify "should parse 'application/json' requests with empty body" do
+      params = params_for_request "", "application/json"
+      params.should.equal({})
+    end
+
+    specify "shouldn't affect form-urlencoded requests" do
+      params = params_for_request("key=value", "application/x-www-form-urlencoded")
+      params['key'].should.equal "value"
     end
 
   end
 
-  def env_for_post_with_headers(path, headers, body)
-    Rack::MockRequest.env_for(path, {:method => "POST", :input => body}.merge(headers))
+  def params_for_request(body, content_type)
+    env = Rack::MockRequest.env_for "/", {:method => "POST", :input => body, "CONTENT_TYPE" => content_type}
+    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
+    Rack::PostBodyContentTypeParser.new(app).call(env).last
   end
+  
 rescue LoadError => e
   # Missing dependency JSON, skipping tests.
   STDERR.puts "WARN: Skipping Rack::PostBodyContentTypeParser tests (json not installed)"
