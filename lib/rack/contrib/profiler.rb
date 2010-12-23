@@ -18,12 +18,13 @@ module Rack
 
     RP = ::RubyProf
     DEFAULT_PRINTER = RP::CallTreePrinter
-    DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
+    DEFAULT_CONTENT_TYPE = 'application/octet-stream'
     PRINTER_CONTENT_TYPE = {
-      RubyProf::FlatPrinter => 'text/plain',
-      RubyProf::GraphPrinter => 'text/plain',
-      RubyProf::GraphHtmlPrinter => 'text/html'
+      RP::FlatPrinter => 'text/plain',
+      RP::GraphPrinter => 'text/plain',
+      RP::GraphHtmlPrinter => 'text/html',
+      RP::CallStackPrinter => 'text/html'
     }
 
     # Accepts a :printer => [:call_tree|:graph_html|:graph|:flat] option
