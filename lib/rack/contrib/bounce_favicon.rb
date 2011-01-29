@@ -1,7 +1,7 @@
 require 'time'
 module Rack
 
-  # The Rack::BounceIcon middleware intercepts requests for /favicon.ico
+  # The Rack::BounceFavicon middleware intercepts requests for /favicon.ico
   # and returns a 404 with a cache expirity (default 1 year).
   #
   # This middle accepts a hash with possible values as follows:
@@ -13,11 +13,11 @@ module Rack
   #
   # Basic usage
   #
-  #     use Rack::BounceIcon
+  #     use Rack::BounceFavicon
   #
   # Manually specify a cache duration of 5 years.
   #
-  #     use Rack::BounceIcon, :duration => 365 * 24 * 60 * 60 * 5
+  #     use Rack::BounceFavicon, :duration => 365 * 24 * 60 * 60 * 5
   #
   class BounceFavicon
     def initialize(app, options={})
