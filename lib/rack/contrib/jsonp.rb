@@ -72,7 +72,7 @@ module Rack
     # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
     # 
     def clean(callback)
-      callback.gsub(/[^\w\.]+/, '')
+      callback.gsub(/[^\w\.\$]+/, '')
     end
 
   end

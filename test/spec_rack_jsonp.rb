@@ -55,8 +55,8 @@ context "Rack::JSONP" do
     context "with XSS vulnerability attempts" do
       specify "should clean the callback to include only valid characters for a JavaScript function name" do
         test_body = '{"bar":"foo"}'
-        callback = 'foo<bar>baz()'
-        callback_cleaned = 'foobarbaz'
+        callback = 'foo<bar>baz()$'
+        callback_cleaned = 'foobarbaz$'
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
         body = Rack::JSONP.new(app).call(request).last
