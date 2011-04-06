@@ -43,4 +43,22 @@ context "Rack::AB" do
     response.headers['Set-Cookie'].should =~ /rack_ab=[1,2,3]/
   end
   
+  specify "provides a way to set cookie expiration" do
+    
+    expiration = Time.now+24*60*60
+    
+    app = lambda { |env|
+      [200, {'Content-Type' => 'text/plain'}, '']
+    }
+    app = Rack::AB.new(app, :cookie_params => { :expires => expiration})
+
+    response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => '')
+    
+    pattern = "rack_ab=[a,b]; expires=(.*)"
+    regexp = Regexp.new(pattern)
+    matches = regexp.match response.headers['Set-Cookie']
+    
+    Time.parse(matches.captures.first).to_s.should.equal expiration.to_s
+    
+  end
 end
