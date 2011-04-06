@@ -10,6 +10,6 @@ context "Rack::AB" do
     app = Rack::AB.new(app)
 
     response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => '')
-    response.headers['Set-Cookie'].should.equal('rack_ab=b; path=/' || 'rack_ab=b; path=/')
+    response.headers['Set-Cookie'].should.equal('rack_ab=a' || 'rack_ab=b')
   end
 end

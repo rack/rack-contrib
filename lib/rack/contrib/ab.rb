@@ -1,12 +1,11 @@
 module Rack
   class AB
     
-    def initialize(app, values=['a', 'b'], name='rack_ab', expiration=nil, path='/')
+    def initialize(app, cookie_name='rack_ab', possible_values=['a', 'b'], cookie_params={})
       @app = app
-      @name = name
-      @values = values
-      @expiration = expiration
-      @path = path
+      @cookie_name = cookie_name
+      @possible_values = possible_values
+      @cookie_params = cookie_params
     end
 
     def call(env)
@@ -15,13 +14,13 @@ module Rack
       
       req = Request.new(env)
       
-      if req.cookies[@name].nil?
+      if req.cookies[@cookie_name].nil?
         
-        value = @values[rand(@values.length)]
-        params = {:value => value, :path => @path, :expires => @expiration}
+        value = @possible_values[rand(@possible_values.length)]
+        @cookie_params[:value] = value
         
         resp = Rack::Response.new(body, status, headers)
-        resp.set_cookie(@name, params)
+        resp.set_cookie(@cookie_name, @cookie_params)
         resp.finish
         
       else
