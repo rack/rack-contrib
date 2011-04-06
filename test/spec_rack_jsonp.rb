@@ -85,6 +85,16 @@ context "Rack::JSONP" do
         body.should.not.include "<script>"
         body.should.equal ["#{callback_cleaned}(#{test_body})"]
       end
+      
+      specify "should allow dots in the callback" do
+        test_body = '{"bar":"foo"}'
+        callback = 'foo.bar.baz'
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.not.include "<script>"
+        body.should.equal ["#{callback}(#{test_body})"]
+      end
     end
     
   end

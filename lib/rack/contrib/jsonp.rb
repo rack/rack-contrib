@@ -64,8 +64,15 @@ module Rack
     # 
     #   clean("foo<script>alert(1);</script>") #=> "fooscriptalert1script"
     # 
+    # NOTE: Supports dots (.) since callbacks are often in objects:
+    # 
+    #   foo.bar.baz({...})
+    # 
+    # See:
+    # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
+    # 
     def clean(callback)
-      callback.gsub(/\W+/, '')
+      callback.gsub(/[^\w\.]+/, '')
     end
 
   end
