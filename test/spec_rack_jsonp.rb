@@ -52,6 +52,41 @@ context "Rack::JSONP" do
       headers['Content-Type'].should.equal('application/javascript')
     end
     
+    context "with XSS vulnerability attempts" do
+      specify "should clean the callback to include only valid characters for a JavaScript function name" do
+        test_body = '{"bar":"foo"}'
+        callback = 'foo<bar>baz()'
+        callback_cleaned = 'foobarbaz'
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.not.include "<script>"
+        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+      end
+      
+      specify "should not include <script> tags in the callback" do
+        test_body = '{"bar":"foo"}'
+        callback = 'foo<script>alert(1)</script>'
+        callback_cleaned = 'fooscriptalert1script'
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.not.include "<script>"
+        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+      end
+      
+      specify "should not include multiple statements" do
+        test_body = '{"bar":"foo"}'
+        callback = 'foo%3balert(1)//'
+        callback_cleaned = 'fooalert1'
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.not.include "<script>"
+        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+      end
+    end
+    
   end
 
   specify "should not change anything if no callback param is provided" do

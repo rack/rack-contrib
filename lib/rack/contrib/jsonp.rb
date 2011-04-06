@@ -57,7 +57,15 @@ module Rack
     #
     def pad(callback, response, body = "")
       response.each{ |s| body << s.to_s }
-      ["#{callback}(#{body})"]
+      ["#{clean(callback)}(#{body})"]
+    end
+
+    # Removes any non-valid characters for a JavaScript function name.
+    # 
+    #   clean("foo<script>alert(1);</script>") #=> "fooscriptalert1script"
+    # 
+    def clean(callback)
+      callback.gsub(/\W+/, '')
     end
 
   end
