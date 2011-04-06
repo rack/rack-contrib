@@ -33,4 +33,14 @@ context "Rack::AB" do
     response.headers['Set-Cookie'].should =~ /new_cookie_name=[a,b]/
   end
   
+  specify "provides a way to set a custom cookie values" do
+    app = lambda { |env|
+      [200, {'Content-Type' => 'text/plain'}, '']
+    }
+    app = Rack::AB.new(app, :possible_values => [1,2,3])
+
+    response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => '')
+    response.headers['Set-Cookie'].should =~ /rack_ab=[1,2,3]/
+  end
+  
 end
