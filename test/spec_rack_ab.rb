@@ -37,7 +37,7 @@ context "Rack::AB" do
     app = lambda { |env|
       [200, {'Content-Type' => 'text/plain'}, '']
     }
-    app = Rack::AB.new(app, :possible_values => [1,2,3])
+    app = Rack::AB.new(app, :bucket_names => [1,2,3])
 
     response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => '')
     response.headers['Set-Cookie'].should =~ /rack_ab=[1,2,3]/
