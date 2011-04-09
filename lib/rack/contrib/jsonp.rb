@@ -7,6 +7,9 @@ module Rack
   class JSONP
     include Rack::Utils
 
+    VALID_JS_VAR    = /[a-zA-Z_$][\w$]*/
+    VALID_CALLBACK  = /\A#{VALID_JS_VAR}(?:\.?#{VALID_JS_VAR})*\z/
+
     def initialize(app)
       @app = app
     end
@@ -18,13 +21,19 @@ module Rack
     # Changes nothing if no <tt>callback</tt> param is specified.
     #
     def call(env)
+      request = Rack::Request.new(env)
+
+      if has_callback?(request)
+        callback = request.params['callback']
+        return bad_request unless callback && valid_callback?(callback)
+      end
+
       status, headers, response = @app.call(env)
 
       headers = HeaderHash.new(headers)
-      request = Rack::Request.new(env)
       
-      if is_json?(headers) && has_callback?(request)
-        response = pad(request.params.delete('callback'), response)
+      if is_json?(headers) && has_callback?(request) && callback
+        response = pad(callback, response)
 
         # No longer json, its javascript!
         headers['Content-Type'] = headers['Content-Type'].gsub('json', 'javascript')
@@ -35,6 +44,7 @@ module Rack
           headers['Content-Length'] = length.to_s
         end
       end
+
       [status, headers, response]
     end
     
@@ -48,6 +58,15 @@ module Rack
       request.params.include?('callback')
     end
 
+    # See:
+    # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
+    # 
+    # NOTE: Supports dots (.) since callbacks are often in objects:
+    # 
+    def valid_callback?(callback)
+      callback =~ VALID_CALLBACK
+    end
+
     # Pads the response with the appropriate callback format according to the
     # JSON-P spec/requirements.
     #
@@ -56,23 +75,13 @@ module Rack
     # since JSON is returned as a full string.
     #
     def pad(callback, response, body = "")
+      return bad_request unless callback =~ //
       response.each{ |s| body << s.to_s }
-      ["#{clean(callback)}(#{body})"]
+      ["#{callback}(#{body})"]
     end
 
-    # Removes any non-valid characters for a JavaScript function name.
-    # 
-    #   clean("foo<script>alert(1);</script>") #=> "fooscriptalert1script"
-    # 
-    # NOTE: Supports dots (.) since callbacks are often in objects:
-    # 
-    #   foo.bar.baz({...})
-    # 
-    # See:
-    # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
-    # 
-    def clean(callback)
-      callback.gsub(/[^\w\.\$]+/, '')
+    def bad_request(body = "Bad Request")
+      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.size.to_s }, [body] ]
     end
 
   end

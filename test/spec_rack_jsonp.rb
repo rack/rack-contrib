@@ -53,46 +53,34 @@ context "Rack::JSONP" do
     end
     
     context "with XSS vulnerability attempts" do
-      specify "should clean the callback to include only valid characters for a JavaScript function name" do
-        test_body = '{"bar":"foo"}'
-        callback = 'foo<bar>baz()$'
-        callback_cleaned = 'foobarbaz$'
-        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+      def request(callback, body = '{"bar":"foo"}')
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [body]] }
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
-        body = Rack::JSONP.new(app).call(request).last
-        body.should.not.include "<script>"
-        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+        Rack::JSONP.new(app).call(request)
       end
       
-      specify "should not include <script> tags in the callback" do
-        test_body = '{"bar":"foo"}'
-        callback = 'foo<script>alert(1)</script>'
-        callback_cleaned = 'fooscriptalert1script'
-        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
-        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
-        body = Rack::JSONP.new(app).call(request).last
-        body.should.not.include "<script>"
-        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+      def assert_bad_request(response)
+        response.should.not.equal nil
+        status, headers, body = response
+        status.should.equal 400
+        body.should.equal ["Bad Request"]
       end
       
-      specify "should not include multiple statements" do
-        test_body = '{"bar":"foo"}'
-        callback = 'foo%3balert(1)//'
-        callback_cleaned = 'fooalert1'
-        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
-        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
-        body = Rack::JSONP.new(app).call(request).last
-        body.should.not.include "<script>"
-        body.should.equal ["#{callback_cleaned}(#{test_body})"]
+      specify "should return bad request for callback with invalid characters" do
+        assert_bad_request(request("foo<bar>baz()$"))
       end
       
-      specify "should allow dots in the callback" do
-        test_body = '{"bar":"foo"}'
-        callback = 'foo.bar.baz'
-        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
-        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
-        body = Rack::JSONP.new(app).call(request).last
-        body.should.not.include "<script>"
+      specify "should return bad request for callbacks with <script> tags" do
+        assert_bad_request(request("foo<script>alert(1)</script>"))
+      end
+      
+      specify "should return bad requests for callbacks with multiple statements" do
+        assert_bad_request(request("foo%3balert(1)//")) # would render: "foo;alert(1)//"
+      end
+      
+      specify "should not return a bad request for callbacks with dots in the callback" do
+        status, headers, body = request(callback = "foo.bar.baz", test_body = '{"foo":"bar"}')
+        status.should.equal 200
         body.should.equal ["#{callback}(#{test_body})"]
       end
     end
