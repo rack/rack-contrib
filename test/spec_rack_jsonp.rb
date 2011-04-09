@@ -52,6 +52,17 @@ context "Rack::JSONP" do
       headers['Content-Type'].should.equal('application/javascript')
     end
     
+    context "but is empty" do
+      specify "should " do
+        test_body = '{"bar":"foo"}'
+        callback = ''
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.equal ['{"bar":"foo"}']
+      end
+    end
+    
     context "with XSS vulnerability attempts" do
       def request(callback, body = '{"bar":"foo"}')
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [body]] }

@@ -25,14 +25,14 @@ module Rack
 
       if has_callback?(request)
         callback = request.params['callback']
-        return bad_request unless callback && valid_callback?(callback)
+        return bad_request unless valid_callback?(callback)
       end
 
       status, headers, response = @app.call(env)
 
       headers = HeaderHash.new(headers)
       
-      if is_json?(headers) && has_callback?(request) && callback
+      if is_json?(headers) && has_callback?(request)
         response = pad(callback, response)
 
         # No longer json, its javascript!
@@ -55,7 +55,7 @@ module Rack
     end
     
     def has_callback?(request)
-      request.params.include?('callback')
+      request.params.include?('callback') and not request.params['callback'].empty?
     end
 
     # See:
