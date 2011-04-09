@@ -32,7 +32,7 @@ module Rack
 
       headers = HeaderHash.new(headers)
       
-      if is_json?(headers) && has_callback?(request)
+      if is_json?(headers) && callback
         response = pad(callback, response)
 
         # No longer json, its javascript!
