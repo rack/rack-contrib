@@ -39,7 +39,7 @@ module Rack
     def initialize(app, dir=nil, &block)
       @app = app
       @block = block
-      @dir = dir || File.dirname(__FILE__)
+      @dir = dir || Dir.pwd
       @file = File.join(File.expand_path(@dir), '.maintenance')
     end
     
