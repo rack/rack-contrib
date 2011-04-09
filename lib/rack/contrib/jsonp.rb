@@ -75,7 +75,6 @@ module Rack
     # since JSON is returned as a full string.
     #
     def pad(callback, response, body = "")
-      return bad_request unless callback =~ //
       response.each{ |s| body << s.to_s }
       ["#{callback}(#{body})"]
     end
