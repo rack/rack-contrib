@@ -48,6 +48,7 @@ interface:
 * Rack::ResponseHeaders - Manipulates response headers object at runtime
 * Rack::SimpleEndpoint - Creates simple endpoints with routing rules, similar to Sinatra actions
 * Rack::TryStatic - Tries to match request to a static file
+* Rack::Maintenance - Serves a simple maintenance page when .maintenance file is found under current directory. Allows to customize the prompt.
 
 === Use
 
