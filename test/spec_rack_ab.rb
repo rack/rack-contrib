@@ -1,6 +1,5 @@
 require 'test/spec'
 require 'rack/mock'
-require 'rack/contrib/ab'
 
 context "Rack::AB" do
   specify "should return 'a' or 'b' if no cookie is set" do
@@ -61,4 +60,21 @@ context "Rack::AB" do
     Time.parse(matches.captures.first).to_s.should.equal expiration.to_s
     
   end
+  
+  specify "provides a way to split traffic inside app" do
+    app = lambda { |env|
+      if 'a' == env['rack.ab.bucket_name']
+        body = 'content for bucket a'
+      elsif 'b' == env['rack.ab.bucket_name']
+        body = 'content for bucket b'
+      end
+      [200, {'Content-Type' => 'text/plain'}, body]
+    }
+    app = Rack::AB.new(app)
+
+    response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => 'rack_ab=a')
+    
+    response.body.should.equal 'content for bucket a'
+  end
+  
 end
