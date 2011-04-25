@@ -52,6 +52,50 @@ context "Rack::JSONP" do
       headers['Content-Type'].should.equal('application/javascript')
     end
     
+    context "but is empty" do
+      specify "should " do
+        test_body = '{"bar":"foo"}'
+        callback = ''
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.should.equal ['{"bar":"foo"}']
+      end
+    end
+    
+    context "with XSS vulnerability attempts" do
+      def request(callback, body = '{"bar":"foo"}')
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        Rack::JSONP.new(app).call(request)
+      end
+      
+      def assert_bad_request(response)
+        response.should.not.equal nil
+        status, headers, body = response
+        status.should.equal 400
+        body.should.equal ["Bad Request"]
+      end
+      
+      specify "should return bad request for callback with invalid characters" do
+        assert_bad_request(request("foo<bar>baz()$"))
+      end
+      
+      specify "should return bad request for callbacks with <script> tags" do
+        assert_bad_request(request("foo<script>alert(1)</script>"))
+      end
+      
+      specify "should return bad requests for callbacks with multiple statements" do
+        assert_bad_request(request("foo%3balert(1)//")) # would render: "foo;alert(1)//"
+      end
+      
+      specify "should not return a bad request for callbacks with dots in the callback" do
+        status, headers, body = request(callback = "foo.bar.baz", test_body = '{"foo":"bar"}')
+        status.should.equal 200
+        body.should.equal ["#{callback}(#{test_body})"]
+      end
+    end
+    
   end
 
   specify "should not change anything if no callback param is provided" do
