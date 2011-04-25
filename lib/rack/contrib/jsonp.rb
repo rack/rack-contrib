@@ -7,6 +7,9 @@ module Rack
   class JSONP
     include Rack::Utils
 
+    VALID_JS_VAR    = /[a-zA-Z_$][\w$]*/
+    VALID_CALLBACK  = /\A#{VALID_JS_VAR}(?:\.?#{VALID_JS_VAR})*\z/
+
     def initialize(app)
       @app = app
     end
@@ -18,13 +21,19 @@ module Rack
     # Changes nothing if no <tt>callback</tt> param is specified.
     #
     def call(env)
+      request = Rack::Request.new(env)
+
+      if has_callback?(request)
+        callback = request.params['callback']
+        return bad_request unless valid_callback?(callback)
+      end
+
       status, headers, response = @app.call(env)
 
       headers = HeaderHash.new(headers)
-      request = Rack::Request.new(env)
       
-      if is_json?(headers) && has_callback?(request)
-        response = pad(request.params.delete('callback'), response)
+      if is_json?(headers) && callback
+        response = pad(callback, response)
 
         # No longer json, its javascript!
         headers['Content-Type'] = headers['Content-Type'].gsub('json', 'javascript')
@@ -35,6 +44,7 @@ module Rack
           headers['Content-Length'] = length.to_s
         end
       end
+
       [status, headers, response]
     end
     
@@ -45,7 +55,16 @@ module Rack
     end
     
     def has_callback?(request)
-      request.params.include?('callback')
+      request.params.include?('callback') and not request.params['callback'].empty?
+    end
+
+    # See:
+    # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
+    # 
+    # NOTE: Supports dots (.) since callbacks are often in objects:
+    # 
+    def valid_callback?(callback)
+      callback =~ VALID_CALLBACK
     end
 
     # Pads the response with the appropriate callback format according to the
@@ -58,6 +77,10 @@ module Rack
     def pad(callback, response, body = "")
       response.each{ |s| body << s.to_s }
       ["#{callback}(#{body})"]
+    end
+
+    def bad_request(body = "Bad Request")
+      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.size.to_s }, [body] ]
     end
 
   end
