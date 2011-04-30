@@ -29,9 +29,8 @@ module Rack
     end
 
     def call(env)
-      case env[CONTENT_TYPE]
-      when APPLICATION_JSON
-        env.update(FORM_HASH => JSON.parse(env[POST_BODY].read), FORM_INPUT => env[POST_BODY])
+      if Rack::Request.new(env).media_type == APPLICATION_JSON && (body = env[POST_BODY].read).length != 0
+        env.update(FORM_HASH => JSON.parse(body), FORM_INPUT => env[POST_BODY])
       end
       @app.call(env)
     end
