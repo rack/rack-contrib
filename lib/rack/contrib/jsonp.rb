@@ -75,7 +75,17 @@ module Rack
     # since JSON is returned as a full string.
     #
     def pad(callback, response, body = "")
-      response.each{ |s| body << s.to_s }
+      response.each do |s|
+        # U+2028 and U+2029 are allowed inside strings in JSON (as all literal
+        # Unicode characters) but JavaScript defines them as newline
+        # seperators. Because no literal newlines are allowed in a string, this
+        # causes a ParseError in the browser. We work around this issue by
+        # replacing them with the escaped version. This should be safe because
+        # according to the JSON spec, these characters are *only* valid inside
+        # a string and should therefore not be present any other places.
+        body << s.to_s.gsub("\u2028", '\u2028').gsub("\u2029", '\u2029')
+      end
+
       ["#{callback}(#{body})"]
     end
 
