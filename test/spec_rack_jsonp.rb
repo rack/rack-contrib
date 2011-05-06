@@ -51,6 +51,15 @@ context "Rack::JSONP" do
       headers = Rack::JSONP.new(app).call(request)[1]
       headers['Content-Type'].should.equal('application/javascript')
     end
+
+    specify "should not allow literal U+2028 or U+2029" do
+      test_body = "{\"bar\":\"\u2028 and \u2029\"}"
+      callback = 'foo'
+      app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+      request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+      body = Rack::JSONP.new(app).call(request).last
+      body.join.should.not.match(/\u2028|\u2029/)
+    end
     
     context "but is empty" do
       specify "should " do
