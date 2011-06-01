@@ -68,6 +68,7 @@ module Rack
 			mail.delivery_method :smtp, smtp
 			mail.deliver!
       env['mail.sent'] = true
+			mail
 		end
 
     def extract_body(env)
