@@ -1,5 +1,5 @@
 require 'net/smtp'
-require 'tmail'
+require 'mail'
 require 'erb'
 
 module Rack
@@ -14,10 +14,10 @@ module Rack
       @app = app
       @config = {
         :to      => nil,
-        :from    => ENV['USER'] || 'rack',
+        :from    => ENV['USER'] || 'rack@localhost',
         :subject => '[exception] %s',
         :smtp    => {
-          :server         => 'localhost',
+          :address         => 'localhost',
           :domain         => 'localhost',
           :port           => 25,
           :authentication => :login,
@@ -34,8 +34,6 @@ module Rack
         begin
           @app.call(env)
         rescue => boom
-          # TODO don't allow exceptions from send_notification to
-          # propogate
           send_notification boom, env
           raise
         end
@@ -53,41 +51,24 @@ module Rack
 
   private
     def generate_mail(exception, env)
-      mail = TMail::Mail.new
-      mail.to = Array(config[:to])
-      mail.from = config[:from]
-      mail.subject = config[:subject] % [exception.to_s]
-      mail.date = Time.now
-      mail.set_content_type 'text/plain'
-      mail.charset = 'UTF-8'
-      mail.body = @template.result(binding)
-      mail
+			mail = Mail.new({
+				:from => config[:from], 
+				:to => config[:to],
+			 	:subject => config[:subject] % [exception.to_s],
+			 	:body => @template.result(binding)
+			})
     end
 
     def send_notification(exception, env)
       mail = generate_mail(exception, env)
       smtp = config[:smtp]
+			# for backward compability, replace the :server key with :address 
+			address = smtp.delete :server
+			smtp[:address] = address if address
+			mail.delivery_method :smtp, smtp
+			mail.deliver!
       env['mail.sent'] = true
-      return if smtp[:server] == 'example.com'
-
-      server = service.new(smtp[:server], smtp[:port])
-
-      if smtp[:enable_starttls_auto] == :auto
-        server.enable_starttls_auto 
-      elsif smtp[:enable_starttls_auto]
-        server.enable_starttls 
-      end
-
-      server.start smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication]
-
-      mail.to.each do |recipient|
-        server.send_message mail.to_s, mail.from, recipient
-      end
-    end
-
-    def service
-      Net::SMTP
-    end
+		end
 
     def extract_body(env)
       if io = env['rack.input']
