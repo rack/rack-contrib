@@ -60,8 +60,10 @@ begin
       mail.from.should.equal ['bar@example.org']
       mail.subject.should.equal '[ERROR] Suffering Succotash!'
       mail.body.should.not.be.nil
-      mail.body.should.be =~ /FOO:\s+"BAR"/
-      mail.body.should.be =~ /^\s*THE BODY\s*$/
+
+      body = mail.body.parts.first.body
+      body.should.be =~ /FOO:\s+"BAR"/
+      body.should.be =~ /^\s*THE BODY\s*$/
     end
 
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
