@@ -43,10 +43,10 @@ module Rack
 
     private
       def profiling?(env)
-        unless RubyProf.running?
+        unless ::RubyProf.running?
           request = Rack::Request.new(env.clone)
           if mode = request.params.delete('profile')
-            if RubyProf.const_defined?(mode.upcase)
+            if ::RubyProf.const_defined?(mode.upcase)
               mode
             else
               env['rack.errors'].write "Invalid RubyProf measure_mode: " +
@@ -58,10 +58,10 @@ module Rack
       end
 
       def profile(env, mode)
-        RubyProf.measure_mode = RubyProf.const_get(mode.upcase)
+        ::RubyProf.measure_mode = ::RubyProf.const_get(mode.upcase)
 
         GC.enable_stats if GC.respond_to?(:enable_stats)
-        result = RubyProf.profile do
+        result = ::RubyProf.profile do
           @times.times { @app.call(env) }
         end
         GC.disable_stats if GC.respond_to?(:disable_stats)
@@ -93,8 +93,8 @@ module Rack
           printer
         else
           name = "#{camel_case(printer)}Printer"
-          if RubyProf.const_defined?(name)
-            RubyProf.const_get(name)
+          if ::RubyProf.const_defined?(name)
+            ::RubyProf.const_get(name)
           else
             DEFAULT_PRINTER
           end
