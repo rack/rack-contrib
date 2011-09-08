@@ -6,30 +6,22 @@ module Rack
   #
   # Pass the :printer option to pick a different result format.
   class Profiler
-    MODES = %w(
-      process_time
-      wall_time
-      cpu_time
-      allocations
-      memory
-      gc_runs
-      gc_time
-    )
+    MODES = %w(process_time wall_time cpu_time
+               allocations memory gc_runs gc_time)
 
-    DEFAULT_PRINTER = ::RubyProf::CallTreePrinter
-    DEFAULT_CONTENT_TYPE = 'application/octet-stream'
+    DEFAULT_PRINTER = :call_stack
 
-    PRINTER_CONTENT_TYPE = {
-      ::RubyProf::FlatPrinter => 'text/plain',
-      ::RubyProf::GraphPrinter => 'text/plain',
-      ::RubyProf::GraphHtmlPrinter => 'text/html'
-    }
+    CONTENT_TYPES = Hash.new('application/octet-stream').merge(
+      'RubyProf::FlatPrinter'      => 'text/plain',
+      'RubyProf::GraphPrinter'     => 'text/plain',
+      'RubyProf::GraphHtmlPrinter' => 'text/html',
+      'RubyProf::CallStackPrinter' => 'text/html')
 
-    # Accepts a :printer => [:call_tree|:graph_html|:graph|:flat] option
-    # defaulting to :call_tree.
+    # Accepts a :printer => [:call_stack|:call_tree|:graph_html|:graph|:flat]
+    # option defaulting to :call_stack.
     def initialize(app, options = {})
       @app = app
-      @printer = parse_printer(options[:printer])
+      @printer = parse_printer(options[:printer] || DEFAULT_PRINTER)
       @times = (options[:times] || 1).to_i
     end
 
@@ -77,7 +69,7 @@ module Rack
       end
 
       def headers(printer, env, mode)
-        headers = { 'Content-Type' => PRINTER_CONTENT_TYPE[printer] || DEFAULT_CONTENT_TYPE }
+        headers = { 'Content-Type' => CONTENT_TYPES[printer.name] }
         if printer == ::RubyProf::CallTreePrinter
           filename = ::File.basename(env['PATH_INFO'])
           headers['Content-Disposition'] =
@@ -87,16 +79,14 @@ module Rack
       end
 
       def parse_printer(printer)
-        if printer.nil?
-          DEFAULT_PRINTER
-        elsif printer.is_a?(Class)
+        if printer.is_a?(Class)
           printer
         else
           name = "#{camel_case(printer)}Printer"
           if ::RubyProf.const_defined?(name)
             ::RubyProf.const_get(name)
           else
-            DEFAULT_PRINTER
+            ::RubyProf::FlatPrinter
           end
         end
       end
