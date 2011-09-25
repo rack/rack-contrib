@@ -53,12 +53,20 @@ context "Rack::JSONP" do
     end
 
     specify "should not allow literal U+2028 or U+2029" do
-      test_body = "{\"bar\":\"\u2028 and \u2029\"}"
+      test_body = if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('1.9')
+        "{\"bar\":\"\u2028 and \u2029\"}"
+      else
+        "{\"bar\":\"\342\200\250 and \342\200\251\"}"
+      end
       callback = 'foo'
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
-      body.join.should.not.match(/\u2028|\u2029/)
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('1.9')
+        body.join.should.not.match(/\u2028|\u2029/)
+      else
+        body.join.should.not.match(/\342\200\250|\342\200\251/)
+      end
     end
     
     context "but is empty" do
