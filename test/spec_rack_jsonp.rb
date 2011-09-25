@@ -72,6 +72,52 @@ context "Rack::JSONP" do
       end
     end
     
+    context 'but is invalid' do
+      context 'with content-type application/json' do
+        specify 'should return "Bad Request"' do
+          test_body = '{"bar":"foo"}'
+          callback = '*'
+          content_type = 'application/json'
+          app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
+          request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+          body = Rack::JSONP.new(app).call(request).last
+          body.should.equal ['Bad Request']
+        end
+
+        specify 'should return set the response code to 400' do
+          test_body = '{"bar":"foo"}'
+          callback = '*'
+          content_type = 'application/json'
+          app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
+          request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+          response_code = Rack::JSONP.new(app).call(request).first
+          response_code.should.equal 400
+        end
+      end
+
+      context 'with content-type text/plain' do
+        specify 'should return "Good Request"' do
+          test_body = 'Good Request'
+          callback = '*'
+          content_type = 'text/plain'
+          app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
+          request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+          body = Rack::JSONP.new(app).call(request).last
+          body.should.equal ['Good Request']
+        end
+
+        specify 'should not change the response code from 200' do
+          test_body = '{"bar":"foo"}'
+          callback = '*'
+          content_type = 'text/plain'
+          app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
+          request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+          response_code = Rack::JSONP.new(app).call(request).first
+          response_code.should.equal 200
+        end
+      end
+    end
+
     context "with XSS vulnerability attempts" do
       def request(callback, body = '{"bar":"foo"}')
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [body]] }
