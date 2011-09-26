@@ -10,6 +10,18 @@ module Rack
     VALID_JS_VAR    = /[a-zA-Z_$][\w$]*/
     VALID_CALLBACK  = /\A#{VALID_JS_VAR}(?:\.?#{VALID_JS_VAR})*\z/
 
+    # These hold the Unicode characters \u2028 and \u2029.
+    #
+    # They are defined in constants for Ruby 1.8 compatibility.
+    #
+    # In 1.8
+    # "\u2028" # => "u2028"
+    # "\u2029" # => "u2029"
+    # In 1.9
+    # "\342\200\250" # => "\u2028"
+    # "\342\200\251" # => "\u2029"
+    U2028, U2029 = ("\u2028" == 'u2028') ? ["\342\200\250", "\342\200\251"] : ["\u2028", "\u2029"]
+
     def initialize(app)
       @app = app
     end
@@ -83,17 +95,7 @@ module Rack
         # replacing them with the escaped version. This should be safe because
         # according to the JSON spec, these characters are *only* valid inside
         # a string and should therefore not be present any other places.
-        body << unless "\u2028" == 'u2028'
-          s.to_s.gsub("\u2028", '\u2028').gsub("\u2029", '\u2029')
-        else
-          # In 1.8
-          # "\u2028" # => "u2028"
-          # "\u2029" # => "u2029"
-          # In 1.9
-          # "\342\200\250" # => "\u2028"
-          # "\342\200\251" # => "\u2029"
-          s.to_s.gsub("\342\200\250", '\u2028').gsub("\342\200\251", '\u2029')
-        end
+        body << s.to_s.gsub(U2028, '\u2028').gsub(U2029, '\u2029')
       end
 
       ["#{callback}(#{body})"]
