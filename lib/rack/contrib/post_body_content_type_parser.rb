@@ -1,8 +1,4 @@
-begin
-  require 'json'
-rescue LoadError => e
-  require 'json/pure'
-end
+require 'multi_json'
 
 module Rack
 
@@ -30,7 +26,7 @@ module Rack
 
     def call(env)
       if Rack::Request.new(env).media_type == APPLICATION_JSON && (body = env[POST_BODY].read).length != 0
-        env.update(FORM_HASH => JSON.parse(body), FORM_INPUT => env[POST_BODY])
+        env.update(FORM_HASH => MultiJson.decode(body), FORM_INPUT => env[POST_BODY])
       end
       @app.call(env)
     end
