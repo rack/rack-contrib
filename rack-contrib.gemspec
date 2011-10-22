@@ -99,9 +99,9 @@ Gem::Specification.new do |s|
 
   s.extra_rdoc_files = %w[README.rdoc COPYING]
   s.add_dependency 'rack', '>= 0.9.1'
+  s.add_dependency 'multi_json', '>= 1.0.3'
   s.add_development_dependency 'test-spec', '>= 0.9.0'
   s.add_development_dependency 'tmail', '>= 1.2'
-  s.add_development_dependency 'json', '>= 1.1'
 
   s.has_rdoc = true
   s.homepage = "http://github.com/rack/rack-contrib/"
