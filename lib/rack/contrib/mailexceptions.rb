@@ -78,10 +78,10 @@ module Rack
         server.enable_starttls 
       end
 
-      server.start smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication]
-
-      mail.to.each do |recipient|
-        server.send_message mail.to_s, mail.from, recipient
+      server.start smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication] do |smtp|
+        mail.to.each do |recipient|
+          smtp.send_message mail.to_s, mail.from, recipient
+        end
       end
     end
 
