@@ -85,6 +85,9 @@ module Rack
         # a string and should therefore not be present any other places.
         body << s.to_s.gsub("\u2028", '\u2028').gsub("\u2029", '\u2029')
       end
+      
+      # https://github.com/rack/rack-contrib/issues/46
+      response.close if response.respond_to?(:close)
 
       ["#{callback}(#{body})"]
     end
