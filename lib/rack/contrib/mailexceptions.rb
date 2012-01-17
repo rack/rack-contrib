@@ -51,25 +51,25 @@ module Rack
 
   private
     def generate_mail(exception, env)
-			mail = Mail.new({
-				:from => config[:from], 
-				:to => config[:to],
-			 	:subject => config[:subject] % [exception.to_s],
-			 	:body => @template.result(binding)
-			})
+      mail = Mail.new({
+        :from => config[:from], 
+        :to => config[:to],
+         :subject => config[:subject] % [exception.to_s],
+         :body => @template.result(binding)
+      })
     end
 
     def send_notification(exception, env)
       mail = generate_mail(exception, env)
       smtp = config[:smtp]
-			# for backward compability, replace the :server key with :address 
-			address = smtp.delete :server
-			smtp[:address] = address if address
-			mail.delivery_method :smtp, smtp
-			mail.deliver!
+      # for backward compability, replace the :server key with :address 
+      address = smtp.delete :server
+      smtp[:address] = address if address
+      mail.delivery_method :smtp, smtp
+      mail.deliver!
       env['mail.sent'] = true
-			mail
-		end
+      mail
+    end
 
     def extract_body(env)
       if io = env['rack.input']
