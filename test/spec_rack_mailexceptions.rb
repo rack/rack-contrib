@@ -2,10 +2,8 @@ require 'test/spec'
 require 'rack/mock'
 
 begin
-  require 'tmail'
-  require 'rack/contrib/mailexceptions'
-
-  require File.dirname(__FILE__) + '/mail_settings.rb'
+  require './lib/rack/contrib/mailexceptions'
+  require './test/mail_settings.rb'
 
   class TestError < RuntimeError
   end
@@ -57,13 +55,13 @@ begin
           mail.smtp @smtp_settings
         end
 
-      tmail = mailer.send(:generate_mail, test_exception, @env)
-      tmail.to.should.equal ['foo@example.org']
-      tmail.from.should.equal ['bar@example.org']
-      tmail.subject.should.equal '[ERROR] Suffering Succotash!'
-      tmail.body.should.not.be.nil
-      tmail.body.should.be =~ /FOO:\s+"BAR"/
-      tmail.body.should.be =~ /^\s*THE BODY\s*$/
+      mail = mailer.send(:generate_mail, test_exception, @env)
+      mail.to.should.equal ['foo@example.org']
+      mail.from.should.equal ['bar@example.org']
+      mail.subject.should.equal '[ERROR] Suffering Succotash!'
+      mail.body.should.not.be.nil
+      mail.body.should.be =~ /FOO:\s+"BAR"/
+      mail.body.should.be =~ /^\s*THE BODY\s*$/
     end
 
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
@@ -167,5 +165,5 @@ begin
     end
   end
 rescue LoadError => boom
-  STDERR.puts "WARN: Skipping Rack::MailExceptions tests (tmail not installed)"
+  STDERR.puts "WARN: Skipping Rack::MailExceptions tests (mail not installed)"
 end
