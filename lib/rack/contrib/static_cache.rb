@@ -87,7 +87,7 @@ module Rack
     end
 
     def duration_in_seconds
-      60 * 60 * 24 * 365 * @cache_duration
+      (60 * 60 * 24 * 365 * @cache_duration).to_i
     end
   end
 end
