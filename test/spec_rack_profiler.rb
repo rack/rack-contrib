@@ -14,6 +14,11 @@ begin
       profiler.instance_variable_get('@times').must_equal 1
     end
 
+    specify 'call @times globally and times is set' do
+        profiler = Rack::Profiler.new(app, :times => 4) 
+        profiler.instance_variable_get('@times').should.equal 4
+    end
+
     specify 'CallStackPrinter has Content-Type test/html' do
       headers = Rack::Profiler.new(app, :printer => :call_stack).call(request)[1]
       headers.must_equal "Content-Type"=>"text/html"
