@@ -43,4 +43,14 @@ describe "Rack::TryStatic" do
       res.body.strip.should == "existing.html"
     end
   end
+
+  context 'when sharing options' do
+    it 'should not mutate given options' do
+      org_options = build_options  :try => ['/index.html']
+      given_options = org_options.dup
+      request(given_options).get('/documents').should.be.ok
+      request(given_options).get('/documents').should.be.ok
+      given_options.should == org_options
+    end
+  end
 end
