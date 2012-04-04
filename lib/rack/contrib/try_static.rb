@@ -19,7 +19,7 @@ module Rack
       @app = app
       @try = ['', *options.delete(:try)]
       @static = ::Rack::Static.new(
-        lambda { [404, {}, []] },
+        lambda { |_| [404, {}, []] },
         options)
     end
 

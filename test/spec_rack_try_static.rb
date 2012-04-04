@@ -13,7 +13,7 @@ def request(options = {})
   @request =
     Rack::MockRequest.new(
       Rack::TryStatic.new(
-        lambda {[200, {}, ["Hello World"]]},
+        lambda { |_| [200, {}, ["Hello World"]]},
         options))
 end
 
