@@ -93,5 +93,5 @@ TODO: instructions for 1.9.x and include bundler
 
 rack-contrib on GitHub:: <http://github.com/rack/rack-contrib>
 Rack:: <http://rack.rubyforge.org/>
-Rack On GitHub:: <http://github.org/rack/rack>
+Rack On GitHub:: <http://github.com/rack/rack>
 rack-devel mailing list:: <http://groups.google.com/group/rack-devel>
