@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
 
   s.name = 'rack-contrib'
   s.version = '1.1.0'
-  s.date = '2010-10-19'
+  s.date = '2012-03-08'
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
