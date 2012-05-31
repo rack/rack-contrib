@@ -7,6 +7,7 @@ module Rack
     end
   end
 
+  autoload :AB,                         "rack/contrib/ab"
   autoload :AcceptFormat,               "rack/contrib/accept_format"
   autoload :Access,                     "rack/contrib/access"
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
