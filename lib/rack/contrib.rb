@@ -11,6 +11,7 @@ module Rack
   autoload :Access,                     "rack/contrib/access"
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
   autoload :Cookies,                    "rack/contrib/cookies"
+  autoload :CORS,                       "rack/contrib/cors"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
