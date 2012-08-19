@@ -44,6 +44,10 @@ context "Rack::Locale" do
     response_with_languages('en-gb,en-us;q=0.95;en').body.should.equal('en-gb')
   end
 
+  specify 'should treat a * as "all other languages"' do
+    response_with_languages('*,en;q=0.5').body.should.equal( I18n.default_locale.to_s )
+  end
+
   specify 'should reset the I18n locale after the response' do
     I18n.locale = 'es'
     response_with_languages('en,de;q=0.8')

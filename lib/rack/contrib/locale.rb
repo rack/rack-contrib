@@ -30,9 +30,9 @@ module Rack
 
       lang = languages_and_qvalues.sort_by { |(locale, qvalue)|
         qvalue.to_f
-      }.last
+      }.last.first
 
-      lang.first
+      lang == '*' ? nil : lang
     end
   end
 end
