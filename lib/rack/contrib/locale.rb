@@ -15,7 +15,9 @@ module Rack
         lang = lang.split(",").map { |l|
           l += ';q=1.0' unless l =~ /;q=\d+\.\d+$/
           l.split(';q=')
-        }.first
+        }.sort_by { |(locale, qvalue)|
+          qvalue.to_f
+        }.last
         locale = lang.first.split("-").first
       else
         locale = I18n.default_locale

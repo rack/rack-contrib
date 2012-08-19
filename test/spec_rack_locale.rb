@@ -36,6 +36,10 @@ context "Rack::Locale" do
     headers['Content-Language'].should.equal('dk')
   end
 
+  specify 'should pick the language with the highest qvalue' do
+    response_with_languages('en;q=0.9,es;q=0.95').body.should.equal('es')
+  end
+
   specify 'should reset the I18n locale after the response' do
     I18n.locale = 'es'
     response_with_languages('en,de;q=0.8')
