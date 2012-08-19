@@ -32,7 +32,7 @@ module Rack
         qvalue.to_f
       }.last
 
-      lang.first.split("-").first
+      lang.first
     end
   end
 end
