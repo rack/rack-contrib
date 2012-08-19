@@ -8,12 +8,16 @@ module Rack
 
     def call(env)
       old_locale = I18n.locale
-      locale = accept_locale(env) || I18n.default_locale
-      locale = env['rack.locale'] = I18n.locale = locale.to_s
-      status, headers, body = @app.call(env)
-      headers['Content-Language'] = locale
-      I18n.locale = old_locale
-      [status, headers, body]
+
+      begin
+        locale = accept_locale(env) || I18n.default_locale
+        locale = env['rack.locale'] = I18n.locale = locale.to_s
+        status, headers, body = @app.call(env)
+        headers['Content-Language'] = locale
+        [status, headers, body]
+      ensure
+        I18n.locale = old_locale
+      end
     end
 
     private
