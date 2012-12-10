@@ -19,10 +19,8 @@ module Rack
     private
 
     def domain
-      @domain ||= begin
-        @host =~ DOMAIN_REGEXP
-        ".#{$1}.#{$2}"
-      end
+      @host =~ DOMAIN_REGEXP
+      ".#{$1}.#{$2}"
     end
 
     def share_cookie(headers)
