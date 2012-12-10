@@ -48,6 +48,7 @@ interface:
 * Rack::ResponseHeaders - Manipulates response headers object at runtime
 * Rack::SimpleEndpoint - Creates simple endpoints with routing rules, similar to Sinatra actions
 * Rack::TryStatic - Tries to match request to a static file
+* Rack::CORS - Allows for flexible enabling of Cross Origin Resource Sharing (CORS) for a specific set of domains
 
 === Use
 
