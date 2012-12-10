@@ -37,7 +37,7 @@ module Rack
       if ::File.extname(req.path_info).empty?
         accept = env['HTTP_ACCEPT'].to_s.scan(/[^;,\s]*\/[^;,\s]*/)[0].to_s
         extension =  Rack::Mime::MIME_TYPES.invert[accept] || @ext
-        req.path_info = req.path_info+"#{extension}"
+        req.path_info = req.path_info.chomp('/') << "#{extension}"
       end
 
       @app.call(env)
