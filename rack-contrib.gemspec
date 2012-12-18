@@ -101,6 +101,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'test-spec', '>= 0.9.0'
   s.add_development_dependency 'tmail', '>= 1.2'
   s.add_development_dependency 'json', '>= 1.1'
+  s.add_development_dependency 'rake', '>= 10.0.3'
+  s.add_development_dependency 'rdoc', '>= 3.12'
 
   s.has_rdoc = true
   s.homepage = "http://github.com/rack/rack-contrib/"
