@@ -1,9 +1,8 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/evil'
 require 'erb'
 
-context "Rack::Evil" do
+describe "Rack::Evil" do
   app = lambda do |env|
     template = ERB.new("<%= throw :response, [404, {'Content-Type' => 'text/html'}, 'Never know where it comes from'] %>")
     [200, {'Content-Type' => 'text/plain'}, template.result(binding)]
@@ -12,8 +11,8 @@ context "Rack::Evil" do
   specify "should enable the app to return the response from anywhere" do
     status, headers, body = Rack::Evil.new(app).call({})
 
-    status.should.equal 404
-    headers['Content-Type'].should.equal 'text/html'
-    body.should.equal 'Never know where it comes from'
+    status.should eq(404)
+    headers['Content-Type'].should eq('text/html')
+    body.should eq('Never know where it comes from')
   end
 end

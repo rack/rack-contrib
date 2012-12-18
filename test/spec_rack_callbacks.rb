@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/mock'
 
 class Flame
@@ -37,7 +36,7 @@ class TheEnd
   end
 end
 
-context "Rack::Callbacks" do
+describe "Rack::Callbacks" do
   specify "works for love and small stack trace" do
     callback_app = Rack::Callbacks.new do
       before Flame
@@ -55,11 +54,11 @@ context "Rack::Callbacks" do
 
     response = Rack::MockRequest.new(app).get("/")
 
-    response.body.should.equal 'F Lifo..with love'
+    response.body.should eq('F Lifo..with love')
 
-    $old_status.should.equal 200
-    response.status.should.equal 201
+    $old_status.should eq(200)
+    response.status.should eq(201)
 
-    response.headers['last'].should.equal 'TheEnd'
+    response.headers['last'].should eq('TheEnd')
   end
 end

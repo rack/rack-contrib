@@ -1,4 +1,3 @@
-require 'test/spec'
 
 require 'rack'
 require 'rack/contrib/try_static'
@@ -23,7 +22,7 @@ describe "Rack::TryStatic" do
   context 'when file cannot be found' do
     it 'should call call app' do
       res = request(build_options(:try => ['html'])).get('/documents')
-      res.should.be.ok
+      res.should be_ok
       res.body.should == "Hello World"
     end
   end
@@ -31,7 +30,7 @@ describe "Rack::TryStatic" do
   context 'when file can be found' do
     it 'should serve first found' do
       res = request(build_options(:try => ['.html', '/index.html', '/index.htm'])).get('/documents')
-      res.should.be.ok
+      res.should be_ok
       res.body.strip.should == "index.html"
     end
   end
@@ -39,7 +38,7 @@ describe "Rack::TryStatic" do
   context 'when path_info maps directly to file' do
     it 'should serve existing' do
       res = request(build_options(:try => ['/index.html'])).get('/documents/existing.html')
-      res.should.be.ok
+      res.should be_ok
       res.body.strip.should == "existing.html"
     end
   end
@@ -48,8 +47,8 @@ describe "Rack::TryStatic" do
     it 'should not mutate given options' do
       org_options = build_options  :try => ['/index.html']
       given_options = org_options.dup
-      request(given_options).get('/documents').should.be.ok
-      request(given_options).get('/documents').should.be.ok
+      request(given_options).get('/documents').should be_ok
+      request(given_options).get('/documents').should be_ok
       given_options.should == org_options
     end
   end

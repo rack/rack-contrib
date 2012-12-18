@@ -1,9 +1,8 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/accept_format'
 require 'rack/mime'
 
-context "Rack::AcceptFormat" do
+describe "Rack::AcceptFormat" do
   app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, env['PATH_INFO']] }
 
   specify "should do nothing when a format extension is already provided" do
