@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/host_meta'
 require 'rack/contrib/not_found'

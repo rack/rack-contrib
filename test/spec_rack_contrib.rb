@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/contrib'
 
 context "Rack::Contrib" do

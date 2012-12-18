@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/builder'
 require 'rack/contrib/common_cookies'

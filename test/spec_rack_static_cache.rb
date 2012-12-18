@@ -1,4 +1,3 @@
-require 'test/spec'
 
 require 'rack'
 require 'rack/contrib/static_cache'

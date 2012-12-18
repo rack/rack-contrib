@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/builder'
 require 'rack/mock'
 require 'rack/contrib/backstage'

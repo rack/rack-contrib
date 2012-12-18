@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/accept_format'
 require 'rack/mime'
