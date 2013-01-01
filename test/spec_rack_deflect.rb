@@ -1,9 +1,9 @@
 require 'rack/mock'
 require 'rack/contrib/deflect'
 
-context "Rack::Deflect" do
+describe "Rack::Deflect" do
 
-  setup do
+  before do
     @app = lambda { |env| [200, { 'Content-Type' => 'text/plain' }, ['cookies']] }
     @mock_addr_1 = '111.111.111.111'
     @mock_addr_2 = '222.222.222.222'
@@ -18,14 +18,14 @@ context "Rack::Deflect" do
     Rack::Deflect.new @app, options
   end
 
-  specify "should allow regular requests to follow through" do
+  it "should allow regular requests to follow through" do
     app = mock_deflect
     status, headers, body = app.call mock_env(@mock_addr_1)
     status.should.equal 200
     body.should.equal ['cookies']
   end
 
-  specify "should deflect requests exceeding the request threshold" do
+  it "should deflect requests exceeding the request threshold" do
     log = StringIO.new
     app = mock_deflect :request_threshold => 5, :interval => 10, :block_duration => 10, :log => log
     env = mock_env @mock_addr_1
@@ -48,7 +48,7 @@ context "Rack::Deflect" do
     log.string.should.match(/^deflect\(\d+\/\d+\/\d+\): blocked 111.111.111.111\n/)
   end
 
-  specify "should expire blocking" do
+  it "should expire blocking" do
     log = StringIO.new
     app = mock_deflect :request_threshold => 5, :interval => 2, :block_duration => 2, :log => log
     env = mock_env @mock_addr_1
@@ -79,7 +79,7 @@ context "Rack::Deflect" do
     log.string.should.match(/deflect.*: blocked 111\.111\.111\.111\ndeflect.*: released 111\.111\.111\.111\n/)
   end
 
-  specify "should allow whitelisting of remote addresses" do
+  it "should allow whitelisting of remote addresses" do
     app = mock_deflect :whitelist => [@mock_addr_1], :request_threshold => 5, :interval => 2
     env = mock_env @mock_addr_1
 
@@ -91,7 +91,7 @@ context "Rack::Deflect" do
     end
   end
 
-  specify "should allow blacklisting of remote addresses" do
+  it "should allow blacklisting of remote addresses" do
     app = mock_deflect :blacklist => [@mock_addr_2]
 
     status, headers, body = app.call mock_env(@mock_addr_1)

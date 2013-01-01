@@ -11,7 +11,21 @@ end
 
 describe "Rack::StaticCache" do
 
-  setup do
+  def default_app_request
+    @options = {:urls => ["/statics"], :root => @root}
+    request
+  end
+
+  def configured_app_request
+    @options = {:urls => ["/statics", "/documents*"], :root => @root, :versioning => false, :duration => 2}
+    request
+  end
+
+  def request
+    @request = Rack::MockRequest.new(Rack::StaticCache.new(DummyApp.new, @options))
+  end
+
+  before do
     @root = ::File.expand_path(::File.dirname(__FILE__))
   end
 
@@ -71,20 +85,6 @@ describe "Rack::StaticCache" do
     res.body.should =~ /nocache/
     next_next_year = Time.now().year + 2
     res.headers['Expires'].should.not =~ Regexp.new("#{next_next_year}")
-  end
-
-  def default_app_request
-    @options = {:urls => ["/statics"], :root => @root}
-    request
-  end
-
-  def configured_app_request
-    @options = {:urls => ["/statics", "/documents*"], :root => @root, :versioning => false, :duration => 2}
-    request
-  end
-
-  def request
-    @request = Rack::MockRequest.new(Rack::StaticCache.new(DummyApp.new, @options))
   end
 
 end

@@ -1,9 +1,9 @@
 require 'rack/mock'
 require 'rack/contrib/not_found'
 
-context "Rack::NotFound" do
+describe "Rack::NotFound" do
 
-  specify "should render the file at the given path for all requests" do
+  it "should render the file at the given path for all requests" do
     app = Rack::Builder.new do
       use Rack::Lint
       run Rack::NotFound.new('test/404.html')
