@@ -1,4 +1,3 @@
-require 'test/spec'
 require 'rack/mock'
 
 begin
@@ -14,9 +13,9 @@ begin
     return boom
   end
 
-  context 'Rack::MailExceptions' do
+  describe 'Rack::MailExceptions' do
 
-    setup do
+    before do
       @app = lambda { |env| raise TestError, 'Why, I say' }
       @env = Rack::MockRequest.env_for("/foo",
         'FOO' => 'BAR',
@@ -33,7 +32,7 @@ begin
       }
     end
 
-    specify 'yields a configuration object to the block when created' do
+    it 'yields a configuration object to the block when created' do
       called = false
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
@@ -46,7 +45,7 @@ begin
       called.should.be == true
     end
 
-    specify 'generates a TMail object with configured settings' do
+    it 'generates a TMail object with configured settings' do
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
           mail.to 'foo@example.org'
@@ -64,7 +63,7 @@ begin
       mail.body.should.be =~ /^\s*THE BODY\s*$/
     end
 
-    specify 'catches exceptions raised from app, sends mail, and re-raises' do
+    it 'catches exceptions raised from app, sends mail, and re-raises' do
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
           mail.to 'foo@example.org'
@@ -77,7 +76,7 @@ begin
     end
 
     if TEST_SMTP && ! TEST_SMTP.empty?
-      specify 'sends mail' do
+      it 'sends mail' do
         mailer =
           Rack::MailExceptions.new(@app) do |mail|
             mail.config.merge! TEST_SMTP
@@ -89,8 +88,8 @@ begin
       STDERR.puts 'WARN: Skipping SMTP tests (edit test/mail_settings.rb to enable)'
     end
 
-    context 'for tls enabled smtp' do
-      setup do
+    describe 'for tls enabled smtp' do
+      before do
         @smtp_settings.merge!(TEST_SMTP_TLS)
         @mailer = 
           Rack::MailExceptions.new(@app) do |mail|
@@ -102,7 +101,7 @@ begin
       end
 
       describe 'with :enable_starttls_auto set to :auto' do
-        specify 'sends mail' do
+        it 'sends mail' do
           @mailer.smtp.merge(:enable_starttls_auto => :auto)
           lambda { @mailer.call(@env) }.should.raise(TestError)
           @env['mail.sent'].should.be true
@@ -110,7 +109,7 @@ begin
       end
 
       describe 'with :enable_starttls_auto set to true' do
-        specify 'sends mail' do
+        it 'sends mail' do
           @mailer.smtp.merge(:enable_starttls_auto => true)
           lambda { @mailer.call(@env) }.should.raise(TestError)
           @env['mail.sent'].should.be true
@@ -128,7 +127,7 @@ begin
         def self.tls; @@_tls; end
       end
 
-      setup do
+      before do
         Rack::MailExceptions.class_eval { def service; FakeSMTP; end}
         @mailer = 
           Rack::MailExceptions.new(@app) do |mail|
@@ -139,24 +138,24 @@ begin
           end
       end
 
-      context 'with :enable_starttls_auto unset' do
-        specify 'sends mail' do
+      describe 'with :enable_starttls_auto unset' do
+        it 'sends mail' do
           @mailer.smtp[:enable_starttls_auto] = nil
           lambda { @mailer.call(@env) }.should.raise(TestError)
           FakeSMTP.tls.should.be nil
         end
       end
 
-      context 'with :enable_starttls_auto set to true' do
-        specify 'sends mail' do
+      describe 'with :enable_starttls_auto set to true' do
+        it 'sends mail' do
           @mailer.smtp[:enable_starttls_auto] = true
           lambda { @mailer.call(@env) }.should.raise(TestError)
           FakeSMTP.tls.should == true
         end
       end
 
-      context 'with :enable_starttls_auto set to :auto' do
-        specify 'sends mail' do
+      describe 'with :enable_starttls_auto set to :auto' do
+        it 'sends mail' do
           @mailer.smtp[:enable_starttls_auto] = :auto
           lambda { @mailer.call(@env) }.should.raise(TestError)
           FakeSMTP.tls.should == :auto

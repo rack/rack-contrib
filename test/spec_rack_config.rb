@@ -1,10 +1,9 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/config'
 
-context "Rack::Config" do
+describe "Rack::Config" do
 
-  specify "should accept a block that modifies the environment" do
+  it "should accept a block that modifies the environment" do
     app = Rack::Builder.new do
       use Rack::Lint
       use Rack::ContentLength

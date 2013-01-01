@@ -1,9 +1,8 @@
-require 'test/spec'
 require 'rack/mock'
 
-context "Rack::Locale" do
+describe "Rack::Locale" do
 
-  setup do
+  before do
     begin
       require 'rack/contrib/locale'
     rescue LoadError
@@ -22,33 +21,33 @@ context "Rack::Locale" do
     Rack::MockRequest.new(app).get('/', { 'HTTP_ACCEPT_LANGUAGE' => accept_languages } )
   end
 
-  specify 'should use I18n.default_locale if no languages are requested' do
+  it 'should use I18n.default_locale if no languages are requested' do
     I18n.default_locale = :zh
     response_with_languages(nil).body.should.equal('zh')
   end
 
-  specify 'should treat an empty qvalue as 1.0' do
+  it 'should treat an empty qvalue as 1.0' do
     response_with_languages('en,es;q=0.95').body.should.equal('en')
   end
 
-  specify 'should set the Content-Language response header' do
+  it 'should set the Content-Language response header' do
     headers = response_with_languages('de;q=0.7,dk;q=0.9').headers
     headers['Content-Language'].should.equal('dk')
   end
 
-  specify 'should pick the language with the highest qvalue' do
+  it 'should pick the language with the highest qvalue' do
     response_with_languages('en;q=0.9,es;q=0.95').body.should.equal('es')
   end
 
-  specify 'should retain full language codes' do
+  it 'should retain full language codes' do
     response_with_languages('en-gb,en-us;q=0.95;en').body.should.equal('en-gb')
   end
 
-  specify 'should treat a * as "all other languages"' do
+  it 'should treat a * as "all other languages"' do
     response_with_languages('*,en;q=0.5').body.should.equal( I18n.default_locale.to_s )
   end
 
-  specify 'should reset the I18n locale after the response' do
+  it 'should reset the I18n locale after the response' do
     I18n.locale = 'es'
     response_with_languages('en,de;q=0.8')
     I18n.locale.should.equal(:es)

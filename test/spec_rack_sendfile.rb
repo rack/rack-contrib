@@ -1,14 +1,13 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/sendfile'
 
-context "Rack::File" do
-  specify "should respond to #to_path" do
+describe "Rack::File" do
+  it "should respond to #to_path" do
     Rack::File.new(Dir.pwd).should.respond_to :to_path
   end
 end
 
-context "Rack::Sendfile" do
+describe "Rack::Sendfile" do
   def sendfile_body
     res = ['Hello World']
     def res.to_path ; "/tmp/hello.txt" ; end
@@ -23,7 +22,7 @@ context "Rack::Sendfile" do
     Rack::Sendfile.new(simple_app(body))
   end
 
-  setup do
+  before do
     @request = Rack::MockRequest.new(sendfile_app)
   end
 
@@ -31,7 +30,7 @@ context "Rack::Sendfile" do
     yield @request.get('/', headers)
   end
 
-  specify "does nothing when no X-Sendfile-Type header present" do
+  it "does nothing when no X-Sendfile-Type header present" do
     request do |response|
       response.should.be.ok
       response.body.should.equal 'Hello World'
@@ -39,7 +38,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify "sets X-Sendfile response header and discards body" do
+  it "sets X-Sendfile response header and discards body" do
     request 'HTTP_X_SENDFILE_TYPE' => 'X-Sendfile' do |response|
       response.should.be.ok
       response.body.should.be.empty
@@ -47,7 +46,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify "sets X-Lighttpd-Send-File response header and discards body" do
+  it "sets X-Lighttpd-Send-File response header and discards body" do
     request 'HTTP_X_SENDFILE_TYPE' => 'X-Lighttpd-Send-File' do |response|
       response.should.be.ok
       response.body.should.be.empty
@@ -55,7 +54,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify "sets X-Accel-Redirect response header and discards body" do
+  it "sets X-Accel-Redirect response header and discards body" do
     headers = {
       'HTTP_X_SENDFILE_TYPE' => 'X-Accel-Redirect',
       'HTTP_X_ACCEL_MAPPING' => '/tmp/=/foo/bar/'
@@ -67,7 +66,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify 'writes to rack.error when no X-Accel-Mapping is specified' do
+  it 'writes to rack.error when no X-Accel-Mapping is specified' do
     request 'HTTP_X_SENDFILE_TYPE' => 'X-Accel-Redirect' do |response|
       response.should.be.ok
       response.body.should.equal 'Hello World'
@@ -76,7 +75,7 @@ context "Rack::Sendfile" do
     end
   end
 
-  specify 'does nothing when body does not respond to #to_path' do
+  it 'does nothing when body does not respond to #to_path' do
     @request = Rack::MockRequest.new(sendfile_app(['Not a file...']))
     request 'HTTP_X_SENDFILE_TYPE' => 'X-Sendfile' do |response|
       response.body.should.equal 'Not a file...'

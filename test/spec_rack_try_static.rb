@@ -1,4 +1,3 @@
-require 'test/spec'
 
 require 'rack'
 require 'rack/contrib/try_static'
@@ -20,7 +19,7 @@ def request(options = {})
 end
 
 describe "Rack::TryStatic" do
-  context 'when file cannot be found' do
+  describe 'when file cannot be found' do
     it 'should call call app' do
       res = request(build_options(:try => ['html'])).get('/documents')
       res.should.be.ok
@@ -28,7 +27,7 @@ describe "Rack::TryStatic" do
     end
   end
 
-  context 'when file can be found' do
+  describe 'when file can be found' do
     it 'should serve first found' do
       res = request(build_options(:try => ['.html', '/index.html', '/index.htm'])).get('/documents')
       res.should.be.ok
@@ -36,7 +35,7 @@ describe "Rack::TryStatic" do
     end
   end
 
-  context 'when path_info maps directly to file' do
+  describe 'when path_info maps directly to file' do
     it 'should serve existing' do
       res = request(build_options(:try => ['/index.html'])).get('/documents/existing.html')
       res.should.be.ok
@@ -44,7 +43,7 @@ describe "Rack::TryStatic" do
     end
   end
 
-  context 'when sharing options' do
+  describe 'when sharing options' do
     it 'should not mutate given options' do
       org_options = build_options  :try => ['/index.html']
       given_options = org_options.dup

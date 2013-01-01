@@ -1,20 +1,19 @@
-require 'test/spec'
 require 'rack'
 require 'rack/contrib/response_headers'
 
-context "Rack::ResponseHeaders" do
+describe "Rack::ResponseHeaders" do
 
-  specify "yields a HeaderHash of response headers" do
+  it "yields a HeaderHash of response headers" do
     orig_headers = {'X-Foo' => 'foo', 'X-Bar' => 'bar'}
     app = Proc.new {[200, orig_headers, []]}
     middleware = Rack::ResponseHeaders.new(app) do |headers|
-      assert_instance_of Rack::Utils::HeaderHash, headers
+      headers.should.be.instance_of(Rack::Utils::HeaderHash)
       orig_headers.should == headers
     end
     middleware.call({})
   end
 
-  specify "allows adding headers" do
+  it "allows adding headers" do
     app = Proc.new {[200, {'X-Foo' => 'foo'}, []]}
     middleware = Rack::ResponseHeaders.new(app) do |headers|
       headers['X-Bar'] = 'bar'
@@ -23,7 +22,7 @@ context "Rack::ResponseHeaders" do
     r[1].should == {'X-Foo' => 'foo', 'X-Bar' => 'bar'}
   end
 
-  specify "allows deleting headers" do
+  it "allows deleting headers" do
     app = Proc.new {[200, {'X-Foo' => 'foo', 'X-Bar' => 'bar'}, []]}
     middleware = Rack::ResponseHeaders.new(app) do |headers|
       headers.delete('X-Bar')

@@ -1,8 +1,7 @@
-require 'test/spec'
 require 'rack/contrib'
 
-context "Rack::Contrib" do
-  specify "should expose release" do
+describe "Rack::Contrib" do
+  it "should expose release" do
     Rack::Contrib.should.respond_to :release
   end
 end

@@ -1,5 +1,5 @@
-require 'test/spec'
 require 'rack/mock'
+require 'rack/contrib/callbacks'
 
 class Flame
   def call(env)
@@ -37,8 +37,8 @@ class TheEnd
   end
 end
 
-context "Rack::Callbacks" do
-  specify "works for love and small stack trace" do
+describe "Rack::Callbacks" do
+  it "works for love and small stack trace" do
     callback_app = Rack::Callbacks.new do
       before Flame
       before Pacify, "with love"
