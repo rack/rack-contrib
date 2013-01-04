@@ -69,24 +69,10 @@ module Rack
       address = smtp.delete :server
       smtp[:address] = address if address
       mail.delivery_method :smtp, smtp
-      mail.deliver!
+      mail.deliver! unless smtp[:server] == 'example.com'
       env['mail.sent'] = true
 
-      return if smtp[:server] == 'example.com'
-
-      server = service.new(smtp[:server], smtp[:port])
-
-      if smtp[:enable_starttls_auto] == :auto
-        server.enable_starttls_auto 
-      elsif smtp[:enable_starttls_auto]
-        server.enable_starttls 
-      end
-
-      server.start smtp[:domain], smtp[:user_name], smtp[:password], smtp[:authentication]
-
-      mail.to.each do |recipient|
-        server.send_message mail.to_s, mail.from.first, recipient
-      end
+      mail
     end
 
     def service
