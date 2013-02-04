@@ -1,5 +1,6 @@
 require 'test/spec'
 require 'rack/mock'
+require 'oj'
 
 begin
   require 'rack/contrib/post_body_content_type_parser'
@@ -15,7 +16,7 @@ begin
       params = params_for_request '{"key":"value"}', "application/json; charset=utf-8"
       params['key'].should.equal "value"
     end
-    
+
     specify "should parse 'application/json' requests with empty body" do
       params = params_for_request "", "application/json"
       params.should.equal({})
@@ -26,6 +27,14 @@ begin
       params['key'].should.equal "value"
     end
 
+    specify "should parse 'application/json' requests with a custom json parser" do
+      env = Rack::MockRequest.env_for "/", {:method => "POST", :input => body, "CONTENT_TYPE" => content_type}
+      app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
+      params = Rack::PostBodyContentTypeParser.new(app) do |body|
+        Oj.load(body)
+      end.call(env).last
+      params['key'].should.equal "value"
+    end
   end
 
   def params_for_request(body, content_type)
@@ -33,7 +42,7 @@ begin
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
     Rack::PostBodyContentTypeParser.new(app).call(env).last
   end
-  
+
 rescue LoadError => e
   # Missing dependency JSON, skipping tests.
   STDERR.puts "WARN: Skipping Rack::PostBodyContentTypeParser tests (json not installed)"
