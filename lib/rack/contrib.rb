@@ -3,7 +3,7 @@ require 'rack'
 module Rack
   module Contrib
     def self.release
-      "1.0.1"
+      "1.2.0"
     end
   end
 
@@ -14,6 +14,7 @@ module Rack
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
+  autoload :HostMeta,                   "rack/contrib/host_meta"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
   autoload :LighttpdScriptNameFix,      "rack/contrib/lighttpd_script_name_fix"
@@ -37,4 +38,5 @@ module Rack
   autoload :RelativeRedirect,           "rack/contrib/relative_redirect"
   autoload :StaticCache,                "rack/contrib/static_cache"
   autoload :TryStatic,                  "rack/contrib/try_static"
+  autoload :Printout,                   "rack/contrib/printout"
 end

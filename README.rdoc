@@ -48,6 +48,7 @@ interface:
 * Rack::ResponseHeaders - Manipulates response headers object at runtime
 * Rack::SimpleEndpoint - Creates simple endpoints with routing rules, similar to Sinatra actions
 * Rack::TryStatic - Tries to match request to a static file
+* Rack::Printout - Prints the environment and the response per request
 
 === Use
 
@@ -93,5 +94,5 @@ TODO: instructions for 1.9.x and include bundler
 
 rack-contrib on GitHub:: <http://github.com/rack/rack-contrib>
 Rack:: <http://rack.rubyforge.org/>
-Rack On GitHub:: <http://github.org/rack/rack>
+Rack On GitHub:: <http://github.com/rack/rack>
 rack-devel mailing list:: <http://groups.google.com/group/rack-devel>
