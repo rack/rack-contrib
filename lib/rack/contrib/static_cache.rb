@@ -26,7 +26,7 @@ module Rack
   #
   # Examples:
   #     use Rack::StaticCache, :urls => ["/images", "/css", "/js", "/documents*"], :root => "statics"
-  #     will serve all requests beginning with /images, /csss or /js from the
+  #     will serve all requests beginning with /images, /css or /js from the
   #     directory "statics/images",  "statics/css",  "statics/js".
   #     All the files from these directories will have modified headers to enable client/proxy caching,
   #     except the files from the directory "documents". Append a * (star) at the end of the pattern
