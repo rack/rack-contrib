@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
     lib/rack/contrib/not_found.rb
     lib/rack/contrib/post_body_content_type_parser.rb
     lib/rack/contrib/proctitle.rb
+    lib/rack/contrib/printout.rb
     lib/rack/contrib/profiler.rb
     lib/rack/contrib/relative_redirect.rb
     lib/rack/contrib/response_cache.rb
