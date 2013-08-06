@@ -98,7 +98,12 @@ module Rack
 
       <%= env.to_a.
         sort{|a,b| a.first <=> b.first}.
-        map{ |k,v| "%-25s%p" % [k+':', v] }.
+        map do |k,v|
+        	 if k == 'HTTP_AUTHORIZATION' and v =~ /^Basic /
+        	   v = 'Basic *filtered*'
+        	 end
+        	 "%-25s%p" % [k+':', v]
+        end.
         join("\n  ") %>
 
     <% if exception.respond_to?(:backtrace) %>
