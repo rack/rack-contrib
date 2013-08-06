@@ -76,7 +76,7 @@ module Rack
   private
     def generate_mail(exception, env)
       Mail.new({
-        :from => config[:from], 
+        :from => config[:from],
         :to => config[:to],
         :subject => config[:subject] % [exception.to_s],
         :body => @template.result(binding),
@@ -129,7 +129,12 @@ module Rack
 
       <%= env.to_a.
         sort{|a,b| a.first <=> b.first}.
-        map{ |k,v| "%-25s%p" % [k+':', v] }.
+        map do |k,v|
+          if k == 'HTTP_AUTHORIZATION' and v =~ /^Basic /
+            v = 'Basic *filtered*'
+         end
+          "%-25s%p" % [k+':', v]
+        end.
         join("\n  ") %>
 
     <% if exception.respond_to?(:backtrace) %>
