@@ -64,6 +64,22 @@ begin
       mail.body.should.be =~ /^\s*THE BODY\s*$/
     end
 
+    specify 'filters HTTP_EXCEPTION body' do
+      mailer =
+        Rack::MailExceptions.new(@app) do |mail|
+          mail.to 'foo@example.org'
+          mail.from 'bar@example.org'
+          mail.subject '[ERROR] %s'
+          mail.smtp @smtp_settings
+        end
+
+      env = @env.dup
+      env['HTTP_AUTHORIZATION'] = 'Basic xyzzy12345'
+      
+      mail = mailer.send(:generate_mail, test_exception, env)
+      mail.body.should.be =~ /HTTP_AUTHORIZATION:\s+"Basic \*filtered\*"/
+    end
+    
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
@@ -163,6 +179,7 @@ begin
         end
       end
     end
+    
   end
 rescue LoadError => boom
   STDERR.puts "WARN: Skipping Rack::MailExceptions tests (mail not installed)"
