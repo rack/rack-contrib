@@ -26,7 +26,7 @@ module Rack
     def call(env)
       orig_path = env['PATH_INFO']
       found = nil
-      if env['REQUEST_METHOD'] == 'GET'
+      if %w(GET HEAD).include? env['REQUEST_METHOD']
         @try.each do |path|
           resp = @static.call(env.merge!({'PATH_INFO' => orig_path + path}))
           break if 404 != resp[0] && found = resp
