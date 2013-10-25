@@ -68,6 +68,7 @@ module Rack
 
     def deflect? env
       @remote_addr = env['HTTP_X_FORWARDED_FOR']
+      @remote_addr = env['REMOTE_ADDR'] unless @remote_addr && @remote_addr != ''
       return false if options[:whitelist].include? @remote_addr
       return true  if options[:blacklist].include? @remote_addr
       sync { watch }
