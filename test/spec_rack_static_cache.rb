@@ -59,6 +59,14 @@ describe "Rack::StaticCache" do
     res.headers['Expires'].should =~ Regexp.new("#{next_next_year}")
   end
 
+  it "should round max-age if duration is part of a year" do
+    one_week_duration_app_request
+    res = @request.get("/statics/test")
+    res.should.be.ok
+    res.body.should =~ /rubyrack/
+    res.headers['Cache-Control'].should == "max-age=606461, public"
+  end
+
   it "should return 404s if requested with version number but versioning is disabled" do
     configured_app_request
     res = @request.get("/statics/test-0.0.1")
@@ -76,6 +84,11 @@ describe "Rack::StaticCache" do
 
   def default_app_request
     @options = {:urls => ["/statics"], :root => @root}
+    request
+  end
+
+  def one_week_duration_app_request
+    @options = {:urls => ["/statics"], :root => @root, :duration => 1.fdiv(52)}
     request
   end
 
