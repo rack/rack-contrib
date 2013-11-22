@@ -82,7 +82,7 @@ module Rack
         if printer.is_a?(Class)
           printer
         else
-          name = "#{camel_case(printer)}Printer" unless name.match /Printer$/
+          name = "#{camel_case(printer)}Printer" unless printer.match /Printer$/
           if ::RubyProf.const_defined?(name)
             ::RubyProf.const_get(name)
           else
