@@ -64,7 +64,8 @@ module Rack
         :from => config[:from], 
         :to => config[:to],
         :subject => config[:subject] % [exception.to_s],
-        :body => @template.result(binding)
+        :body => @template.result(binding),
+        :charset => "UTF-8"
       })
     end
 
