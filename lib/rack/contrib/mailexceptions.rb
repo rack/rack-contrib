@@ -54,8 +54,9 @@ module Rack
       mail = Mail.new({
         :from => config[:from], 
         :to => config[:to],
-         :subject => config[:subject] % [exception.to_s],
-         :body => @template.result(binding)
+        :subject => config[:subject] % [exception.to_s],
+        :body => @template.result(binding),
+        :charset => "UTF-8"
       })
     end
 
