@@ -7,6 +7,17 @@ module Rack
   # sends a useful email with the exception, stacktrace, and
   # contents of the environment.
 
+  # use smtp
+  #    use Rack::MailExceptions do |mail|
+  #      mail.to 'test@gmail.com'
+  #      mail.smtp :address => 'mail.test.com', :user_name => 'test@test.com', :password => 'test'
+  #    end
+  # use sendmail
+  #    use Rack::MailExceptions do |mail|
+  #      mail.to 'test@gmail.com'
+  #      mail.smtp false
+  #    end
+
   class MailExceptions
     attr_reader :config
 
@@ -46,7 +57,11 @@ module Rack
     end
 
     def smtp(settings={})
-      @config[:smtp].merge! settings
+      if settings
+        @config[:smtp].merge! settings
+      else
+        @config[:smtp] = nil
+      end
     end
 
   private
@@ -62,11 +77,15 @@ module Rack
 
     def send_notification(exception, env)
       mail = generate_mail(exception, env)
-      smtp = config[:smtp]
-      # for backward compability, replace the :server key with :address 
-      address = smtp.delete :server
-      smtp[:address] = address if address
-      mail.delivery_method :smtp, smtp
+      if config[:smtp]
+        smtp = config[:smtp]
+        # for backward compability, replace the :server key with :address
+        address = smtp.delete :server
+        smtp[:address] = address if address
+        mail.delivery_method :smtp, smtp
+      else
+        mail.delivery_method :sendmail
+      end
       mail.deliver!
       env['mail.sent'] = true
       mail
