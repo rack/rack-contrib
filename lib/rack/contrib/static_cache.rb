@@ -72,9 +72,6 @@ module Rack
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
           headers['Expires'] = @duration_in_words
-          headers.delete 'Etag'
-          headers.delete 'Pragma'
-          headers.delete 'Last-Modified'
         end
         [status, headers, body]
       else
