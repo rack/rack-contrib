@@ -67,7 +67,14 @@ module Rack
       path = env["PATH_INFO"]
       url = @urls.detect{ |u| path.index(u) == 0 }
       unless url.nil?
-        path.sub!(/-[\d.]+([.][a-zA-Z][\w]+)?$/, '\1') if @versioning_enabled
+        if @versioning_enabled
+          path.sub!(/
+            -               # a literal dash
+            (\d+\.\d+\.\d+) # basic 3 digit semver
+            (\.[0-9a-z]+)?  # an optional file extension containing numbers or letters
+            \z              # end of string
+          /x, '\1')         # /x allows regex comments; \1 tells sub! to delete the match
+        end
         status, headers, body = @file_server.call(env)
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
