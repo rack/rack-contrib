@@ -26,9 +26,6 @@ describe "Rack::StaticCache" do
     res.headers['Expires'].must_match(Regexp.new(
         "[A-Z][a-z]{2}[,][\s][0-9]{2}[\s][A-Z][a-z]{2}[\s]" << "#{next_year}" <<
         "[\s][0-9]{2}[:][0-9]{2}[:][0-9]{2} GMT$"))
-    res.headers.has_key?('Etag').must_equal false
-    res.headers.has_key?('Pragma').must_equal false
-    res.headers.has_key?('Last-Modified').must_equal false
   end
 
   it "should return 404s if url root is known but it can't find the file" do
