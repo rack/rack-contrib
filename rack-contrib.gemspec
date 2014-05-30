@@ -4,6 +4,7 @@ Gem::Specification.new do |s|
 
   s.name = 'rack-contrib'
   s.version = '1.2.0'
+  s.licenses = ['MIT']
 
   s.description = "Contributed Rack Middleware and Utilities"
   s.summary     = "Contributed Rack Middleware and Utilities"
