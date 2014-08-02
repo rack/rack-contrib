@@ -11,7 +11,7 @@ context "Rack::JSONP" do
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
-      body.should.equal ["#{callback}(#{test_body})"]
+      body.should.equal ["/**/#{callback}(#{test_body})"]
     end
     
     specify "should not wrap the response body in a callback if body is not JSON" do
@@ -155,7 +155,7 @@ context "Rack::JSONP" do
       specify "should not return a bad request for callbacks with dots in the callback" do
         status, headers, body = request(callback = "foo.bar.baz", test_body = '{"foo":"bar"}')
         status.should.equal 200
-        body.should.equal ["#{callback}(#{test_body})"]
+        body.should.equal ["/**/#{callback}(#{test_body})"]
       end
     end
     
