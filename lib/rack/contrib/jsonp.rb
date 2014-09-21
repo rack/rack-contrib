@@ -99,7 +99,7 @@ module Rack
       # https://github.com/rack/rack-contrib/issues/46
       response.close if response.respond_to?(:close)
 
-      ["#{callback}(#{body})"]
+      ["/**/#{callback}(#{body})"]
     end
 
     def bad_request(body = "Bad Request")
