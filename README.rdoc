@@ -78,17 +78,15 @@ components included. The following example shows what a simple rackup
 
 To contribute to the project, begin by cloning the repo and installing the necessary gems:
 
-    gem install json rack ruby-prof test-spec test-unit
+    gem install json rack ruby-prof rspec
 
 To run the entire test suite, run 
     rake test
 
 To run a specific component's tests run
-    specrb -Ilib:test -w test/spec_rack_thecomponent.rb
+    rspec -Ilib:test test/spec_rack_thecomponent.rb
 
-This works on ruby 1.8.7 but has problems under ruby 1.9.x. 
-
-TODO: instructions for 1.9.x and include bundler
+TODO: include bundler
 
 === Links
 

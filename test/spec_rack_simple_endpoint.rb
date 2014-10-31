@@ -1,9 +1,8 @@
-require 'test/spec'
 require 'rack'
 require 'rack/contrib/simple_endpoint'
 
-context "Rack::SimpleEndpoint" do
-  setup do
+describe "Rack::SimpleEndpoint" do
+  before do
     @app = Proc.new { Rack::Response.new {|r| r.write "Downstream app"}.finish }
   end
 
@@ -58,23 +57,23 @@ context "Rack::SimpleEndpoint" do
 
   specify "block yields Rack::Request and Rack::Response objects" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') do |req, res|
-      assert_instance_of ::Rack::Request, req
-      assert_instance_of ::Rack::Response, res
+      req.should be_instance_of ::Rack::Request
+      res.should be_instance_of ::Rack::Response
     end
     endpoint.call(Rack::MockRequest.env_for('/foo'))
   end
 
   specify "block yields MatchData object when Regex path matcher specified" do
     endpoint = Rack::SimpleEndpoint.new(@app, /foo(.+)/) do |req, res, match|
-      assert_instance_of MatchData, match
-      assert_equal 'bar', match[1]
+      match.should be_instance_of MatchData
+      match[1].should == 'bar'
     end
     endpoint.call(Rack::MockRequest.env_for('/foobar'))
   end
 
   specify "block does NOT yield MatchData object when String path matcher specified" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') do |req, res, match|
-      assert_nil match
+      match.should be_nil
     end
     endpoint.call(Rack::MockRequest.env_for('/foo'))
   end

@@ -1,11 +1,10 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/builder'
 require 'rack/contrib/common_cookies'
 
-context Rack::CommonCookies do
+describe Rack::CommonCookies do
 
-  setup do
+  before do
     @app = Rack::Builder.new do
       use Rack::CommonCookies
       run lambda {|env| [200, {'Set-Cookie' => env['HTTP_COOKIE']}, []] }

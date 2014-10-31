@@ -1,29 +1,28 @@
-require 'test/spec'
 require 'rack/mock'
 
 begin
   require 'rack/contrib/post_body_content_type_parser'
 
-  context "Rack::PostBodyContentTypeParser" do
+  describe "Rack::PostBodyContentTypeParser" do
 
     specify "should parse 'application/json' requests" do
       params = params_for_request '{"key":"value"}', "application/json"
-      params['key'].should.equal "value"
+      params['key'].should eq("value")
     end
 
     specify "should parse 'application/json; charset=utf-8' requests" do
       params = params_for_request '{"key":"value"}', "application/json; charset=utf-8"
-      params['key'].should.equal "value"
+      params['key'].should eq("value")
     end
     
     specify "should parse 'application/json' requests with empty body" do
       params = params_for_request "", "application/json"
-      params.should.equal({})
+      params.should eq({})
     end
 
     specify "shouldn't affect form-urlencoded requests" do
       params = params_for_request("key=value", "application/x-www-form-urlencoded")
-      params['key'].should.equal "value"
+      params['key'].should eq("value")
     end
 
   end

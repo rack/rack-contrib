@@ -1,8 +1,7 @@
-require 'test/spec'
 require 'rack/mock'
 require 'rack/contrib/runtime'
 
-context "Rack::Runtime" do
+describe "Rack::Runtime" do
   specify "sets X-Runtime is none is set" do
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, "Hello, World!"] }
     response = Rack::Runtime.new(app).call({})
