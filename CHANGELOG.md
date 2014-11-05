@@ -5,3 +5,4 @@
 
 ### Project
 * we have a changelog!
+* README converted to markdown
