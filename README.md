@@ -3,66 +3,49 @@
 This package includes a variety of add-on components for Rack, a Ruby web server
 interface:
 
-* Rack::JSONP - Adds JSON-P support by stripping out the callback param
-  and padding the response with the appropriate callback format.
-* Rack::LighttpdScriptNameFix - Fixes how lighttpd sets the SCRIPT_NAME
-  and PATH_INFO variables in certain configurations.
-* Rack::Locale - Detects the client locale using the Accept-Language request
-  header and sets a rack.locale variable in the environment.
-* Rack::MailExceptions - Rescues exceptions raised from the app and
-  sends a useful email with the exception, stacktrace, and contents of the
-  environment.
-* Rack::NestedParams - parses form params with subscripts (e.g., * "post[title]=Hello")
-  into a nested/recursive Hash structure (based on Rails' implementation).
-* Rack::PostBodyContentTypeParser - Adds support for JSON request bodies. The
-  Rack parameter hash is populated by deserializing the JSON data provided in
-  the request body when the Content-Type is application/json.
-* Rack::ProcTitle - Displays request information in process title ($0) for
-  monitoring/inspection with ps(1).
-* Rack::Profiler - Uses ruby-prof to measure request time.
-* Rack::Sendfile - Enables X-Sendfile support for bodies that can be served
-  from file.
-* Rack::Signals - Installs signal handlers that are safely processed after
-  a request
-* Rack::StaticCache - Modifies the response headers to facilitiate client and proxy caching for
-  static files that minimizes http requests and improves overall load times for second time visitors.
-* Rack::TimeZone - Detects the client's timezone using JavaScript and sets
-  a variable in Rack's environment with the offset from UTC.
-* Rack::Evil - Lets the rack application return a response to the client from any place.
-* Rack::Callbacks - Implements DSL for pure before/after filter like Middlewares.
-* Rack::Config - Shared configuration for cooperative middleware.
-* Rack::NotFound - A default 404 application.
-* Rack::CSSHTTPRequest - Adds CSSHTTPRequest support by encoding responses as
-  CSS for cross-site AJAX-style data loading
-* Rack::Deflect - Helps protect against DoS attacks.
-* Rack::ResponseCache - Caches responses to requests without query strings
-  to Disk or a user provider Ruby object. Similar to Rails' page caching.
-* Rack::RelativeRedirect - Transforms relative paths in redirects to
-  absolute URLs.
-* Rack::Backstage - Returns content of specified file if it exists, which makes
-  it convenient for putting up maintenance pages.
-* Rack::AcceptFormat - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
-* Rack::HostMeta - Configures /host-meta using a block
-* Rack::Cookies - Adds simple cookie jar hash to env
-* Rack::Access - Limits access based on IP address
-* Rack::ResponseHeaders - Manipulates response headers object at runtime
-* Rack::SimpleEndpoint - Creates simple endpoints with routing rules, similar to Sinatra actions
-* Rack::TryStatic - Tries to match request to a static file
-* Rack::Printout - Prints the environment and the response per request
+* `Rack::AcceptFormat` - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
+* `Rack::Access` - Limits access based on IP address
+* `Rack::Backstage` - Returns content of specified file if it exists, which makes it convenient for putting up maintenance pages.
+* `Rack::CSSHTTPRequest` - Adds CSSHTTPRequest support by encoding responses as CSS for cross-site AJAX-style data loading
+* `Rack::Callbacks` - Implements DSL for pure before/after filter like Middlewares.
+* `Rack::Config` - Shared configuration for cooperative middleware.
+* `Rack::Cookies` - Adds simple cookie jar hash to env
+* `Rack::Deflect` - Helps protect against DoS attacks.
+* `Rack::Evil` - Lets the rack application return a response to the client from any place.
+* `Rack::HostMeta` - Configures `/host-meta` using a block
+* `Rack::JSONP` - Adds JSON-P support by stripping out the callback param and padding the response with the appropriate callback format.
+* `Rack::LighttpdScriptNameFix` - Fixes how lighttpd sets the `SCRIPT_NAME` and `PATH_INFO` variables in certain configurations.
+* `Rack::Locale` - Detects the client locale using the Accept-Language request header and sets a `rack.locale` variable in the environment.
+* `Rack::MailExceptions` - Rescues exceptions raised from the app and sends a useful email with the exception, stacktrace, and contents of the environment.
+* `Rack::NestedParams` - parses form params with subscripts (e.g., * "`post[title]=Hello`") into a nested/recursive Hash structure (based on Rails' implementation).
+* `Rack::NotFound` - A default 404 application.
+* `Rack::PostBodyContentTypeParser` - Adds support for JSON request bodies. The Rack parameter hash is populated by deserializing the JSON data provided in the request body when the Content-Type is application/json.
+* `Rack::Printout` - Prints the environment and the response per request
+* `Rack::ProcTitle` - Displays request information in process title (`$0`) for monitoring/inspection with ps(1).
+* `Rack::Profiler` - Uses ruby-prof to measure request time.
+* `Rack::RelativeRedirect` - Transforms relative paths in redirects to absolute URLs.
+* `Rack::ResponseCache` - Caches responses to requests without query strings to Disk or a user provider Ruby object. Similar to Rails' page caching.
+* `Rack::ResponseHeaders` - Manipulates response headers object at runtime
+* `Rack::Sendfile` - Enables `X-Sendfile` support for bodies that can be served from file.
+* `Rack::Signals` - Installs signal handlers that are safely processed after a request
+* `Rack::SimpleEndpoint` - Creates simple endpoints with routing rules, similar to Sinatra actions
+* `Rack::StaticCache` - Modifies the response headers to facilitiate client and proxy caching for static files that minimizes http requests and improves overall load times for second time visitors.
+* `Rack::TimeZone` - Detects the client's timezone using JavaScript and sets a variable in Rack's environment with the offset from UTC.
+* `Rack::TryStatic` - Tries to match request to a static file
 
 ### Use
 
 Git is the quickest way to the rack-contrib sources:
 
-  git clone git://github.com/rack/rack-contrib.git
+    git clone git://github.com/rack/rack-contrib.git
 
 Gems are available too:
 
-  gem install rack-contrib
+    gem install rack-contrib
 
-Requiring 'rack/contrib' will add autoloads to the Rack modules for all of the
+Requiring `'rack/contrib'` will add autoloads to the Rack modules for all of the
 components included. The following example shows what a simple rackup
-(+config.ru+) file might look like:
+(`config.ru`) file might look like:
 
 ```ruby
 require 'rack'
