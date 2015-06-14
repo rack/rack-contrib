@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = %w[
     AUTHORS
     COPYING
-    README.rdoc
+    README.md
     Rakefile
     lib/rack/contrib.rb
     lib/rack/contrib/accept_format.rb
@@ -98,7 +98,7 @@ Gem::Specification.new do |s|
 
   s.test_files = s.files.select {|path| path =~ /^test\/spec_.*\.rb/}
 
-  s.extra_rdoc_files = %w[README.rdoc COPYING]
+  s.extra_rdoc_files = %w[README.md COPYING]
 
   s.add_runtime_dependency 'rack', '>= 0.9.1', '< 2'
 
