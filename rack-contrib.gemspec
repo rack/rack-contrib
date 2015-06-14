@@ -102,11 +102,15 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'rack', '>= 0.9.1', '< 2'
 
-  s.add_development_dependency 'test-spec', '~> 0.9'
-  s.add_development_dependency 'tmail', '~> 1.2'
+  s.add_development_dependency 'i18n', '~> 0.0'
   s.add_development_dependency 'json', '~> 1.1'
+  s.add_development_dependency 'minitest', '~> 5.0'
+  s.add_development_dependency 'minitest-hooks', '~> 1.0'
+  s.add_development_dependency 'mail', '~> 2.0'
+  s.add_development_dependency 'nbio-csshttprequest', '~> 1.0'
   s.add_development_dependency 'rake', '~> 10.1'
   s.add_development_dependency 'rdoc', '~> 3.12'
+  s.add_development_dependency 'ruby-prof', '~> 0.0'
 
   s.has_rdoc = true
   s.homepage = "http://github.com/rack/rack-contrib/"

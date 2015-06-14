@@ -1,4 +1,4 @@
-require 'test/spec'
+require 'minitest/autorun'
 
 require 'rack'
 require 'rack/contrib/static_cache'
@@ -12,74 +12,74 @@ end
 
 describe "Rack::StaticCache" do
 
-  setup do
+  before do
     @root = ::File.expand_path(::File.dirname(__FILE__))
   end
 
   it "should serve files with required headers" do
     default_app_request
     res = @request.get("/statics/test")
-    res.should.be.ok
-    res.body.should =~ /rubyrack/
-    res.headers['Cache-Control'].should == 'max-age=31536000, public'
-     next_year = Time.now().year + 1
-    res.headers['Expires'].should =~ Regexp.new(
+    res.ok?.must_equal(true)
+    res.body.must_match(/rubyrack/)
+    res.headers['Cache-Control'].must_equal 'max-age=31536000, public'
+    next_year = Time.now().year + 1
+    res.headers['Expires'].must_match(Regexp.new(
         "[A-Z][a-z]{2}[,][\s][0-9]{2}[\s][A-Z][a-z]{2}[\s]" << "#{next_year}" <<
-        "[\s][0-9]{2}[:][0-9]{2}[:][0-9]{2} GMT$")
-    res.headers.has_key?('Etag').should == false
-    res.headers.has_key?('Pragma').should == false
-    res.headers.has_key?('Last-Modified').should == false
+        "[\s][0-9]{2}[:][0-9]{2}[:][0-9]{2} GMT$"))
+    res.headers.has_key?('Etag').must_equal false
+    res.headers.has_key?('Pragma').must_equal false
+    res.headers.has_key?('Last-Modified').must_equal false
   end
 
   it "should return 404s if url root is known but it can't find the file" do
     default_app_request
     res = @request.get("/statics/foo")
-    res.should.be.not_found
+    res.not_found?.must_equal(true)
   end
 
   it "should call down the chain if url root is not known" do
     default_app_request
     res = @request.get("/something/else")
-    res.should.be.ok
-    res.body.should == "Hello World"
+    res.ok?.must_equal(true)
+    res.body.must_equal "Hello World"
   end
 
   it "should serve files if requested with version number and versioning is enabled" do
     default_app_request
     res = @request.get("/statics/test-0.0.1")
-    res.should.be.ok
+    res.ok?.must_equal(true)
   end
 
   it "should change cache duration if specified thorugh option" do
     configured_app_request
     res = @request.get("/statics/test")
-    res.should.be.ok
-    res.body.should =~ /rubyrack/
+    res.ok?.must_equal(true)
+    res.body.must_match(/rubyrack/)
     next_next_year = Time.now().year + 2
-    res.headers['Expires'].should =~ Regexp.new("#{next_next_year}")
+    res.headers['Expires'].must_match(Regexp.new("#{next_next_year}"))
   end
 
   it "should round max-age if duration is part of a year" do
     one_week_duration_app_request
     res = @request.get("/statics/test")
-    res.should.be.ok
-    res.body.should =~ /rubyrack/
-    res.headers['Cache-Control'].should == "max-age=606461, public"
+    res.ok?.must_equal(true)
+    res.body.must_match(/rubyrack/)
+    res.headers['Cache-Control'].must_equal "max-age=606461, public"
   end
 
   it "should return 404s if requested with version number but versioning is disabled" do
     configured_app_request
     res = @request.get("/statics/test-0.0.1")
-    res.should.be.not_found
+    res.not_found?.must_equal(true)
   end
 
   it "should serve files with plain headers when * is added to the directory name" do
     configured_app_request
     res = @request.get("/documents/test")
-    res.should.be.ok
-    res.body.should =~ /nocache/
+    res.ok?.must_equal(true)
+    res.body.must_match(/nocache/)
     next_next_year = Time.now().year + 2
-    res.headers['Expires'].should.not =~ Regexp.new("#{next_next_year}")
+    res.headers['Expires'].wont_match(Regexp.new("#{next_next_year}"))
   end
 
   def default_app_request

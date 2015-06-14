@@ -1,11 +1,11 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/mock'
 
 begin
   require 'csshttprequest'
   require 'rack/contrib/csshttprequest'
 
-  context "Rack::CSSHTTPRequest" do
+  describe "Rack::CSSHTTPRequest" do
 
     before(:each) do
       @test_body = '{"bar":"foo"}'
@@ -18,24 +18,24 @@ begin
         PATH_INFO ends with '.chr'" do
       request = Rack::MockRequest.env_for("/blah.chr", :lint => true, :fatal => true)
       Rack::CSSHTTPRequest.new(@app).call(request)
-      request['csshttprequest.chr'].should.equal true
+      request['csshttprequest.chr'].must_equal true
     end
 
     specify "env['csshttprequest.chr'] should be set to true when \
         request parameter _format == 'chr'" do
       request = Rack::MockRequest.env_for("/?_format=chr", :lint => true, :fatal => true)
       Rack::CSSHTTPRequest.new(@app).call(request)
-      request['csshttprequest.chr'].should.equal true
+      request['csshttprequest.chr'].must_equal true
     end
 
     specify "should not change the headers or response when !env['csshttprequest.chr']" do
       request = Rack::MockRequest.env_for("/", :lint => true, :fatal => true)
       status, headers, response = Rack::CSSHTTPRequest.new(@app).call(request)
-      headers.should.equal @test_headers
-      response.join.should.equal @test_body
+      headers.must_equal @test_headers
+      response.join.must_equal @test_body
     end
 
-    context "when env['csshttprequest.chr']" do
+    describe "when env['csshttprequest.chr']" do
       before(:each) do
         @request = Rack::MockRequest.env_for("/",
           'csshttprequest.chr' => true, :lint => true, :fatal => true)
@@ -43,17 +43,17 @@ begin
 
       specify "should modify the content length to the correct value" do
         headers = Rack::CSSHTTPRequest.new(@app).call(@request)[1]
-        headers['Content-Length'].should.equal @encoded_body.length.to_s
+        headers['Content-Length'].must_equal @encoded_body.length.to_s
       end
 
       specify "should modify the content type to the correct value" do
         headers = Rack::CSSHTTPRequest.new(@app).call(@request)[1]
-        headers['Content-Type'].should.equal 'text/css'
+        headers['Content-Type'].must_equal 'text/css'
       end
 
       specify "should not modify any other headers" do
         headers = Rack::CSSHTTPRequest.new(@app).call(@request)[1]
-        headers.should.equal @test_headers.merge({
+        headers.must_equal @test_headers.merge({
           'Content-Type' => 'text/css',
           'Content-Length' => @encoded_body.length.to_s
         })
