@@ -1,15 +1,15 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack'
 require 'rack/contrib/response_headers'
 
-context "Rack::ResponseHeaders" do
+describe "Rack::ResponseHeaders" do
 
   specify "yields a HeaderHash of response headers" do
     orig_headers = {'X-Foo' => 'foo', 'X-Bar' => 'bar'}
     app = Proc.new {[200, orig_headers, []]}
     middleware = Rack::ResponseHeaders.new(app) do |headers|
       assert_instance_of Rack::Utils::HeaderHash, headers
-      orig_headers.should == headers
+      orig_headers.must_equal headers
     end
     middleware.call({})
   end
@@ -20,7 +20,7 @@ context "Rack::ResponseHeaders" do
       headers['X-Bar'] = 'bar'
     end
     r = middleware.call({})
-    r[1].should == {'X-Foo' => 'foo', 'X-Bar' => 'bar'}
+    r[1].must_equal('X-Foo' => 'foo', 'X-Bar' => 'bar')
   end
 
   specify "allows deleting headers" do
@@ -29,7 +29,7 @@ context "Rack::ResponseHeaders" do
       headers.delete('X-Bar')
     end
     r = middleware.call({})
-    r[1].should == {'X-Foo' => 'foo'}
+    r[1].must_equal('X-Foo' => 'foo')
   end
 
 end

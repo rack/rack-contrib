@@ -1,8 +1,8 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/config'
 
-context "Rack::Config" do
+describe "Rack::Config" do
 
   specify "should accept a block that modifies the environment" do
     app = Rack::Builder.new do
@@ -16,7 +16,7 @@ context "Rack::Config" do
       }
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.should.equal('hello')
+    response.body.must_equal('hello')
   end
 
 end

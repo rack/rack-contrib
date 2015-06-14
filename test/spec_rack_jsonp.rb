@@ -1,17 +1,17 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/jsonp'
 
-context "Rack::JSONP" do
+describe "Rack::JSONP" do
 
-  context "when a callback parameter is provided" do
+  describe "when a callback parameter is provided" do
     specify "should wrap the response body in the Javascript callback if JSON" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
-      body.should.equal ["#{callback}(#{test_body})"]
+      body.must_equal ["/**/#{callback}(#{test_body})"]
     end
     
     specify "should not wrap the response body in a callback if body is not JSON" do
@@ -20,7 +20,7 @@ context "Rack::JSONP" do
       app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
-      body.should.equal ['{"bar":"foo"}']
+      body.must_equal ['{"bar":"foo"}']
     end
     
     specify "should update content length if it was set" do
@@ -30,8 +30,8 @@ context "Rack::JSONP" do
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
 
       headers = Rack::JSONP.new(app).call(request)[1]
-      expected_length = test_body.length + callback.length + "()".length
-      headers['Content-Length'].should.equal(expected_length.to_s)
+      expected_length = "/**/".length + test_body.length + callback.length + "()".length
+      headers['Content-Length'].must_equal(expected_length.to_s)
     end
     
     specify "should not touch content length if not set" do
@@ -40,7 +40,7 @@ context "Rack::JSONP" do
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       headers = Rack::JSONP.new(app).call(request)[1]
-      headers['Content-Length'].should.equal nil
+      headers['Content-Length'].must_equal nil
     end
     
     specify "should modify the content type to application/javascript" do
@@ -49,7 +49,7 @@ context "Rack::JSONP" do
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       headers = Rack::JSONP.new(app).call(request)[1]
-      headers['Content-Type'].should.equal('application/javascript')
+      headers['Content-Type'].must_equal('application/javascript')
     end
 
     specify "should not allow literal U+2028 or U+2029" do
@@ -63,25 +63,25 @@ context "Rack::JSONP" do
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       body = Rack::JSONP.new(app).call(request).last
       unless "\u2028" == 'u2028'
-        body.join.should.not.match(/\u2028|\u2029/)
+        body.join.wont_match(/\u2028|\u2029/)
       else
-        body.join.should.not.match(/\342\200\250|\342\200\251/)
+        body.join.wont_match(/\342\200\250|\342\200\251/)
       end
     end
     
-    context "but is empty" do
+    describe "but is empty" do
       specify "should " do
         test_body = '{"bar":"foo"}'
         callback = ''
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
         body = Rack::JSONP.new(app).call(request).last
-        body.should.equal ['{"bar":"foo"}']
+        body.must_equal ['{"bar":"foo"}']
       end
     end
     
-    context 'but is invalid' do
-      context 'with content-type application/json' do
+    describe 'but is invalid' do
+      describe 'with content-type application/json' do
         specify 'should return "Bad Request"' do
           test_body = '{"bar":"foo"}'
           callback = '*'
@@ -89,7 +89,7 @@ context "Rack::JSONP" do
           app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
           request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
           body = Rack::JSONP.new(app).call(request).last
-          body.should.equal ['Bad Request']
+          body.must_equal ['Bad Request']
         end
 
         specify 'should return set the response code to 400' do
@@ -99,11 +99,11 @@ context "Rack::JSONP" do
           app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
           request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
           response_code = Rack::JSONP.new(app).call(request).first
-          response_code.should.equal 400
+          response_code.must_equal 400
         end
       end
 
-      context 'with content-type text/plain' do
+      describe 'with content-type text/plain' do
         specify 'should return "Good Request"' do
           test_body = 'Good Request'
           callback = '*'
@@ -111,7 +111,7 @@ context "Rack::JSONP" do
           app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
           request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
           body = Rack::JSONP.new(app).call(request).last
-          body.should.equal ['Good Request']
+          body.must_equal ['Good Request']
         end
 
         specify 'should not change the response code from 200' do
@@ -121,12 +121,12 @@ context "Rack::JSONP" do
           app = lambda { |env| [200, {'Content-Type' => content_type}, [test_body]] }
           request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
           response_code = Rack::JSONP.new(app).call(request).first
-          response_code.should.equal 200
+          response_code.must_equal 200
         end
       end
     end
 
-    context "with XSS vulnerability attempts" do
+    describe "with XSS vulnerability attempts" do
       def request(callback, body = '{"bar":"foo"}')
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [body]] }
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
@@ -134,10 +134,10 @@ context "Rack::JSONP" do
       end
       
       def assert_bad_request(response)
-        response.should.not.equal nil
+        response.wont_equal nil
         status, headers, body = response
-        status.should.equal 400
-        body.should.equal ["Bad Request"]
+        status.must_equal 400
+        body.must_equal ["Bad Request"]
       end
       
       specify "should return bad request for callback with invalid characters" do
@@ -154,8 +154,8 @@ context "Rack::JSONP" do
       
       specify "should not return a bad request for callbacks with dots in the callback" do
         status, headers, body = request(callback = "foo.bar.baz", test_body = '{"foo":"bar"}')
-        status.should.equal 200
-        body.should.equal ["#{callback}(#{test_body})"]
+        status.must_equal 200
+        body.must_equal ["/**/#{callback}(#{test_body})"]
       end
     end
     
@@ -166,7 +166,7 @@ context "Rack::JSONP" do
     app = lambda { |env| [200, {'Content-Type' => 'application/json'}, test_body] }
     request = Rack::MockRequest.env_for("/", :params => "foo=bar")
     body = Rack::JSONP.new(app).call(request).last
-    body.should.equal test_body
+    body.must_equal test_body
   end
 
   specify "should not change anything if it's not a json response" do
@@ -174,7 +174,7 @@ context "Rack::JSONP" do
     app = lambda { |env| [404, {'Content-Type' => 'text/html'}, [test_body]] }
     request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
     body = Rack::JSONP.new(app).call(request).last
-    body.should.equal [test_body]
+    body.must_equal [test_body]
   end
   
   specify "should not change anything if there is no Content-Type header" do
@@ -182,7 +182,7 @@ context "Rack::JSONP" do
     app = lambda { |env| [404, {}, [test_body]] }
     request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
     body = Rack::JSONP.new(app).call(request).last
-    body.should.equal [test_body]
+    body.must_equal [test_body]
   end  
 
 end
