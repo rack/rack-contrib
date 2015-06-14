@@ -1,5 +1,5 @@
 # Rakefile for Rack::Contrib.  -*-ruby-*-
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'rake/testtask'
 
 desc "Run all the tests"
@@ -26,7 +26,7 @@ task :fulltest do
 end
 
 desc "Generate RDoc documentation"
-Rake::RDocTask.new(:rdoc) do |rdoc|
+RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.options << '--line-numbers' << '--inline-source' <<
     '--main' << 'README' <<
     '--title' << 'Rack Contrib Documentation' <<
