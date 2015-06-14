@@ -51,12 +51,15 @@ module Rack
 
   private
     def generate_mail(exception, env)
-      mail = Mail.new({
-        :from => config[:from], 
-        :to => config[:to],
-         :subject => config[:subject] % [exception.to_s],
-         :body => @template.result(binding)
-      })
+      mail = Mail.new
+      mail.to = Array(config[:to])
+      mail.from = config[:from]
+      mail.subject = config[:subject] % [exception.to_s]
+      mail.date = Time.now
+      mail.charset = 'UTF-8'
+      text_body = @template.result(binding)
+      mail.text_part = Mail::Part.new { body text_body }
+      mail
     end
 
     def send_notification(exception, env)
@@ -66,9 +69,14 @@ module Rack
       address = smtp.delete :server
       smtp[:address] = address if address
       mail.delivery_method :smtp, smtp
-      mail.deliver!
+      mail.deliver! unless smtp[:server] == 'example.com'
       env['mail.sent'] = true
+
       mail
+    end
+
+    def service
+      Net::SMTP
     end
 
     def extract_body(env)
@@ -112,3 +120,4 @@ module Rack
 
   end
 end
+
