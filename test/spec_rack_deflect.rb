@@ -15,6 +15,10 @@ context "Rack::Deflect" do
     Rack::MockRequest.env_for path, { 'REMOTE_ADDR' => remote_addr }
   end
 
+  def mock_proxied_env remote_addr, path = '/'
+    Rack::MockRequest.env_for path, { 'REMOTE_ADDR' => '10.10.10.10', 'HTTP_X_FORWARDED_FOR' => remote_addr }
+  end
+
   def mock_deflect options = {}
     Rack::Deflect.new @app, options
   end
@@ -100,6 +104,10 @@ context "Rack::Deflect" do
     body.should.equal ['cookies']
 
     status, headers, body = app.call mock_env(@mock_addr_2)
+    status.should.equal 403
+    body.should.equal []
+
+    status, headers, body = app.call mock_proxied_env(@mock_addr_2)
     status.should.equal 403
     body.should.equal []
   end
