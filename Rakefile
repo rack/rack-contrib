@@ -5,11 +5,6 @@ require 'rake/testtask'
 desc "Run all the tests"
 task :default => [:test]
 
-desc "Generate RDox"
-task "RDOX" do
-  sh "specrb -Ilib:test -a --rdox >RDOX"
-end
-
 desc "Run specs"
 Rake::TestTask.new do |t|
   t.libs << "test"
@@ -24,11 +19,9 @@ RDoc::Task.new(:rdoc) do |rdoc|
     '--charset' << 'utf-8'
   rdoc.rdoc_dir = "doc"
   rdoc.rdoc_files.include 'README.rdoc'
-  rdoc.rdoc_files.include 'RDOX'
   rdoc.rdoc_files.include('lib/rack/*.rb')
   rdoc.rdoc_files.include('lib/rack/*/*.rb')
 end
-task :rdoc => ["RDOX"]
 
 
 # PACKAGING =================================================================

@@ -1,0 +1,17 @@
+source 'https://rubygems.org'
+
+# These are the minimum available versions of all the gems we need, based on
+# the version specs in the gemspec.  We test against all of these to ensure
+# we haven't accidentally used a feature of a gem that isn't in the oldest
+# version we say we need.
+#
+gem 'rack',                '= 1.1'
+gem 'i18n',                '= 0.4.0'
+gem 'json',                '= 1.8.1'
+gem 'minitest',            '= 5.0.0'
+gem 'minitest-hooks',      '= 1.0.0'
+gem 'mail',                '= 2.3.0'
+gem 'nbio-csshttprequest', '= 1.0.2'
+gem 'rdoc',                '= 3.12'
+gem 'rake',                '= 10.1.0'
+gem 'ruby-prof',           '= 0.13.0'
