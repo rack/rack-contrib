@@ -46,6 +46,19 @@ have before they can be landed:
   place, but if you diverge from how things are done at the moment the patch
   won't get accepted as-is.
 
+* Support Ruby 1.8.7.  We're going to keep supporting 1.8 as long as Rack
+  proper does.  Some existing middleware requires 1.9, but all new
+  middleware, and existing 1.8-compatible middleware, must continue to be
+  1.8 compatible.  We use [Travis
+  CI test runs](https://travis-ci.org/rack/rack-contrib) to validate this.
+
+* Require no external dependencies.  Some existing middleware depends on
+  additional gems in order to function; we feel that this is an
+  anti-pattern, and so no patches will be accepted which add additional
+  external gems.  If your middleware or other change has a dependency on a
+  gem, please discuss it with us; we may accept it and split it out into a
+  separate gem.
+
 We will not reject patches which do not meet these standards, however
 *someone* will have to do the work to bring the patch up to scratch before
 it can be landed.  The maintainers *might* do it, eventually, but it may not
