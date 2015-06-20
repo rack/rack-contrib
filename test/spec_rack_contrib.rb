@@ -1,8 +1,8 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/contrib'
 
-context "Rack::Contrib" do
+describe "Rack::Contrib" do
   specify "should expose release" do
-    Rack::Contrib.should.respond_to :release
+    Rack::Contrib.must_respond_to(:release)
   end
 end

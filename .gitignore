@@ -3,3 +3,6 @@
 /RDOX
 ChangeLog
 /Gemfile.lock
+/.bundle
+/test/gemfiles/.bundle
+/test/gemfiles/*.lock
