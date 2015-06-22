@@ -1,4 +1,5 @@
 # -*- encoding : us-ascii -*-
+
 if "a string".respond_to?(:valid_encoding?)
   require 'rack/mock'
   require 'rack/contrib/enforce_valid_encoding'
@@ -15,39 +16,41 @@ if "a string".respond_to?(:valid_encoding?)
 
     describe "contstant assertions" do
       it "INVALID_PATH should not be a valid UTF-8 string when decoded" do
-        Rack::Utils.unescape(INVALID_PATH).valid_encoding?.should.equal false
+        Rack::Utils.unescape(INVALID_PATH).valid_encoding?.must_equal false
       end
 
       it "VALID_PATH should be valid when decoded" do
-        Rack::Utils.unescape(VALID_PATH).valid_encoding?.should.equal true
+        Rack::Utils.unescape(VALID_PATH).valid_encoding?.must_equal true
       end
     end
 
     it "should accept a request with a correctly encoded path" do
       response = Rack::MockRequest.new(@app).get(VALID_PATH)
-      response.body.should.equal("Hello World")
-      response.status.should.equal(200)
+      response.body.must_equal("Hello World")
+      response.status.must_equal(200)
     end
 
     it "should reject a request with a poorly encoded path" do
       response = Rack::MockRequest.new(@app).get(INVALID_PATH)
-      response.status.should.equal(400)
+      response.status.must_equal(400)
     end
 
     it "should accept a request with a correctly encoded query string" do
       response = Rack::MockRequest.new(@app).get('/', 'QUERY_STRING' => VALID_PATH)
-      response.body.should.equal("Hello World")
-      response.status.should.equal(200)
+      response.body.must_equal("Hello World")
+      response.status.must_equal(200)
     end
 
     it "should reject a request with a poorly encoded query string" do
       response = Rack::MockRequest.new(@app).get('/', 'QUERY_STRING' => INVALID_PATH)
-      response.status.should.equal(400)
+      response.status.must_equal(400)
     end
 
     it "should reject a request containing malformed multibyte characters" do
       response = Rack::MockRequest.new(@app).get('/', 'QUERY_STRING' => Rack::Utils.unescape(INVALID_PATH, Encoding::ASCII_8BIT))
-      response.status.should.equal(400)
+      response.status.must_equal(400)
     end
   end
+else
+  STDERR.puts "WARN: Skipping Rack::EnforceValidEncoding tests (String#valid_encoding? not available)"
 end
