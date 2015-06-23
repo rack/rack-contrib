@@ -31,7 +31,7 @@ class Rack::RelativeRedirect
   # does not start with a slash, make location relative to the path requested.
   def call(env)
     res = @app.call(env)
-    if [301,302,303].include?(res[0]) and loc = res[1]['Location'] and !%r{\Ahttps?://}o.match(loc)
+    if [301,302,303, 307,308].include?(res[0]) and loc = res[1]['Location'] and !%r{\Ahttps?://}o.match(loc)
       absolute = @absolute_proc.call(env, res)
       res[1]['Location'] = if %r{\A/}.match(loc)
         "#{absolute}#{loc}"
