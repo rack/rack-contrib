@@ -17,6 +17,24 @@ describe Rack::RelativeRedirect do
     @def_app = lambda { |env| [@def_status, {'Location' => @def_location}, [""]]}
   end
 
+  specify "should rewrite Location on all the redirect codes" do
+    [301, 302, 303, 307, 308].each do |status|
+      request(:status => status) do |r|
+        r.status.must_equal(status)
+        r.headers['Location'].must_equal('http://example.org/redirect/to/blah')
+      end
+    end
+  end
+
+  specify "should not rewrite Location on other status codes" do
+    [200, 201, 300, 304, 305, 306, 404, 500].each do |status|
+      request(:status => status) do |r|
+        r.status.must_equal(status)
+        r.headers['Location'].must_equal('/redirect/to/blah')
+      end
+    end
+  end
+
   specify "should make the location url an absolute url if currently a relative url" do
     request do |r|
       r.status.must_equal(301)
