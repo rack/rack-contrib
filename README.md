@@ -77,6 +77,18 @@ This works on ruby 1.8.7 but has problems under ruby 1.9.x.
 
 TODO: instructions for 1.9.x and include bundler
 
+### Criteria for inclusion
+The criteria for middleware being included in this project are roughly as follows:
+* For patterns that are very common, provide a reference implementation so that other projects do not have to reinvent the wheel.
+* For patterns that are very useful or interesting, provide a well-done implementation.
+* The middleware fits in 1 code file and is relatively small. Currently all middleware in the project are < 150 LOC.
+* The middleware doesn't have any dependencies other than rack and the ruby standard library.
+
+These criteria were introduced several years after the start of the project, so some of the included middleware may not meet all of them. In particular, several middleware have external dependencies. It is possible that in some future release of rack-contrib, middleware with external depencies will be removed from the project.
+
+When submitting code keep the above criteria in mind and also see the code
+guidelines in CONTRIBUTING.md. 
+
 ### Links
 
 * rack-contrib on GitHub:: <http://github.com/rack/rack-contrib>
