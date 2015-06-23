@@ -69,7 +69,7 @@ module Rack
     end
     
     def has_callback?(request)
-      request.params.include?('callback') and not request.params['callback'].empty?
+      request.params.include?('callback') and not request.params['callback'].to_s.empty?
     end
 
     # See:

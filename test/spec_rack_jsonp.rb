@@ -70,11 +70,19 @@ describe "Rack::JSONP" do
     end
     
     describe "but is empty" do
-      specify "should " do
+      specify "with assignment" do
         test_body = '{"bar":"foo"}'
         callback = ''
         app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
+        body = Rack::JSONP.new(app).call(request).last
+        body.must_equal ['{"bar":"foo"}']
+      end
+
+      specify "without assignment" do
+        test_body = '{"bar":"foo"}'
+        app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
+        request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback")
         body = Rack::JSONP.new(app).call(request).last
         body.must_equal ['{"bar":"foo"}']
       end
