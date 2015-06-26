@@ -5,8 +5,8 @@ source 'https://rubygems.org'
 # we haven't accidentally used a feature of a gem that isn't in the oldest
 # version we say we need.
 #
-gem 'rack',                '= 1.1'
-gem 'git-version-bump',    '= 0.13.0'
+gem 'rack',                '= 1.4.0'
+gem 'git-version-bump',    '= 0.13.1'
 gem 'i18n',                '= 0.4.0'
 gem 'json',                '= 1.8.1'
 gem 'minitest',            '= 5.0.0'
@@ -14,5 +14,5 @@ gem 'minitest-hooks',      '= 1.0.0'
 gem 'mail',                '= 2.3.0'
 gem 'nbio-csshttprequest', '= 1.0.2'
 gem 'rdoc',                '= 3.12'
-gem 'rake',                '= 10.1.0'
+gem 'rake',                '= 10.4.2'
 gem 'ruby-prof',           '= 0.13.0'
