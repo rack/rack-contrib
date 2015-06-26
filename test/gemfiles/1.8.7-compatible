@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rack',                '~> 1.1'
+gem 'git-version-bump',    '~> 0.13'
 gem 'json',                '~> 1.5'
 gem 'minitest',            '~> 5.0'
 gem 'minitest-hooks',      '~> 1.0'
