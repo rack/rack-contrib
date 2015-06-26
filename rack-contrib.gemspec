@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   # update `test/gemfiles/minimum_versions`!
   #
   s.add_runtime_dependency 'rack', '~> 1.4'
-  s.add_runtime_dependency 'git-version-bump', '~> 0.13'
+  s.add_runtime_dependency 'git-version-bump', '~> 0.15'
 
   s.add_development_dependency 'bundler', '~> 1.0'
   s.add_development_dependency 'github-release', '~> 0.1'
