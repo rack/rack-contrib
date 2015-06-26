@@ -14,6 +14,7 @@ module Rack
   autoload :Cookies,                    "rack/contrib/cookies"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
+  autoload :EnforceValidEncoding,       "rack/contrib/enforce_valid_encoding"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
   autoload :HostMeta,                   "rack/contrib/host_meta"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
