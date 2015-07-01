@@ -33,6 +33,13 @@ begin
       result.must_be_empty
     end
 
+    specify "should not create additions" do
+      before = Symbol.all_symbols
+      params_for_request %{{"json_class":"this_should_not_be_added"}}, "application/json" rescue nil
+      result = Symbol.all_symbols - before
+      result.should.be.empty
+    end
+
   end
 
   def params_for_request(body, content_type)
