@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'rack/mock'
+require 'rack/contrib/callbacks'
 
 class Flame
   def call(env)
