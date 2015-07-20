@@ -1,5 +1,8 @@
 # -*- encoding : us-ascii -*-
 
+require 'minitest/autorun'
+require 'rack/contrib/enforce_valid_encoding'
+
 if "a string".respond_to?(:valid_encoding?)
   require 'rack/mock'
   require 'rack/contrib/enforce_valid_encoding'
