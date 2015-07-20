@@ -66,14 +66,14 @@ describe "Rack::Deflect" do
     status.must_equal 403
     body.must_equal []
 
-    # Allow block to expire
-    sleep 3
-
-    # Another 5 is fine now
-    5.times do
-      status, headers, body = app.call env
-      status.must_equal 200
-      body.must_equal ['cookies']
+    # Move to the future so the block will expire
+    Time.stub :now, Time.now + 3 do
+      # Another 5 is fine now
+      5.times do
+        status, headers, body = app.call env
+        status.must_equal 200
+        body.must_equal ['cookies']
+      end
     end
 
     # Log should reflect block and release
