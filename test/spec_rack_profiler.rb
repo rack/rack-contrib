@@ -14,9 +14,10 @@ begin
       profiler.instance_variable_get('@times').must_equal 1
     end
 
-    specify 'call @times globally and times is set' do
-        profiler = Rack::Profiler.new(app, :times => 4) 
-        profiler.instance_variable_get('@times').should.equal 4
+    specify 'called multiple times via query params' do
+      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&times=4")
+      body = Rack::Profiler.new(app).call(req)[2].string
+      body.must_match(/Fixnum#to_s \[4 calls, 4 total\]/)
     end
 
     specify 'CallStackPrinter has Content-Type test/html' do
