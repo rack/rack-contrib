@@ -24,6 +24,12 @@ module Rack
   #
   # You can use Rack::Deflater along with Rack::StaticCache for further improvements in page loading time.
   #
+  # If you'd like to use a non-standard version identifier in your URLs, you
+  # can set the regex to remove with the `:version_regex` option.  If you
+  # want to capture something after the regex (such as file extensions), you
+  # should capture that as `\1`.  All other captured subexpressions will be
+  # discarded.  You may find the `?:` capture modifier helpful.
+  #
   # Examples:
   #     use Rack::StaticCache, :urls => ["/images", "/css", "/js", "/documents*"], :root => "statics"
   #     will serve all requests beginning with /images, /css or /js from the
@@ -57,8 +63,10 @@ module Rack
       root = options[:root] || Dir.pwd
       @file_server = Rack::File.new(root)
       @cache_duration = options[:duration] || 1
-      @versioning_enabled = true
-      @versioning_enabled = options[:versioning] unless options[:versioning].nil?
+      @versioning_enabled = options.fetch(:versioning, true)
+      if @versioning_enabled
+        @version_regex = options.fetch(:version_regex, /-[\d.]+([.][a-zA-Z][\w]+)?$/)
+      end
       @duration_in_seconds = self.duration_in_seconds
       @duration_in_words    = self.duration_in_words
     end
@@ -66,14 +74,11 @@ module Rack
     def call(env)
       path = env["PATH_INFO"]
       url = @urls.detect{ |u| path.index(u) == 0 }
-      unless url.nil?
+      if url.nil?
+        @app.call(env)
+      else
         if @versioning_enabled
-          path.sub!(/
-            -               # a literal dash
-            (\d+\.\d+\.\d+) # basic MAJOR.MINOR.PATCH semver
-            (\.[0-9a-z]+)?  # an optional file extension containing numbers or letters
-            \z              # end of string
-          /x, '\1')         # /x allows spaces in regex for comments; \1 tells sub! to delete the match
+          path.sub!(@version_regex, '\1')
         end
         status, headers, body = @file_server.call(env)
         if @no_cache[url].nil?
@@ -81,8 +86,6 @@ module Rack
           headers['Expires'] = @duration_in_words
         end
         [status, headers, body]
-      else
-        @app.call(env)
       end
     end
 
