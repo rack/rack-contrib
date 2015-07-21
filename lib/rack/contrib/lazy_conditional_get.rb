@@ -73,7 +73,7 @@ module Rack
     end
 
     def reading? env
-      READ_METHODS.include?(env[Rack::REQUEST_METHOD])
+      READ_METHODS.include?(env['REQUEST_METHOD'])
     end
 
     def skipping? headers
