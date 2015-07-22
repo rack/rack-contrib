@@ -6,8 +6,9 @@ module Rack
   # the modification date or the ETag.
   #
   # Instead it makes the assumption that only non-reading requests can 
-  # potentially change the content. So it uses and caches a `global_last_modified`
-  # date and updates it on requests which are not GET or HEAD.
+  # potentially change the content, meaning any request which is not 
+  # GET or HEAD. Each time you make one of these request, the date is cached
+  # and any resource is considered identical until the next non-reading request.
   #
   # Basically you use it this way:
   #
@@ -28,19 +29,20 @@ module Rack
   # By default, the middleware only delegates to Rack::ConditionalGet to avoid
   # any unwanted behaviour. You have to set a header to any resource which you 
   # want to be cached. And it will be cached until the next "potential update" 
-  # of your site.
+  # of your site, that is whenever the next POST/PUT/PATCH/DELETE request 
+  # is received.
   #
-  # The header is `Rack-Lazy-Conditional-Get`. You have to set it to either 'yes'
+  # The header is `Rack-Lazy-Conditional-Get`. You have to set it to 'yes'
   # if you want the middleware to set `Last-Modified` for you.
   #
   # Bear in mind that if you set `Last-Modified` as well, the middleware will 
   # not change it.
   #
-  # Regarding the POST/PUT/DELETE... requests, they will always reset your 
-  # `global_last_modified` date. But if you have one of these request and you 
+  # Regarding the POST/PUT/PATCH/DELETE... requests, they will always reset your 
+  # global modification date. But if you have one of these request and you 
   # know for sure that it does not modify the cached content, you can set the
   # `Rack-Lazy-Conditional-Get` on response to `skip`. This will not update the
-  # `global_last_modified` date.
+  # global modification date.
 
   class LazyConditionalGet
 
