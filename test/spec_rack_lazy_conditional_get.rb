@@ -59,9 +59,9 @@ describe 'Rack::LazyConditionalGet' do
 
     it 'Should set right headers' do
       status, headers, body = @myapp.call(env)
-      status.must_equal 200
-      headers['Rack-Lazy-Conditional-Get'].must_equal 'yes'
-      headers['Last-Modified'].must_equal global_last_modified
+      expect(status).must_equal 200
+      expect(headers['Rack-Lazy-Conditional-Get']).must_equal 'yes'
+      expect(headers['Last-Modified']).must_equal global_last_modified
     end
 
     describe 'When the resource already has a Last-Modified header' do
@@ -70,9 +70,9 @@ describe 'Rack::LazyConditionalGet' do
 
       it 'Does not update Last-Modified with the global one' do
         status, headers, body = @myapp.call(env)
-        status.must_equal 200
-        headers['Rack-Lazy-Conditional-Get'].must_equal 'yes'
-        headers['Last-Modified'].wont_equal global_last_modified
+        expect(status).must_equal 200
+        expect(headers['Rack-Lazy-Conditional-Get']).must_equal 'yes'
+        expect(headers['Last-Modified']).wont_equal global_last_modified
       end
 
     end
@@ -84,7 +84,7 @@ describe 'Rack::LazyConditionalGet' do
 
       it 'Should not render resource the second time' do
         status, headers, body = @myapp.call(env)
-        status.must_equal 304
+        expect(status).must_equal 304
       end
 
     end
@@ -99,7 +99,7 @@ describe 'Rack::LazyConditionalGet' do
       set_global_last_modified (Time.now-3600).httpdate
       stamp = global_last_modified
       status, headers, body = @myapp.call(env)
-      global_last_modified.wont_equal stamp
+      expect(global_last_modified).wont_equal stamp
     end
 
     describe 'When the skip header is returned' do
@@ -110,8 +110,8 @@ describe 'Rack::LazyConditionalGet' do
         set_global_last_modified (Time.now-3600).httpdate
         stamp = global_last_modified
         status, headers, body = @myapp.call(env)
-        headers['Rack-Lazy-Conditional-Get'].must_equal 'skip'
-        global_last_modified.must_equal stamp
+        expect(headers['Rack-Lazy-Conditional-Get']).must_equal 'skip'
+        expect(global_last_modified).must_equal stamp
       end
 
     end
@@ -124,9 +124,9 @@ describe 'Rack::LazyConditionalGet' do
 
     it 'Should set right headers' do
       status, headers, body = @myapp.call(env)
-      status.must_equal 200
-      headers['Rack-Lazy-Conditional-Get'].must_equal 'no'
-      headers['Last-Modified'].must_be :nil?
+      expect(status).must_equal 200
+      expect(headers['Rack-Lazy-Conditional-Get']).must_equal 'no'
+      expect(headers['Last-Modified']).must_be :nil?
     end
 
   end
