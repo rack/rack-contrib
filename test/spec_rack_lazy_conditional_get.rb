@@ -36,11 +36,11 @@ describe 'Rack::LazyConditionalGet' do
   def path; '/'; end
   def cache_object; $lazy_conditional_get_cache; end
 
-  def general_last_modified
+  def global_last_modified
     cache_object[Rack::LazyConditionalGet::KEY]
   end
 
-  def set_general_last_modified val
+  def set_global_last_modified val
     cache_object[Rack::LazyConditionalGet::KEY] = val
   end
 
@@ -50,7 +50,7 @@ describe 'Rack::LazyConditionalGet' do
             when nil
               {}
             when :up_to_date
-              {'HTTP_IF_MODIFIED_SINCE'=>general_last_modified}
+              {'HTTP_IF_MODIFIED_SINCE'=>global_last_modified}
             else
               {'HTTP_IF_MODIFIED_SINCE'=>stamp}
             end
@@ -60,16 +60,16 @@ describe 'Rack::LazyConditionalGet' do
     request_with_stamp nil
   end
 
-  describe 'When the ressource has X-Lazy-Conditional-Get' do
+  describe 'When the resource has X-Lazy-Conditional-Get' do
 
     it 'Should set right headers' do
       status, headers, body = request_without_stamp
       status.must_equal 200
       headers['X-Lazy-Conditional-Get'].must_equal 'yes'
-      headers['Last-Modified'].must_equal general_last_modified
+      headers['Last-Modified'].must_equal global_last_modified
     end
 
-    describe 'When the ressource already has a Last-Modified header' do
+    describe 'When the resource already has a Last-Modified header' do
 
       def core_app_headers
         super.merge({'Last-Modified'=>(Time.now-3600).httpdate})
@@ -79,16 +79,16 @@ describe 'Rack::LazyConditionalGet' do
         status, headers, body = request_without_stamp
         status.must_equal 200
         headers['X-Lazy-Conditional-Get'].must_equal 'yes'
-        headers['Last-Modified'].wont_equal general_last_modified
+        headers['Last-Modified'].wont_equal global_last_modified
       end
 
     end
 
-    describe 'When loading a ressource for the second time' do
+    describe 'When loading a resource for the second time' do
 
       def core_app; lambda {|env| raise}; end
 
-      it 'Should not render ressource the second time' do
+      it 'Should not render resource the second time' do
         status, headers, body = request_with_stamp :up_to_date
         status.must_equal 304
       end
@@ -99,12 +99,12 @@ describe 'Rack::LazyConditionalGet' do
 
   describe 'When a request is potentially changing data' do
 
-    it 'Updates the general_last_modified' do
+    it 'Updates the global_last_modified' do
       myapp = app
-      set_general_last_modified (Time.now-3600).httpdate
-      stamp = general_last_modified
+      set_global_last_modified (Time.now-3600).httpdate
+      stamp = global_last_modified
       status, headers, body = myapp.call(env({'REQUEST_METHOD'=>'POST'}))
-      general_last_modified.wont_equal stamp
+      global_last_modified.wont_equal stamp
     end
 
     describe 'When the skip header is returned' do
@@ -113,13 +113,13 @@ describe 'Rack::LazyConditionalGet' do
         super.merge({'X-Lazy-Conditional-Get'=>'skip'})
       end
 
-      it 'Does not update the general_last_modified' do
+      it 'Does not update the global_last_modified' do
         myapp = app
-        set_general_last_modified (Time.now-3600).httpdate
-        stamp = general_last_modified
+        set_global_last_modified (Time.now-3600).httpdate
+        stamp = global_last_modified
         status, headers, body = myapp.call(env({'REQUEST_METHOD'=>'POST'}))
         headers['X-Lazy-Conditional-Get'].must_equal 'skip'
-        general_last_modified.must_equal stamp
+        global_last_modified.must_equal stamp
       end
 
     end
