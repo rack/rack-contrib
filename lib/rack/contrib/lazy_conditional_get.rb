@@ -30,8 +30,8 @@ module Rack
   # want to be cached. And it will be cached until the next "potential update" 
   # of your site.
   #
-  # The header is `Rack-Lazy-Conditional-Get`. You have to set it to either 'yes',
-  # 'true' or '1' if you want the middleware to set `Last-Modified` for you.
+  # The header is `Rack-Lazy-Conditional-Get`. You have to set it to either 'yes'
+  # if you want the middleware to set `Last-Modified` for you.
   #
   # Bear in mind that if you set `Last-Modified` as well, the middleware will 
   # not change it.
@@ -46,7 +46,6 @@ module Rack
 
     KEY = 'global_last_modified'.freeze
     READ_METHODS = ['GET','HEAD']
-    TRUTHINESS = ['true','yes','1']
 
     def self.new(*); ::Rack::ConditionalGet.new(super); end
 
@@ -81,8 +80,7 @@ module Rack
     end
 
     def stampable? headers
-      headers['Last-Modified'].to_s=='' and
-      TRUTHINESS.include?(headers['Rack-Lazy-Conditional-Get'])
+      !headers.has_key?('Last-Modified') and headers['Rack-Lazy-Conditional-Get'] == 'yes'
     end
 
     def update_cache
