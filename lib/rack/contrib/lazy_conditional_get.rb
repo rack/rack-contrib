@@ -57,7 +57,7 @@ module Rack
 
     def call env
       if reading? env and fresh? env
-        return [200,{'Last-Modified'=>env['HTTP_IF_MODIFIED_SINCE']},[]]
+        return [304, {'Last-Modified' => env['HTTP_IF_MODIFIED_SINCE']}, []]
       end
       status, headers, body = @app.call env
       update_cache unless (reading?(env) or skipping?(headers))
