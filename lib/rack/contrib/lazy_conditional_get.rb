@@ -49,7 +49,16 @@ module Rack
     KEY = 'global_last_modified'.freeze
     READ_METHODS = ['GET','HEAD']
 
-    def self.new(*); ::Rack::ConditionalGet.new(super); end
+    def self.new(*) 
+      # This code automatically uses `Rack::ConditionalGet` before
+      # our middleware. It is equivalent to:
+      #
+      # ``` ruby
+      # use Rack::ConditionalGet
+      # use Rack::LazyConditionalGet
+      # ```
+      ::Rack::ConditionalGet.new(super) 
+    end
 
     def initialize app, cache={}
       @app = app
