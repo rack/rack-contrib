@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'github-release', '~> 0.1'
   s.add_development_dependency 'i18n', '~> 0.4'
   s.add_development_dependency 'json', '~> 1.8'
-  s.add_development_dependency 'minitest', '~> 5.0'
+  s.add_development_dependency 'minitest', '~> 5.6'
   s.add_development_dependency 'minitest-hooks', '~> 1.0'
   s.add_development_dependency 'mail', '~> 2.3'
   s.add_development_dependency 'nbio-csshttprequest', '~> 1.0'
