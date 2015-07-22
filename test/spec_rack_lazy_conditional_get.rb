@@ -19,11 +19,11 @@ describe 'Rack::LazyConditionalGet' do
   def core_app_headers
     { 
       'Content-Type' => 'text/plain', 
-      'X-Lazy-Conditional-Get'=>x_lazy_conditional_get 
+      'Rack-Lazy-Conditional-Get'=>rack_lazy_conditional_get 
     } 
   end
 
-  def x_lazy_conditional_get; 'yes'; end
+  def rack_lazy_conditional_get; 'yes'; end
 
   def app
     Rack::LazyConditionalGet.new core_app ,cache_object
@@ -60,12 +60,12 @@ describe 'Rack::LazyConditionalGet' do
     request_with_stamp nil
   end
 
-  describe 'When the resource has X-Lazy-Conditional-Get' do
+  describe 'When the resource has Rack-Lazy-Conditional-Get' do
 
     it 'Should set right headers' do
       status, headers, body = request_without_stamp
       status.must_equal 200
-      headers['X-Lazy-Conditional-Get'].must_equal 'yes'
+      headers['Rack-Lazy-Conditional-Get'].must_equal 'yes'
       headers['Last-Modified'].must_equal global_last_modified
     end
 
@@ -78,7 +78,7 @@ describe 'Rack::LazyConditionalGet' do
       it 'Does not update Last-Modified with the global one' do
         status, headers, body = request_without_stamp
         status.must_equal 200
-        headers['X-Lazy-Conditional-Get'].must_equal 'yes'
+        headers['Rack-Lazy-Conditional-Get'].must_equal 'yes'
         headers['Last-Modified'].wont_equal global_last_modified
       end
 
@@ -110,7 +110,7 @@ describe 'Rack::LazyConditionalGet' do
     describe 'When the skip header is returned' do
       
       def core_app_headers
-        super.merge({'X-Lazy-Conditional-Get'=>'skip'})
+        super.merge({'Rack-Lazy-Conditional-Get'=>'skip'})
       end
 
       it 'Does not update the global_last_modified' do
@@ -118,7 +118,7 @@ describe 'Rack::LazyConditionalGet' do
         set_global_last_modified (Time.now-3600).httpdate
         stamp = global_last_modified
         status, headers, body = myapp.call(env({'REQUEST_METHOD'=>'POST'}))
-        headers['X-Lazy-Conditional-Get'].must_equal 'skip'
+        headers['Rack-Lazy-Conditional-Get'].must_equal 'skip'
         global_last_modified.must_equal stamp
       end
 
@@ -126,14 +126,14 @@ describe 'Rack::LazyConditionalGet' do
 
   end
 
-  describe 'When the ressource does not have X-Lazy-Conditional-Get' do
+  describe 'When the ressource does not have Rack-Lazy-Conditional-Get' do
 
-    def x_lazy_conditional_get; 'no'; end
+    def rack_lazy_conditional_get; 'no'; end
 
     it 'Should set right headers' do
       status, headers, body = request_without_stamp
       status.must_equal 200
-      headers['X-Lazy-Conditional-Get'].must_equal 'no'
+      headers['Rack-Lazy-Conditional-Get'].must_equal 'no'
       headers['Last-Modified'].must_be :nil?
     end
 

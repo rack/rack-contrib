@@ -30,7 +30,7 @@ module Rack
   # want to be cached. And it will be cached until the next "potential update" 
   # of your site.
   #
-  # The header is `X-Lazy-Conditional-Get`. You have to set it to either 'yes',
+  # The header is `Rack-Lazy-Conditional-Get`. You have to set it to either 'yes',
   # 'true' or '1' if you want the middleware to set `Last-Modified` for you.
   #
   # Bear in mind that if you set `Last-Modified` as well, the middleware will 
@@ -39,7 +39,7 @@ module Rack
   # Regarding the POST/PUT/DELETE... requests, they will always reset your 
   # `global_last_modified` date. But if you have one of these request and you 
   # know for sure that it does not modify the cached content, you can set the
-  # `X-Lazy-Conditional-Get` on response to `skip`. This will not update the
+  # `Rack-Lazy-Conditional-Get` on response to `skip`. This will not update the
   # `global_last_modified` date.
 
   class LazyConditionalGet
@@ -77,12 +77,12 @@ module Rack
     end
 
     def skipping? headers
-      headers['X-Lazy-Conditional-Get']=='skip'
+      headers['Rack-Lazy-Conditional-Get']=='skip'
     end
 
     def stampable? headers
       headers['Last-Modified'].to_s=='' and
-      TRUTHINESS.include?(headers['X-Lazy-Conditional-Get'])
+      TRUTHINESS.include?(headers['Rack-Lazy-Conditional-Get'])
     end
 
     def update_cache
