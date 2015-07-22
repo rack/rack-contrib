@@ -59,16 +59,16 @@ module Rack
       if reading? env and fresh? env
         return [200,{'Last-Modified'=>env['HTTP_IF_MODIFIED_SINCE']},[]]
       end
-      status,headers,body = @app.call env
+      status, headers, body = @app.call env
       update_cache unless (reading?(env) or skipping?(headers))
       headers['Last-Modified'] = cached_value if stampable? headers
-      [status,headers,body]
+      [status, headers, body]
     end
 
     private
 
     def fresh? env
-      env['HTTP_IF_MODIFIED_SINCE']==cached_value
+      env['HTTP_IF_MODIFIED_SINCE'] == cached_value
     end
 
     def reading? env
@@ -76,7 +76,7 @@ module Rack
     end
 
     def skipping? headers
-      headers['Rack-Lazy-Conditional-Get']=='skip'
+      headers['Rack-Lazy-Conditional-Get'] == 'skip'
     end
 
     def stampable? headers
