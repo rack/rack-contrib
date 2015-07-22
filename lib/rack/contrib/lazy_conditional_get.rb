@@ -2,7 +2,7 @@ module Rack
 
   ##
   # This middleware is like Rack::ConditionalGet except that it does
-  # not have to go down the rack stack and build the ressource to check
+  # not have to go down the rack stack and build the resource to check
   # the modification date or the ETag.
   #
   # Instead it makes the assumption that only non-reading requests can 
@@ -26,14 +26,14 @@ module Rack
   # ```
   #
   # By default, the middleware only delegates to Rack::ConditionalGet to avoid
-  # any unwanted behaviour. You have to set a header to any ressource which you 
+  # any unwanted behaviour. You have to set a header to any resource which you 
   # want to be cached. And it will be cached until the next "potential update" 
   # of your site.
   #
   # The header is `X-Lazy-Conditional-Get`. You have to set it to either 'yes',
   # 'true' or '1' if you want the middleware to set `Last-Modified` for you.
   #
-  # Bare in mind that if you set `Last-Modified` as well, the middleware will 
+  # Bear in mind that if you set `Last-Modified` as well, the middleware will 
   # not change it.
   #
   # Regarding the POST/PUT/DELETE... requests, they will always reset your 
