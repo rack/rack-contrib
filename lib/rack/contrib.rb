@@ -1,10 +1,9 @@
 require 'rack'
-require 'git-version-bump'
 
 module Rack
   module Contrib
     def self.release
-      GVB.version
+      Gem::Specification.find_by_name("rack-contrib").version.to_s
     end
   end
 
