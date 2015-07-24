@@ -3,6 +3,8 @@ require 'rack/mock'
 require 'rack/contrib/accept_format'
 require 'rack/mime'
 
+Rack::AcceptFormat.acknowledge_deprecation
+
 describe "Rack::AcceptFormat" do
   app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, env['PATH_INFO']] }
 
