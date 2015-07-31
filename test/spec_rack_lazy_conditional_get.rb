@@ -15,18 +15,18 @@ describe 'Rack::LazyConditionalGet' do
   end
 
   let(:core_app) {
-    lambda { |env| [200, response_headers, ['data']] }  
+    lambda { |env| [200, response_headers, ['data']] }
   }
 
   let(:response_headers) {
-    headers = { 
-      'Content-Type' => 'text/plain', 
-      'Rack-Lazy-Conditional-Get' => rack_lazy_conditional_get 
+    headers = {
+      'Content-Type' => 'text/plain',
+      'Rack-Lazy-Conditional-Get' => rack_lazy_conditional_get
     }
     if response_with_last_modified
       headers.merge!({'Last-Modified' => (Time.now-3600).httpdate})
     end
-    headers 
+    headers
   }
 
   let(:response_with_last_modified) { false }
@@ -103,7 +103,7 @@ describe 'Rack::LazyConditionalGet' do
     end
 
     describe 'When the skip header is returned' do
-      
+
       let(:rack_lazy_conditional_get) { 'skip' }
 
       it 'Does not update the global_last_modified' do
