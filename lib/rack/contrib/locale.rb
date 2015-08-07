@@ -34,7 +34,13 @@ module Rack
 
       lang = languages_and_qvalues.sort_by { |(locale, qvalue)|
         qvalue.to_f
-      }.last.first
+      }.reverse.detect { |(locale, qvalue)|
+        if I18n.enforce_available_locales
+          locale == '*' || I18n.available_locales.include?(locale.to_sym)
+        else
+          true
+        end
+      }.first
 
       lang == '*' ? nil : lang
     end
