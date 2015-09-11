@@ -10,7 +10,19 @@ describe "Rack::NotFound" do
       run Rack::NotFound.new('test/404.html')
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal('Not Found')
+    response.body.must_equal('Custom 404 page content')
+    response.headers['Content-Length'].must_equal('23')
+    response.status.must_equal(404)
+  end
+
+  specify "should render the default response body if no path specified" do
+    app = Rack::Builder.new do
+      use Rack::Lint
+      run Rack::NotFound.new
+    end
+    response = Rack::MockRequest.new(app).get('/')
+    response.body.must_equal("Not found\n")
+    response.headers['Content-Length'].must_equal('10')
     response.status.must_equal(404)
   end
 
