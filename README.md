@@ -6,6 +6,7 @@ interface:
 * `Rack::AcceptFormat` - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
 * `Rack::Access` - Limits access based on IP address
 * `Rack::Backstage` - Returns content of specified file if it exists, which makes it convenient for putting up maintenance pages.
+* `Rack::BounceFavicon` - Returns a 404 for requests to `/favicon.ico`
 * `Rack::CSSHTTPRequest` - Adds CSSHTTPRequest support by encoding responses as CSS for cross-site AJAX-style data loading
 * `Rack::Callbacks` - Implements DSL for pure before/after filter like Middlewares.
 * `Rack::Config` - Shared configuration for cooperative middleware.
