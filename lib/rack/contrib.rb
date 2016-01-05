@@ -3,7 +3,14 @@ require 'rack'
 module Rack
   module Contrib
     def self.release
-      Gem::Specification.find_by_name("rack-contrib").version.to_s
+      require "git-version-bump"
+      GVB.version
+    rescue LoadError
+      begin
+        Gem::Specification.find_by_name("rack-contrib").version.to_s
+      rescue Gem::LoadError
+        "0.0.0.1.ENOTAG"
+      end
     end
   end
 
