@@ -11,13 +11,14 @@ module Rack
 
       begin
         locale = (accept_locale(env) || I18n.default_locale).to_s
-        locale = env['rack.locale'] = I18n.locale = locale
+        if I18n.locale_available? locale
+          locale = env['rack.locale'] = I18n.locale = locale
+        else
+          locale = locale.gsub(/(?<=-).+/, /(?<=-).+/.match(locale).to_s.upcase)
+        end
         status, headers, body = @app.call(env)
         headers['Content-Language'] = locale unless headers['Content-Language']
         [status, headers, body]
-      rescue I18n::InvalidLocale
-        locale = locale.gsub(/(?<=-).+/, /(?<=-).+/.match(locale).to_s.upcase)
-        retry
       ensure
         I18n.locale = old_locale
       end

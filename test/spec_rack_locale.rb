@@ -33,6 +33,10 @@ begin
       response_with_languages('en,es;q=0.95').body.must_equal('en')
     end
 
+    specify 'should treat an empty qvalue as 1.0' do
+      response_with_languages('zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4').body.must_equal('zh-TW')
+    end
+
     specify 'should set the Content-Language response header' do
       headers = response_with_languages('de;q=0.7,dk;q=0.9').headers
       headers['Content-Language'].must_equal('dk')
