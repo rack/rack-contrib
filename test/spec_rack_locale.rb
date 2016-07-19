@@ -10,7 +10,7 @@ begin
 
     before(:all) do
       # Set the locales that will be used at various points in the tests
-      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh]
+      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh, :'zh-TW']
     end
 
     def app

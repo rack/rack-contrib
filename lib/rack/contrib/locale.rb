@@ -10,11 +10,14 @@ module Rack
       old_locale = I18n.locale
 
       begin
-        locale = accept_locale(env) || I18n.default_locale
-        locale = env['rack.locale'] = I18n.locale = locale.to_s
+        locale = (accept_locale(env) || I18n.default_locale).to_s
+        locale = env['rack.locale'] = I18n.locale = locale
         status, headers, body = @app.call(env)
         headers['Content-Language'] = locale unless headers['Content-Language']
         [status, headers, body]
+      rescue I18n::InvalidLocale
+        locale = locale.gsub(/(?<=-).+/, /(?<=-).+/.match(locale).to_s.upcase)
+        retry
       ensure
         I18n.locale = old_locale
       end
@@ -25,7 +28,6 @@ module Rack
     # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
     def accept_locale(env)
       accept_langs = env["HTTP_ACCEPT_LANGUAGE"]
-      accept_langs = accept_langs.gsub(/(?<=-).+/, /(?<=-).+/.match(accept_langs).to_s.upcase)
       return if accept_langs.nil?
 
       languages_and_qvalues = accept_langs.split(",").map { |l|
