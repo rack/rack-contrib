@@ -25,6 +25,7 @@ module Rack
     # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
     def accept_locale(env)
       accept_langs = env["HTTP_ACCEPT_LANGUAGE"]
+      accept_langs = accept_langs.gsub(/(?<=-).+/, /(?<=-).+/.match(accept_langs).to_s.upcase)
       return if accept_langs.nil?
 
       languages_and_qvalues = accept_langs.split(",").map { |l|
