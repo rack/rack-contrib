@@ -2,9 +2,11 @@ require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/sendfile'
 
-describe "Rack::File" do
-  specify "should respond to #to_path" do
-    Rack::File.new(Dir.pwd).must_respond_to :to_path
+if Rack.release < '2.0.0'
+  describe "Rack::File" do   
+    specify "should respond to #to_path" do    
+      Rack::File.new(Dir.pwd).must_respond_to :to_path   
+    end    
   end
 end
 

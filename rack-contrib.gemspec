@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   # REMINDER: If you modify any dependencies, please ensure you
   # update `test/gemfiles/minimum_versions`!
   #
-  s.add_runtime_dependency 'rack', '~> 1.4'
+  s.add_runtime_dependency 'rack', '>= 1.4'
   s.add_runtime_dependency 'git-version-bump', '~> 0.15'
 
   s.add_development_dependency 'bundler', '~> 1.0'

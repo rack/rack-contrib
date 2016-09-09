@@ -54,7 +54,9 @@ module Rack
         
         # Set new Content-Length, if it was set before we mutated the response body
         if headers['Content-Length']
-          length = response.to_ary.inject(0) { |len, part| len + bytesize(part) }
+          length = response.to_ary.inject(0) do |len, part|
+            len + ( Rack.release < '2.0.0' ? bytesize(part) : part.bytesize )
+          end
           headers['Content-Length'] = length.to_s
         end
       end
