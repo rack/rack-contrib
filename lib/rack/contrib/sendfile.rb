@@ -1,10 +1,6 @@
 require 'rack/file'
 
 module Rack
-  class File #:nodoc:
-    alias :to_path :path
-  end
-
   # = Sendfile
   #
   # The Sendfile middleware intercepts responses whose body is being
