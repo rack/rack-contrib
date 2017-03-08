@@ -1,5 +1,4 @@
 require 'rack'
-require 'git-version-bump'
 
 module Rack
   module Contrib
