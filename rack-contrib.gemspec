@@ -1,7 +1,6 @@
 begin
 	require 'git-version-bump'
 rescue LoadError
-	nil
 end
 
 Gem::Specification.new do |s|
@@ -35,8 +34,8 @@ Gem::Specification.new do |s|
   # update `test/gemfiles/minimum_versions`!
   #
   s.add_runtime_dependency 'rack', '~> 1.4'
-  s.add_runtime_dependency 'git-version-bump', '~> 0.15'
 
+  s.add_development_dependency 'git-version-bump', '~> 0.15'
   s.add_development_dependency 'bundler', '~> 1.0'
   s.add_development_dependency 'github-release', '~> 0.1'
   s.add_development_dependency 'i18n', '~> 0.4'

@@ -1,11 +1,7 @@
 require 'rack'
-require 'git-version-bump'
 
 module Rack
   module Contrib
-    def self.release
-      GVB.version
-    end
   end
 
   autoload :AcceptFormat,               "rack/contrib/accept_format"
