@@ -24,6 +24,14 @@ begin
       Rack::MockRequest.new(app).get('/', { 'HTTP_ACCEPT_LANGUAGE' => accept_languages } )
     end
 
+    def enforce_available_locales(enforce)
+      default_enforce = I18n.enforce_available_locales
+      I18n.enforce_available_locales = enforce
+      yield
+    ensure
+      I18n.enforce_available_locales = default_enforce
+    end
+
     specify 'should use I18n.default_locale if no languages are requested' do
       I18n.default_locale = :zh
       response_with_languages(nil).body.must_equal('zh')
@@ -47,13 +55,25 @@ begin
     end
 
     specify 'should treat a * as "all other languages"' do
-      response_with_languages('*,en;q=0.5').body.must_equal( I18n.default_locale.to_s )
+      response_with_languages('*,en;q=0.5').body.must_equal(I18n.default_locale.to_s)
     end
 
     specify 'should reset the I18n locale after the response' do
       I18n.locale = :es
       response_with_languages('en,de;q=0.8')
       I18n.locale.must_equal(:es)
+    end
+
+    specify 'should pick the available language' do
+      enforce_available_locales(true) do
+        response_with_languages('ch,en;q=0.9,es;q=0.95').body.must_equal('es')
+      end
+    end
+
+    specify 'when not enforce should pick the language with the highest qvalue' do
+      enforce_available_locales(false) do
+        response_with_languages('ch,en;q=0.9').body.must_equal('ch')
+      end
     end
   end
 rescue LoadError
