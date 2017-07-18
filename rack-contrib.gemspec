@@ -1,8 +1,4 @@
-begin
-	require 'git-version-bump'
-rescue LoadError
-	nil
-end
+require 'git-version-bump'
 
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
