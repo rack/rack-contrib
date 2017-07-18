@@ -5,7 +5,7 @@ begin
   require 'rack/contrib/profiler'
 
   describe 'Rack::Profiler' do
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
+    app = lambda { |env| Time.new; [200, {'Content-Type' => 'text/plain'}, 'Oh hai der'] }
     request = Rack::MockRequest.env_for("/", :params => "profile=process_time")
 
     specify 'printer defaults to RubyProf::CallStackPrinter' do
@@ -17,7 +17,7 @@ begin
     specify 'called multiple times via query params' do
       req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=4")
       body = Rack::Profiler.new(app).call(req)[2].string
-      body.must_match(/Proc#call \[4 calls, 4 total\]/)
+      body.must_match(/Time#initialize \[4 calls, 4 total\]/)
     end
 
     specify 'CallStackPrinter has Content-Type test/html' do
