@@ -13,18 +13,19 @@ module Rack
   class NotFound
     F = ::File
 
-    def initialize(path = '')
-      if path.empty?
+    def initialize(path = nil, content_type = 'text/html')
+      if path.nil?
         @content = "Not found\n"
       else
-        file = F.expand_path(path)
-        @content = F.read(file)
+        @content = F.read(path)
       end
       @length = @content.size.to_s
+
+      @content_type = content_type
     end
 
     def call(env)
-      [404, {'Content-Type' => 'text/html', 'Content-Length' => @length}, [@content]]
+      [404, {'Content-Type' => @content_type, 'Content-Length' => @length}, [@content]]
     end
   end
 end
