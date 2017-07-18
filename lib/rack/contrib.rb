@@ -9,7 +9,7 @@ module Rack
       begin
         Gem::Specification.find_by_name("rack-contrib").version.to_s
       rescue Gem::LoadError
-        "0.0.0.1.ENOTAG"
+        "0.0.0.1.ENOGEM"
       end
     end
   end
