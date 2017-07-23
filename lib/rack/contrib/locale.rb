@@ -30,17 +30,24 @@ module Rack
       languages_and_qvalues = accept_langs.split(",").map { |l|
         l += ';q=1.0' unless l =~ /;q=\d+(?:\.\d+)?$/
         l.split(';q=')
-      }
-
-      lang = languages_and_qvalues.sort_by { |(locale, qvalue)|
+      }.sort_by { |(locale, qvalue)|
         qvalue.to_f
-      }.reverse.detect { |(locale, qvalue)|
-        if I18n.enforce_available_locales
+      }.reverse
+
+      unless I18n.enforce_available_locales
+        return languages_and_qvalues.first.first
+      end
+
+      lang = (
+        languages_and_qvalues.detect { |(locale, qvalue)|
           locale == '*' || I18n.available_locales.include?(locale.to_sym)
-        else
-          true
-        end
-      }.first
+        } ||
+        languages_and_qvalues.collect { |(locale, qvalue)|
+          [ locale.split('-').first, qvalue ]
+        }.detect { |(locale, qvalue)|
+          I18n.available_locales.include?(locale.to_sym)
+        }
+      ).first
 
       lang == '*' ? nil : lang
     end
