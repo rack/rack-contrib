@@ -34,20 +34,18 @@ module Rack
         qvalue.to_f
       }.reverse
 
-      unless I18n.enforce_available_locales
-        return languages_and_qvalues.first.first
-      end
-
-      lang = (
-        languages_and_qvalues.detect { |(locale, qvalue)|
+      lang = if I18n.enforce_available_locales
+        (languages_and_qvalues.detect { |(locale, qvalue)|
           locale == '*' || I18n.available_locales.include?(locale.to_sym)
         } ||
         languages_and_qvalues.collect { |(locale, qvalue)|
           [ locale.split('-').first, qvalue ]
         }.detect { |(locale, qvalue)|
           I18n.available_locales.include?(locale.to_sym)
-        }
-      ).first
+        }).first
+      else
+        languages_and_qvalues.first.first
+      end
 
       lang == '*' ? nil : lang
     end
