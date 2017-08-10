@@ -34,7 +34,12 @@ module Rack
         env.update(FORM_HASH => JSON.parse(body, :create_additions => false), FORM_INPUT => env[POST_BODY])
       end
       @app.call(env)
+    rescue JSON::ParserError
+      bad_request('Bad Request (JSON::ParserError)')
     end
 
+    def bad_request(body = 'Bad Request')
+      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.size.to_s }, [body] ]
+    end
   end
 end

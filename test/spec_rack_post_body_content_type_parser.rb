@@ -33,6 +33,23 @@ begin
       result.must_be_empty
     end
 
+    describe "contradiction between body and type" do
+      def assert_bad_request(response, err_class)
+        response.wont_equal nil
+        status, headers, body = response
+        status.must_equal 400
+        body.must_equal ["Bad Request (#{err_class})"]
+      end
+
+      specify "should return bad request with invalid JSON" do
+        test_body = '"bar":"foo"}'
+        env = Rack::MockRequest.env_for "/", {:method => "POST", :input => test_body, "CONTENT_TYPE" => 'application/json'}
+        app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
+        response = Rack::PostBodyContentTypeParser.new(app).call(env)
+
+        assert_bad_request(response, JSON::ParserError)
+      end
+    end
   end
 
   def params_for_request(body, content_type)
