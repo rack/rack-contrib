@@ -34,11 +34,11 @@ begin
     end
 
     describe "contradiction between body and type" do
-      def assert_bad_request(response, err_class)
+      def assert_failed_to_parse_as_json(response, err_class)
         response.wont_equal nil
         status, headers, body = response
         status.must_equal 400
-        body.must_equal ["Bad Request (#{err_class})"]
+        body.must_equal ["failed to parse body as JSON"]
       end
 
       specify "should return bad request with invalid JSON" do
@@ -47,7 +47,7 @@ begin
         app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
         response = Rack::PostBodyContentTypeParser.new(app).call(env)
 
-        assert_bad_request(response, JSON::ParserError)
+        assert_failed_to_parse_as_json(response, JSON::ParserError)
       end
     end
   end

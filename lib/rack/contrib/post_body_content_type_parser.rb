@@ -35,7 +35,7 @@ module Rack
       end
       @app.call(env)
     rescue JSON::ParserError
-      bad_request('Bad Request (JSON::ParserError)')
+      bad_request('failed to parse body as JSON')
     end
 
     def bad_request(body = 'Bad Request')
