@@ -15,7 +15,7 @@ begin
       params = params_for_request '{"key":"value"}', "application/json; charset=utf-8"
       params['key'].must_equal "value"
     end
-    
+
     specify "should parse 'application/json' requests with empty body" do
       params = params_for_request "", "application/json"
       params.must_equal({})
@@ -34,7 +34,7 @@ begin
     end
 
     describe "contradiction between body and type" do
-      def assert_failed_to_parse_as_json(response, err_class)
+      def assert_failed_to_parse_as_json(response)
         response.wont_equal nil
         status, headers, body = response
         status.must_equal 400
@@ -47,7 +47,7 @@ begin
         app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
         response = Rack::PostBodyContentTypeParser.new(app).call(env)
 
-        assert_failed_to_parse_as_json(response, JSON::ParserError)
+        assert_failed_to_parse_as_json(response)
       end
     end
   end
@@ -57,7 +57,7 @@ begin
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
     Rack::PostBodyContentTypeParser.new(app).call(env).last
   end
-  
+
 rescue LoadError => e
   # Missing dependency JSON, skipping tests.
   STDERR.puts "WARN: Skipping Rack::PostBodyContentTypeParser tests (json not installed)"
