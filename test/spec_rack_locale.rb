@@ -75,6 +75,17 @@ begin
         response_with_languages('ch,en;q=0.9').body.must_equal('ch')
       end
     end
+
+    specify 'should pick the available language' do
+      enforce_available_locales(false) do
+        response_with_languages('en-us').body.must_equal('en-us')
+      end
+    end
+    specify 'should pick the available closest language' do
+      enforce_available_locales(true) do
+        response_with_languages('en-us').body.must_equal('en')
+      end
+    end
   end
 rescue LoadError
   STDERR.puts "WARN: Skipping Rack::Locale tests (i18n not installed)"
