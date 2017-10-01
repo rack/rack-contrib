@@ -7,8 +7,7 @@ module Rack
   class JSONP
     include Rack::Utils
 
-    VALID_JS_VAR    = /[a-zA-Z_$][\w$]*/
-    VALID_CALLBACK  = /\A#{VALID_JS_VAR}(?:\.?#{VALID_JS_VAR})*\z/
+    VALID_CALLBACK = /\A[a-zA-Z_$](?:\.?[\w$])*\z/
 
     # These hold the Unicode characters \u2028 and \u2029.
     #
