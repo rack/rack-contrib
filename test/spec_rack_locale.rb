@@ -37,11 +37,6 @@ begin
       response_with_languages(nil).body.must_equal('zh')
     end
 
-    specify 'should use I18n.default_locale if no languages are matched' do
-      I18n.default_locale = :zh
-      response_with_languages('ja').body.must_equal('zh')
-    end
-
     specify 'should treat an empty qvalue as 1.0' do
       response_with_languages('en,es;q=0.95').body.must_equal('en')
     end
@@ -72,6 +67,13 @@ begin
     specify 'should pick the available language' do
       enforce_available_locales(true) do
         response_with_languages('ch,en;q=0.9,es;q=0.95').body.must_equal('es')
+      end
+    end
+
+    specify 'should use default_locale if there is no matching language while enforcing available_locales' do
+      I18n.default_locale = :zh
+      enforce_available_locales(true) do
+        response_with_languages('ja').body.must_equal('zh')
       end
     end
 
