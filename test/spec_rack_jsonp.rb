@@ -13,7 +13,7 @@ describe "Rack::JSONP" do
       body = Rack::JSONP.new(app).call(request).last
       body.must_equal ["/**/#{callback}(#{test_body})"]
     end
-    
+
     specify "should not wrap the response body in a callback if body is not JSON" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
@@ -22,7 +22,7 @@ describe "Rack::JSONP" do
       body = Rack::JSONP.new(app).call(request).last
       body.must_equal ['{"bar":"foo"}']
     end
-    
+
     specify "should update content length if it was set" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
@@ -33,16 +33,16 @@ describe "Rack::JSONP" do
       expected_length = "/**/".length + test_body.length + callback.length + "()".length
       headers['Content-Length'].must_equal(expected_length.to_s)
     end
-    
+
     specify "should not touch content length if not set" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
       app = lambda { |env| [200, {'Content-Type' => 'application/json'}, [test_body]] }
       request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
       headers = Rack::JSONP.new(app).call(request)[1]
-      headers['Content-Length'].must_equal nil
+      headers['Content-Length'].must_be_nil
     end
-    
+
     specify "should modify the content type to application/javascript" do
       test_body = '{"bar":"foo"}'
       callback = 'foo'
@@ -68,7 +68,7 @@ describe "Rack::JSONP" do
         body.join.wont_match(/\342\200\250|\342\200\251/)
       end
     end
-    
+
     describe "but is empty" do
       specify "with assignment" do
         test_body = '{"bar":"foo"}'
@@ -87,7 +87,7 @@ describe "Rack::JSONP" do
         body.must_equal ['{"bar":"foo"}']
       end
     end
-    
+
     describe 'but is invalid' do
       describe 'with content-type application/json' do
         specify 'should return "Bad Request"' do
@@ -140,33 +140,33 @@ describe "Rack::JSONP" do
         request = Rack::MockRequest.env_for("/", :params => "foo=bar&callback=#{callback}")
         Rack::JSONP.new(app).call(request)
       end
-      
+
       def assert_bad_request(response)
-        response.wont_equal nil
+        response.wont_be_nil
         status, headers, body = response
         status.must_equal 400
         body.must_equal ["Bad Request"]
       end
-      
+
       specify "should return bad request for callback with invalid characters" do
         assert_bad_request(request("foo<bar>baz()$"))
       end
-      
+
       specify "should return bad request for callbacks with <script> tags" do
         assert_bad_request(request("foo<script>alert(1)</script>"))
       end
-      
+
       specify "should return bad requests for callbacks with multiple statements" do
         assert_bad_request(request("foo%3balert(1)//")) # would render: "foo;alert(1)//"
       end
-      
+
       specify "should not return a bad request for callbacks with dots in the callback" do
         status, headers, body = request(callback = "foo.bar.baz", test_body = '{"foo":"bar"}')
         status.must_equal 200
         body.must_equal ["/**/#{callback}(#{test_body})"]
       end
     end
-    
+
   end
 
   specify "should not change anything if no callback param is provided" do
@@ -184,14 +184,14 @@ describe "Rack::JSONP" do
     body = Rack::JSONP.new(app).call(request).last
     body.must_equal [test_body]
   end
-  
+
   specify "should not change anything if there is no Content-Type header" do
     test_body = '<html><body>404 Not Found</body></html>'
     app = lambda { |env| [404, {}, [test_body]] }
     request = Rack::MockRequest.env_for("/", :params => "callback=foo", 'HTTP_ACCEPT' => 'application/json')
     body = Rack::JSONP.new(app).call(request).last
     body.must_equal [test_body]
-  end  
+  end
 
   specify "should not change anything if the request doesn't have a body" do
     app1 = lambda { |env| [100, {}, []] }

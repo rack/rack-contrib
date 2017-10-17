@@ -41,7 +41,7 @@ module Rack
       end
 
       headers = HeaderHash.new(headers)
-      
+
       if is_json?(headers) && has_callback?(request)
         callback = request.params['callback']
         return bad_request unless valid_callback?(callback)
@@ -50,7 +50,7 @@ module Rack
 
         # No longer json, its javascript!
         headers['Content-Type'] = headers['Content-Type'].gsub('json', 'javascript')
-        
+
         # Set new Content-Length, if it was set before we mutated the response body
         if headers['Content-Length']
           length = response.to_ary.inject(0) { |len, part| len + bytesize(part) }
@@ -60,22 +60,22 @@ module Rack
 
       [status, headers, response]
     end
-    
+
     private
-    
+
     def is_json?(headers)
       headers.key?('Content-Type') && headers['Content-Type'].include?('application/json')
     end
-    
+
     def has_callback?(request)
       request.params.include?('callback') and not request.params['callback'].to_s.empty?
     end
 
     # See:
     # http://stackoverflow.com/questions/1661197/valid-characters-for-javascript-variable-names
-    # 
+    #
     # NOTE: Supports dots (.) since callbacks are often in objects:
-    # 
+    #
     def valid_callback?(callback)
       callback =~ VALID_CALLBACK
     end
@@ -98,7 +98,7 @@ module Rack
         # a string and should therefore not be present any other places.
         body << s.to_s.gsub(U2028, '\u2028').gsub(U2029, '\u2029')
       end
-      
+
       # https://github.com/rack/rack-contrib/issues/46
       response.close if response.respond_to?(:close)
 

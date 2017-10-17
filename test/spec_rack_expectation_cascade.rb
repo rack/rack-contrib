@@ -44,7 +44,7 @@ describe "Rack::ExpectationCascade" do
     end
     response = app.call({})
     response[0].must_equal 404
-    response[2][0].must_equal nil
+    response[2][0].must_be_nil
   end
 
   specify "returns a 417 if no apps where matched and a expectation header was set" do
@@ -53,7 +53,7 @@ describe "Rack::ExpectationCascade" do
     end
     response = app.call({"Expect" => "100-continue"})
     response[0].must_equal 417
-    response[2][0].must_equal nil
+    response[2][0].must_be_nil
   end
 
   specify "nests expectation cascades" do
