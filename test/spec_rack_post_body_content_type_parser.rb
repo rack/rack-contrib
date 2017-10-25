@@ -35,7 +35,7 @@ begin
 
     describe "contradiction between body and type" do
       def assert_failed_to_parse_as_json(response)
-        response.wont_equal nil
+        response.wont_be_nil
         status, headers, body = response
         status.must_equal 400
         body.must_equal ["failed to parse body as JSON"]

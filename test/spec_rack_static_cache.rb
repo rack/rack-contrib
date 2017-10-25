@@ -135,11 +135,11 @@ describe "Rack::StaticCache" do
     end
 
     it "should not set a max-age" do
-      get_request("/statics/test").headers['Cache-Control'].must_equal(nil)
+      get_request("/statics/test").headers['Cache-Control'].must_be_nil
     end
 
     it "should not set an Expires header" do
-      get_request("/statics/test").headers['Expires'].must_equal(nil)
+      get_request("/statics/test").headers['Expires'].must_be_nil
     end
   end
 end
