@@ -10,8 +10,12 @@ module Rack
       old_locale = I18n.locale
 
       begin
-        locale = accept_locale(env) || I18n.default_locale
-        locale = env['rack.locale'] = I18n.locale = locale.to_s
+        locale = (accept_locale(env) || I18n.default_locale).to_s
+        if I18n.locale_available? locale
+          locale = env['rack.locale'] = I18n.locale = locale
+        else
+          locale = locale.gsub(/(?<=-).+/, /(?<=-).+/.match(locale).to_s.upcase)
+        end
         status, headers, body = @app.call(env)
         headers['Content-Language'] = locale unless headers['Content-Language']
         [status, headers, body]

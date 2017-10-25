@@ -10,7 +10,7 @@ begin
 
     before(:all) do
       # Set the locales that will be used at various points in the tests
-      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh]
+      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh, :'zh-TW']
     end
 
     def app
@@ -39,6 +39,10 @@ begin
 
     specify 'should treat an empty qvalue as 1.0' do
       response_with_languages('en,es;q=0.95').body.must_equal('en')
+    end
+
+    specify 'should treat an empty qvalue as 1.0' do
+      response_with_languages('zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4').body.must_equal('zh-TW')
     end
 
     specify 'should set the Content-Language response header' do
