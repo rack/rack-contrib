@@ -70,6 +70,13 @@ begin
       end
     end
 
+    specify 'should use default_locale if there is no matching language while enforcing available_locales' do
+      I18n.default_locale = :zh
+      enforce_available_locales(true) do
+        response_with_languages('ja').body.must_equal('zh')
+      end
+    end
+
     specify 'when not enforce should pick the language with the highest qvalue' do
       enforce_available_locales(false) do
         response_with_languages('ch,en;q=0.9').body.must_equal('ch')

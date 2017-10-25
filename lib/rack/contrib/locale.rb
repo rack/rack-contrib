@@ -32,7 +32,7 @@ module Rack
         l.split(';q=')
       }
 
-      lang = languages_and_qvalues.sort_by { |(locale, qvalue)|
+      language_and_qvalue = languages_and_qvalues.sort_by { |(locale, qvalue)|
         qvalue.to_f
       }.reverse.detect { |(locale, qvalue)|
         if I18n.enforce_available_locales
@@ -40,8 +40,9 @@ module Rack
         else
           true
         end
-      }.first
+      }
 
+      lang = language_and_qvalue && language_and_qvalue.first
       lang == '*' ? nil : lang
     end
   end
