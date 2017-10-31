@@ -52,9 +52,6 @@ describe "Rack::Cookies" do
     response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => 'foo=bar;quux=h&m')
     response.body.must_equal('foo: , quux: h&m')
     response.headers['Set-Cookie'].must_match(/foo=(;|$)/)
-# This test is currently failing; I suspect it is due to a bug in a dependent
-# lib's cookie handling code, but I haven't had time to track it down yet
-#      -- @mpalmer, 2015-06-17
-#    response.headers['Set-Cookie'].must_match(/expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+    response.headers['Set-Cookie'].must_match(/expires=Thu, 01 Jan 1970 00:00:00 -0000/)
   end
 end
