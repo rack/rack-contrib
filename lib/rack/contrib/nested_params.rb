@@ -127,6 +127,12 @@ module Rack
           elsif top.is_a? Hash
             key = CGI.unescape(key)
             parent << (@top = {}) if top.key?(key) && parent.is_a?(Array)
+
+            if top.include?(key) && value.is_a?(String)
+              warn "Rack::NestedParams' parsing behavior will change in rack-contrib 2.0"
+              warn "Currently 'foo=1&foo=2' is parsed to {'foo' => '1'}, in 2.0 it will be parsed to {'foo' => '2'}"
+            end
+
             top[key] ||= value
             return top[key]
           else
