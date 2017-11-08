@@ -1,5 +1,7 @@
 require 'rack/file'
 
+warn "rack-contrib deprecation warning: the rack-contrib version of Rack::Sendfile is deprecated and will be removed in rack-contrib 2.0.  Please use the Rack::Sendfile from Rack 2.x instead."
+
 module Rack
 
   #
