@@ -1,11 +1,9 @@
 require 'rack/file'
 
-module Rack
-  class File #:nodoc:
-    alias :to_path :path
-  end
+warn "rack-contrib deprecation warning: the rack-contrib version of Rack::Sendfile is deprecated and will be removed in rack-contrib 2.0.  Please use the Rack::Sendfile from Rack 2.x instead."
 
-  # = Sendfile
+module Rack
+
   #
   # The Sendfile middleware intercepts responses whose body is being
   # served from a file and replaces it with a server specific X-Sendfile
@@ -94,8 +92,6 @@ module Rack
   #   XSendFile on
 
   class Sendfile
-    F = ::File
-
     def initialize(app, variation=nil)
       @app = app
       @variation = variation
@@ -106,7 +102,7 @@ module Rack
       if body.respond_to?(:to_path)
         case type = variation(env)
         when 'X-Accel-Redirect'
-          path = F.expand_path(body.to_path)
+          path = ::File.expand_path(body.to_path)
           if url = map_accel_path(env, path)
             headers[type] = url
             body = []
@@ -114,7 +110,7 @@ module Rack
             env['rack.errors'] << "X-Accel-Mapping header missing"
           end
         when 'X-Sendfile', 'X-Lighttpd-Send-File'
-          path = F.expand_path(body.to_path)
+          path = ::File.expand_path(body.to_path)
           headers[type] = path
           body = []
         when '', nil

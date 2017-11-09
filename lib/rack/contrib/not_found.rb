@@ -1,18 +1,31 @@
 module Rack
-  # Rack::NotFound is a default endpoint. Initialize with the path to
-  # your 404 page.
+  # Rack::NotFound is a default endpoint. Optionally initialize with the
+  # path to a custom 404 page, to override the standard response body.
+  #
+  # Examples:
+  #
+  # Serve default 404 response:
+  #   run Rack::NotFound.new
+  #
+  # Serve a custom 404 page:
+  #   run Rack::NotFound.new('path/to/your/404.html')
 
   class NotFound
     F = ::File
 
-    def initialize(path)
-      file = F.expand_path(path)
-      @content = F.read(file)
+    def initialize(path = nil, content_type = 'text/html')
+      if path.nil?
+        @content = "Not found\n"
+      else
+        @content = F.read(path)
+      end
       @length = @content.size.to_s
+
+      @content_type = content_type
     end
 
     def call(env)
-      [404, {'Content-Type' => 'text/html', 'Content-Length' => @length}, [@content]]
+      [404, {'Content-Type' => @content_type, 'Content-Length' => @length}, [@content]]
     end
   end
 end

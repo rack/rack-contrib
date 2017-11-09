@@ -7,6 +7,17 @@ module Rack
   # sends a useful email with the exception, stacktrace, and
   # contents of the environment.
 
+  # use smtp
+  #    use Rack::MailExceptions do |mail|
+  #      mail.to 'test@gmail.com'
+  #      mail.smtp :address => 'mail.test.com', :user_name => 'test@test.com', :password => 'test'
+  #    end
+  # use sendmail
+  #    use Rack::MailExceptions do |mail|
+  #      mail.to 'test@gmail.com'
+  #      mail.smtp false
+  #    end
+
   class MailExceptions
     attr_reader :config
 
@@ -17,7 +28,7 @@ module Rack
         :from    => ENV['USER'] || 'rack@localhost',
         :subject => '[exception] %s',
         :smtp    => {
-          :address         => 'localhost',
+          :address        => 'localhost',
           :domain         => 'localhost',
           :port           => 25,
           :authentication => :login,
@@ -26,6 +37,7 @@ module Rack
         }
       }
       @template = ERB.new(TEMPLATE)
+      @test_mode = false
       yield self if block_given?
     end
 
@@ -46,26 +58,45 @@ module Rack
     end
 
     def smtp(settings={})
-      @config[:smtp].merge! settings
+      if settings
+        @config[:smtp].merge! settings
+      else
+        @config[:smtp] = nil
+      end
+    end
+
+    def enable_test_mode
+      @test_mode = true
+    end
+
+    def disable_test_mode
+      @test_mode = false
     end
 
   private
     def generate_mail(exception, env)
-      mail = Mail.new({
-        :from => config[:from], 
+      Mail.new({
+        :from => config[:from],
         :to => config[:to],
-         :subject => config[:subject] % [exception.to_s],
-         :body => @template.result(binding)
+        :subject => config[:subject] % [exception.to_s],
+        :body => @template.result(binding),
+        :charset => "UTF-8"
       })
     end
 
     def send_notification(exception, env)
       mail = generate_mail(exception, env)
-      smtp = config[:smtp]
-      # for backward compability, replace the :server key with :address 
-      address = smtp.delete :server
-      smtp[:address] = address if address
-      mail.delivery_method :smtp, smtp
+      if @test_mode
+        mail.delivery_method :test
+      elsif config[:smtp]
+        smtp = config[:smtp]
+        # for backward compability, replace the :server key with :address
+        address = smtp.delete :server
+        smtp[:address] = address if address
+        mail.delivery_method :smtp, smtp
+      else
+        mail.delivery_method :sendmail
+      end
       mail.deliver!
       env['mail.sent'] = true
       mail
@@ -98,7 +129,12 @@ module Rack
 
       <%= env.to_a.
         sort{|a,b| a.first <=> b.first}.
-        map{ |k,v| "%-25s%p" % [k+':', v] }.
+        map do |k,v|
+          if k == 'HTTP_AUTHORIZATION' and v =~ /^Basic /
+            v = 'Basic *filtered*'
+         end
+          "%-25s%p" % [k+':', v]
+        end.
         join("\n  ") %>
 
     <% if exception.respond_to?(:backtrace) %>

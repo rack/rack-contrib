@@ -1,4 +1,4 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/mock'
 
 begin
@@ -14,9 +14,9 @@ begin
     return boom
   end
 
-  context 'Rack::MailExceptions' do
+  describe 'Rack::MailExceptions' do
 
-    setup do
+    before do
       @app = lambda { |env| raise TestError, 'Why, I say' }
       @env = Rack::MockRequest.env_for("/foo",
         'FOO' => 'BAR',
@@ -43,10 +43,10 @@ begin
           mail.subject '[ERROR] %s'
           mail.smtp @smtp_settings
         end
-      called.should.be == true
+      called.must_equal(true)
     end
 
-    specify 'generates a TMail object with configured settings' do
+    specify 'generates a Mail object with configured settings' do
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
           mail.to 'foo@example.org'
@@ -56,12 +56,28 @@ begin
         end
 
       mail = mailer.send(:generate_mail, test_exception, @env)
-      mail.to.should.equal ['foo@example.org']
-      mail.from.should.equal ['bar@example.org']
-      mail.subject.should.equal '[ERROR] Suffering Succotash!'
-      mail.body.should.not.be.nil
-      mail.body.should.be =~ /FOO:\s+"BAR"/
-      mail.body.should.be =~ /^\s*THE BODY\s*$/
+      mail.to.must_equal ['foo@example.org']
+      mail.from.must_equal ['bar@example.org']
+      mail.subject.must_equal '[ERROR] Suffering Succotash!'
+      mail.body.wont_equal(nil)
+      mail.body.to_s.must_match(/FOO:\s+"BAR"/)
+      mail.body.to_s.must_match(/^\s*THE BODY\s*$/)
+    end
+
+    specify 'filters HTTP_EXCEPTION body' do
+      mailer =
+        Rack::MailExceptions.new(@app) do |mail|
+          mail.to 'foo@example.org'
+          mail.from 'bar@example.org'
+          mail.subject '[ERROR] %s'
+          mail.smtp @smtp_settings
+        end
+
+      env = @env.dup
+      env['HTTP_AUTHORIZATION'] = 'Basic xyzzy12345'
+
+      mail = mailer.send(:generate_mail, test_exception, env)
+      mail.body.to_s.must_match /HTTP_AUTHORIZATION:\s+"Basic \*filtered\*"/
     end
 
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
@@ -72,96 +88,10 @@ begin
           mail.subject '[ERROR] %s'
           mail.smtp @smtp_settings
         end
-      lambda { mailer.call(@env) }.should.raise(TestError)
-      @env['mail.sent'].should.be == true
-    end
-
-    if TEST_SMTP && ! TEST_SMTP.empty?
-      specify 'sends mail' do
-        mailer =
-          Rack::MailExceptions.new(@app) do |mail|
-            mail.config.merge! TEST_SMTP
-          end
-        lambda { mailer.call(@env) }.should.raise(TestError)
-        @env['mail.sent'].should.be == true
-      end
-    else
-      STDERR.puts 'WARN: Skipping SMTP tests (edit test/mail_settings.rb to enable)'
-    end
-
-    context 'for tls enabled smtp' do
-      setup do
-        @smtp_settings.merge!(TEST_SMTP_TLS)
-        @mailer = 
-          Rack::MailExceptions.new(@app) do |mail|
-            mail.to TEST_SMTP_TLS.values_at(:user_name, :domain).join('@')
-            mail.from 'bar@example.org'
-            mail.subject '[ERROR] %s'
-            mail.smtp @smtp_settings.merge( :enable_starttls_auto => true)
-          end
-      end
-
-      describe 'with :enable_starttls_auto set to :auto' do
-        specify 'sends mail' do
-          @mailer.smtp.merge(:enable_starttls_auto => :auto)
-          lambda { @mailer.call(@env) }.should.raise(TestError)
-          @env['mail.sent'].should.be true
-        end
-      end
-
-      describe 'with :enable_starttls_auto set to true' do
-        specify 'sends mail' do
-          @mailer.smtp.merge(:enable_starttls_auto => true)
-          lambda { @mailer.call(@env) }.should.raise(TestError)
-          @env['mail.sent'].should.be true
-        end
-      end
-    end if defined?(TEST_SMTP_TLS)
-
-    describe 'for tls enabled fake smtp' do
-      class FakeSMTP
-        def initialize(*args); @@_tls = nil; end
-        def start(*args);  end
-        def enable_starttls_auto; @@_tls = :auto; end
-        def enable_starttls; @@_tls = true; end
-        def send_message(*args); end
-        def self.tls; @@_tls; end
-      end
-
-      setup do
-        Rack::MailExceptions.class_eval { def service; FakeSMTP; end}
-        @mailer = 
-          Rack::MailExceptions.new(@app) do |mail|
-            mail.to 'foo@example.org'
-            mail.from 'bar@example.org'
-            mail.subject '[ERROR] %s'
-            mail.smtp @smtp_settings.merge( :server => 'server.com')
-          end
-      end
-
-      context 'with :enable_starttls_auto unset' do
-        specify 'sends mail' do
-          @mailer.smtp[:enable_starttls_auto] = nil
-          lambda { @mailer.call(@env) }.should.raise(TestError)
-          FakeSMTP.tls.should.be nil
-        end
-      end
-
-      context 'with :enable_starttls_auto set to true' do
-        specify 'sends mail' do
-          @mailer.smtp[:enable_starttls_auto] = true
-          lambda { @mailer.call(@env) }.should.raise(TestError)
-          FakeSMTP.tls.should == true
-        end
-      end
-
-      context 'with :enable_starttls_auto set to :auto' do
-        specify 'sends mail' do
-          @mailer.smtp[:enable_starttls_auto] = :auto
-          lambda { @mailer.call(@env) }.should.raise(TestError)
-          FakeSMTP.tls.should == :auto
-        end
-      end
+      mailer.enable_test_mode
+      lambda { mailer.call(@env) }.must_raise(TestError)
+      @env['mail.sent'].must_equal(true)
+      Mail::TestMailer.deliveries.length.must_equal(1)
     end
   end
 rescue LoadError => boom

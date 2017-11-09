@@ -1,5 +1,14 @@
 module Rack
   #
+  # CAUTION: THIS MIDDLEWARE IS DEPRECATED.  DO NOT USE IT.
+  #
+  # This middleware is slated for removal as of rack-contrib 2.0.0, because
+  # it is terribad.  Applications should *always* use the `Accept` header to
+  # detect response formats (when it is available), rather than ignoring
+  # that and instead examining the extension of the request.  We recommend
+  # using the `rack-accept` gem for handling the `Accept` family of entity
+  # request headers.
+  #
   # A Rack middleware for automatically adding a <tt>format</tt> token at the end of the request path
   # when there is none. It can detect formats passed in the HTTP_ACCEPT header to populate this token.
   #
@@ -24,8 +33,19 @@ module Rack
   # MIT-License - Cyril Rohr
   #
   class AcceptFormat
+    def self.deprecation_acknowledged
+      @deprecation_acknowledged
+    end
+
+    def self.acknowledge_deprecation
+      @deprecation_acknowledged = true
+    end
 
     def initialize(app, default_extention = '.html')
+      unless self.class.deprecation_acknowledged
+        warn "Rack::AcceptFormat is DEPRECATED and will be removed in rack-contrib 2.0.0"
+        warn "Please see this middleware's documentation for more info."
+      end
       @ext = default_extention.to_s.strip
       @ext = ".#{@ext}" unless @ext[0] == ?.
       @app = app

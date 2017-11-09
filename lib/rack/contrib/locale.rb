@@ -13,7 +13,7 @@ module Rack
         locale = accept_locale(env) || I18n.default_locale
         locale = env['rack.locale'] = I18n.locale = locale.to_s
         status, headers, body = @app.call(env)
-        headers['Content-Language'] = locale
+        headers['Content-Language'] = locale unless headers['Content-Language']
         [status, headers, body]
       ensure
         I18n.locale = old_locale
@@ -32,10 +32,17 @@ module Rack
         l.split(';q=')
       }
 
-      lang = languages_and_qvalues.sort_by { |(locale, qvalue)|
+      language_and_qvalue = languages_and_qvalues.sort_by { |(locale, qvalue)|
         qvalue.to_f
-      }.last.first
+      }.reverse.detect { |(locale, qvalue)|
+        if I18n.enforce_available_locales
+          locale == '*' || I18n.available_locales.include?(locale.to_sym)
+        else
+          true
+        end
+      }
 
+      lang = language_and_qvalue && language_and_qvalue.first
       lang == '*' ? nil : lang
     end
   end

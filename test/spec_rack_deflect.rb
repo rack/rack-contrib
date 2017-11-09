@@ -1,10 +1,10 @@
-require 'test/spec'
+require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/deflect'
 
-context "Rack::Deflect" do
+describe "Rack::Deflect" do
 
-  setup do
+  before do
     @app = lambda { |env| [200, { 'Content-Type' => 'text/plain' }, ['cookies']] }
     @mock_addr_1 = '111.111.111.111'
     @mock_addr_2 = '222.222.222.222'
@@ -22,8 +22,8 @@ context "Rack::Deflect" do
   specify "should allow regular requests to follow through" do
     app = mock_deflect
     status, headers, body = app.call mock_env(@mock_addr_1)
-    status.should.equal 200
-    body.should.equal ['cookies']
+    status.must_equal 200
+    body.must_equal ['cookies']
   end
 
   specify "should deflect requests exceeding the request threshold" do
@@ -34,19 +34,19 @@ context "Rack::Deflect" do
     # First 5 should be fine
     5.times do
       status, headers, body = app.call env
-      status.should.equal 200
-      body.should.equal ['cookies']
+      status.must_equal 200
+      body.must_equal ['cookies']
     end
 
     # Remaining requests should fail for 10 seconds
     10.times do
       status, headers, body = app.call env
-      status.should.equal 403
-      body.should.equal []
+      status.must_equal 403
+      body.must_equal []
     end
 
     # Log should reflect that we have blocked an address
-    log.string.should.match(/^deflect\(\d+\/\d+\/\d+\): blocked 111.111.111.111\n/)
+    log.string.must_match(/^deflect\(\d+\/\d+\/\d+\): blocked 111.111.111.111\n/)
   end
 
   specify "should expire blocking" do
@@ -57,27 +57,27 @@ context "Rack::Deflect" do
     # First 5 should be fine
     5.times do
       status, headers, body = app.call env
-      status.should.equal 200
-      body.should.equal ['cookies']
+      status.must_equal 200
+      body.must_equal ['cookies']
     end
 
     # Exceeds request threshold
     status, headers, body = app.call env
-    status.should.equal 403
-    body.should.equal []
+    status.must_equal 403
+    body.must_equal []
 
-    # Allow block to expire
-    sleep 3
-
-    # Another 5 is fine now
-    5.times do
-      status, headers, body = app.call env
-      status.should.equal 200
-      body.should.equal ['cookies']
+    # Move to the future so the block will expire
+    Time.stub :now, Time.now + 3 do
+      # Another 5 is fine now
+      5.times do
+        status, headers, body = app.call env
+        status.must_equal 200
+        body.must_equal ['cookies']
+      end
     end
 
     # Log should reflect block and release
-    log.string.should.match(/deflect.*: blocked 111\.111\.111\.111\ndeflect.*: released 111\.111\.111\.111\n/)
+    log.string.must_match(/deflect.*: blocked 111\.111\.111\.111\ndeflect.*: released 111\.111\.111\.111\n/)
   end
 
   specify "should allow whitelisting of remote addresses" do
@@ -87,8 +87,8 @@ context "Rack::Deflect" do
     # Whitelisted addresses are always fine
     10.times do
       status, headers, body = app.call env
-      status.should.equal 200
-      body.should.equal ['cookies']
+      status.must_equal 200
+      body.must_equal ['cookies']
     end
   end
 
@@ -96,12 +96,12 @@ context "Rack::Deflect" do
     app = mock_deflect :blacklist => [@mock_addr_2]
 
     status, headers, body = app.call mock_env(@mock_addr_1)
-    status.should.equal 200
-    body.should.equal ['cookies']
+    status.must_equal 200
+    body.must_equal ['cookies']
 
     status, headers, body = app.call mock_env(@mock_addr_2)
-    status.should.equal 403
-    body.should.equal []
+    status.must_equal 403
+    body.must_equal []
   end
 
 end

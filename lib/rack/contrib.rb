@@ -3,7 +3,14 @@ require 'rack'
 module Rack
   module Contrib
     def self.release
-      "1.2.0"
+      require "git-version-bump"
+      GVB.version
+    rescue LoadError
+      begin
+        Gem::Specification.find_by_name("rack-contrib").version.to_s
+      rescue Gem::LoadError
+        "0.0.0.1.ENOGEM"
+      end
     end
   end
 
@@ -13,10 +20,12 @@ module Rack
   autoload :Cookies,                    "rack/contrib/cookies"
   autoload :CSSHTTPRequest,             "rack/contrib/csshttprequest"
   autoload :Deflect,                    "rack/contrib/deflect"
+  autoload :EnforceValidEncoding,       "rack/contrib/enforce_valid_encoding"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
   autoload :HostMeta,                   "rack/contrib/host_meta"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
+  autoload :LazyConditionalGet,         "rack/contrib/lazy_conditional_get"
   autoload :LighttpdScriptNameFix,      "rack/contrib/lighttpd_script_name_fix"
   autoload :Locale,                     "rack/contrib/locale"
   autoload :MailExceptions,             "rack/contrib/mailexceptions"

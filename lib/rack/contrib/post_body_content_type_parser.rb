@@ -32,10 +32,15 @@ module Rack
     def call(env)
       if Rack::Request.new(env).media_type == APPLICATION_JSON && (body = env[POST_BODY].read).length != 0
         env[POST_BODY].rewind # somebody might try to read this stream
-        env.update(FORM_HASH => @block.call(body), FORM_INPUT => env[POST_BODY])
+        env.update(FORM_HASH => JSON.parse(body, :create_additions => false), FORM_INPUT => env[POST_BODY])
       end
       @app.call(env)
+    rescue JSON::ParserError
+      bad_request('failed to parse body as JSON')
     end
 
+    def bad_request(body = 'Bad Request')
+      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.size.to_s }, [body] ]
+    end
   end
 end
