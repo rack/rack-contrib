@@ -37,8 +37,8 @@ begin
       params = params_for_request '{"key":"value"}', "application/json" do |body|
         { 'payload' => JSON.parse(body) }
       end
-      params['payload'].should_not be_nil
-      params['payload']['body'].should.equal "value"
+      params['payload'].wont_be_nil
+      params['payload']['key'].must_equal "value"
     end
 
     describe "contradiction between body and type" do
