@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'bundler', '~> 1.0'
   s.add_development_dependency 'git-version-bump', '~> 0.15'
   s.add_development_dependency 'github-release', '~> 0.1'
-  s.add_development_dependency 'i18n', '~> 0.5', '>= 0.5.2'
+  s.add_development_dependency 'i18n', '~> 0.6', '>= 0.6.8'
   # json versions earlier than 1.8.5 don't build on newer Ruby versions
   s.add_development_dependency 'json', '~> 1.8', '>= 1.8.5'
   # Later versions of mime-types depend on mime-types-data, which
