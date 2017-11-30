@@ -61,6 +61,13 @@ use Rack::MailExceptions
 run theapp
 ```
 
+#### Versioning
+
+This package is [semver compliant](https://semver.org); you should use a
+pessimistic version constraint (`~>`) against the relevant `2.x` version of
+this gem.
+
+
 ### Testing
 
 To contribute to the project, begin by cloning the repo and installing the necessary gems:
