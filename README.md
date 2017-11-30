@@ -1,3 +1,10 @@
+# NOTE WELL
+
+This branch is for `rack-contrib` 1.x, which is intended to support Rack 1.x. 
+It is not under active development, and only security fixes are being
+integrated into this branch.  Active development of `rack-contrib` is now
+targeting Rack 2.x.
+
 # Contributed Rack Middleware and Utilities
 
 This package includes a variety of add-on components for Rack, a Ruby web server
