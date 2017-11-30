@@ -67,6 +67,10 @@ This package is [semver compliant](https://semver.org); you should use a
 pessimistic version constraint (`~>`) against the relevant `2.x` version of
 this gem.
 
+This version of `rack-contrib` is only compatible with `rack` 2.x.  If you
+are using `rack` 1.x, you will need to use `rack-contrib` 1.x.  A suitable
+pessimistic version constraint (`~>`) is recommended.
+
 
 ### Testing
 
