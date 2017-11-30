@@ -42,17 +42,14 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'git-version-bump', '~> 0.15'
   s.add_development_dependency 'github-release', '~> 0.1'
   s.add_development_dependency 'i18n', '~> 0.6', '>= 0.6.8'
-  # json versions earlier than 1.8.5 don't build on newer Ruby versions
-  s.add_development_dependency 'json', '~> 1.8', '>= 1.8.5'
-  # Later versions of mime-types depend on mime-types-data, which
-  # requires Ruby 2.0
-  s.add_development_dependency 'mime-types', '< 3'
+  s.add_development_dependency 'json', '~> 2.0'
+  s.add_development_dependency 'mime-types', '~> 3.0'
   s.add_development_dependency 'minitest', '~> 5.6'
   s.add_development_dependency 'minitest-hooks', '~> 1.0'
-  s.add_development_dependency 'mail', '~> 2.3'
+  s.add_development_dependency 'mail', '~> 2.3', '>= 2.6.4'
   s.add_development_dependency 'nbio-csshttprequest', '~> 1.0'
   s.add_development_dependency 'rake', '~> 10.4', '>= 10.4.2'
-  s.add_development_dependency 'rdoc', '~> 3.12'
+  s.add_development_dependency 'rdoc', '~> 5.0'
   s.add_development_dependency 'ruby-prof', '~> 0.13.0'
 
   s.has_rdoc = true
