@@ -14,7 +14,6 @@ module Rack
     end
   end
 
-  autoload :AcceptFormat,               "rack/contrib/accept_format"
   autoload :Access,                     "rack/contrib/access"
   autoload :BounceFavicon,              "rack/contrib/bounce_favicon"
   autoload :Cookies,                    "rack/contrib/cookies"
@@ -34,7 +33,6 @@ module Rack
   autoload :Profiler,                   "rack/contrib/profiler"
   autoload :ResponseHeaders,            "rack/contrib/response_headers"
   autoload :Runtime,                    "rack/contrib/runtime"
-  autoload :Sendfile,                   "rack/contrib/sendfile"
   autoload :Signals,                    "rack/contrib/signals"
   autoload :SimpleEndpoint,             "rack/contrib/simple_endpoint"
   autoload :TimeZone,                   "rack/contrib/time_zone"

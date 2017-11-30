@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/nested_params'
-require 'rack/methodoverride'
+require 'rack/method_override'
 
 describe Rack::NestedParams do
 
@@ -37,10 +37,10 @@ describe Rack::NestedParams do
     req.put?.must_equal true
   end
 
-  specify "should make first boolean have precedence even after request already parsed" do
+  specify "should make last boolean have precedence even after request already parsed" do
     app = Rack::MethodOverride.new(middleware)
     req = app.call(form_post("foo=1&foo=0")).last
-    req.POST.must_equal({"foo" => '1'})
+    req.POST.must_equal({"foo" => "0"})
   end
 
 end
