@@ -104,8 +104,8 @@ guidelines in CONTRIBUTING.md.
 
 ### Links
 
-* rack-contrib on GitHub:: <http://github.com/rack/rack-contrib>
-* Rack:: <http://rack.rubyforge.org/>
-* Rack On GitHub:: <http://github.com/rack/rack>
-* rack-devel mailing list:: <http://groups.google.com/group/rack-devel>
-* [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/rack/rack-contrib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+* rack-contrib on GitHub:: <https://github.com/rack/rack-contrib>
+* Rack:: <https://rack.github.io/>
+* Rack On GitHub:: <https://github.com/rack/rack>
+* rack-devel mailing list:: <https://groups.google.com/group/rack-devel>
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/rack/rack-contrib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
