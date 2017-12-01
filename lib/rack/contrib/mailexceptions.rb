@@ -90,7 +90,7 @@ module Rack
         mail.delivery_method :test
       elsif config[:smtp]
         smtp = config[:smtp]
-        # for backward compability, replace the :server key with :address
+        # for backward compatibility, replace the :server key with :address
         address = smtp.delete :server
         smtp[:address] = address if address
         mail.delivery_method :smtp, smtp
