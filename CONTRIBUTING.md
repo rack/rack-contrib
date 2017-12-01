@@ -21,6 +21,11 @@ When reporting a bug, please provide:
 
 * A description of what you expect to see happen.
 
+Note that, in general, the core maintainers of `rack-contrib` are caretakers
+of the codebase, not the fixers-of-bugs.  If you wish to see a bug fixed,
+you will have a far better time if you submit a pull request (see below)
+rather than reporting a bug.
+
 
 # Submitting patches
 
@@ -38,10 +43,6 @@ have before they can be landed:
   middlewares aren't well documented, we know that, but we're trying to
   make sure things don't get any *worse* as new things get added.
 
-  If you're adding a new middleware, please be especially careful to
-  document any additional gems that are required in order for your
-  middleware to work.
-
 * Adhere to existing coding conventions.  The existing code isn't in a great
   place, but if you diverge from how things are done at the moment the patch
   won't get accepted as-is.
@@ -53,20 +54,17 @@ have before they can be landed:
 * Require no external dependencies.  Some existing middleware depends on
   additional gems in order to function; we feel that this is an
   anti-pattern, and so no patches will be accepted which add additional
-  external gems.  If your middleware or other change has a dependency on a
-  gem, please discuss it with us; we may accept it and split it out into a
-  separate gem.
+  external gems.
 
-We will not reject patches which do not meet these standards, however
-*someone* will have to do the work to bring the patch up to scratch before
-it can be landed.  The maintainers *might* do it, eventually, but it may not
-happen any time soon.
+We will not outright reject patches which do not meet these standards,
+however *someone* will have to do the work to bring the patch up to scratch
+before it can be landed.
 
 
 # Release frequency
 
 * Bugfix releases (incrementing `Z` in version `X.Y.Z`), which do not change
-  documented behaviour in any way, should be released as soon as the bugfix
+  documented behaviour in any way, may be released as soon as the bugfix
   is landed.
 
 * Minor releases (incrementing `Y` in version `X.Y.Z`), which change
