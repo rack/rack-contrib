@@ -56,7 +56,7 @@ describe Rack::ResponseCache do
     @cache.must_equal('/index.html'=>@def_value)
   end
 
-  specify "should not cache results if the request is not sucessful (status 200)" do
+  specify "should not cache results if the request is not successful (status 200)" do
     request{|env| [404, {'Content-Type' => 'text/html'}, ['']]}
     @cache.must_equal({})
     request{|env| [500, {'Content-Type' => 'text/html'}, ['']]}

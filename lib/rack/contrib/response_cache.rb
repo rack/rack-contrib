@@ -23,7 +23,7 @@ class Rack::ResponseCache
     end
   end
 
-  # Initialize a new ReponseCache object with the given arguments.  Arguments:
+  # Initialize a new ResponseCache object with the given arguments.  Arguments:
   # * app : The next middleware in the chain.  This is always called.
   # * cache : The place to cache responses.  If a string is provided, a disk
   #   cache is used, and all cached files will use this directory as the root directory.
@@ -42,7 +42,7 @@ class Rack::ResponseCache
   # Call the next middleware with the environment.  If the request was successful (response status 200),
   # was a GET request, and had an empty query string, call the block set up in initialize to get the path.
   # If the cache is a string, create any necessary middle directories, and cache the file in the appropriate
-  # subdirectory of cache.  Otherwise, cache the body of the reponse as the value with the path as the key.
+  # subdirectory of cache.  Otherwise, cache the body of the response as the value with the path as the key.
   def call(env)
     res = @app.call(env)
     if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and res[0] == 200 and path = @path_proc.call(env, res)
