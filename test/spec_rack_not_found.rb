@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/not_found'
+require 'tempfile'
 
 describe "Rack::NotFound" do
 
@@ -40,4 +41,18 @@ describe "Rack::NotFound" do
     response.status.must_equal(404)
   end
 
+  specify "should return correct size" do
+    Tempfile.open('test') do |f|
+      f.write '<!DOCTYPE html>'
+      f.write '<meta charset=utf-8>'
+      f.write '☃ snowman'
+      f.close
+      app = Rack::Builder.new do
+        use Rack::Lint
+        run Rack::NotFound.new(f.path)
+      end
+      response = Rack::MockRequest.new(app).get('/')
+      response.headers['Content-Length'].must_equal('46')
+    end
+  end
 end
