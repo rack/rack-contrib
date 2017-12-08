@@ -19,7 +19,7 @@ module Rack
       else
         @content = F.read(path)
       end
-      @length = @content.size.to_s
+      @length = @content.bytesize.to_s
 
       @content_type = content_type
     end
