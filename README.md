@@ -3,7 +3,6 @@
 This package includes a variety of add-on components for Rack, a Ruby web server
 interface:
 
-* `Rack::AcceptFormat` - Adds a format extension at the end of the URI when there is none, corresponding to the mime-type given in the Accept HTTP header.
 * `Rack::Access` - Limits access based on IP address
 * `Rack::Backstage` - Returns content of specified file if it exists, which makes it convenient for putting up maintenance pages.
 * `Rack::BounceFavicon` - Returns a 404 for requests to `/favicon.ico`
@@ -28,7 +27,6 @@ interface:
 * `Rack::RelativeRedirect` - Transforms relative paths in redirects to absolute URLs.
 * `Rack::ResponseCache` - Caches responses to requests without query strings to Disk or a user provider Ruby object. Similar to Rails' page caching.
 * `Rack::ResponseHeaders` - Manipulates response headers object at runtime
-* `Rack::Sendfile` - Enables `X-Sendfile` support for bodies that can be served from file.
 * `Rack::Signals` - Installs signal handlers that are safely processed after a request
 * `Rack::SimpleEndpoint` - Creates simple endpoints with routing rules, similar to Sinatra actions
 * `Rack::StaticCache` - Modifies the response headers to facilitiate client and proxy caching for static files that minimizes http requests and improves overall load times for second time visitors.
