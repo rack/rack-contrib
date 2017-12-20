@@ -25,7 +25,7 @@ interface:
 * `Rack::ProcTitle` - Displays request information in process title (`$0`) for monitoring/inspection with ps(1).
 * `Rack::Profiler` - Uses ruby-prof to measure request time.
 * `Rack::RelativeRedirect` - Transforms relative paths in redirects to absolute URLs.
-* `Rack::ResponseCache` - Caches responses to requests without query strings to Disk or a user provider Ruby object. Similar to Rails' page caching.
+* `Rack::ResponseCache` - Caches responses to requests without query strings to Disk or a user provided Ruby object. Similar to Rails' page caching.
 * `Rack::ResponseHeaders` - Manipulates response headers object at runtime
 * `Rack::Signals` - Installs signal handlers that are safely processed after a request
 * `Rack::SimpleEndpoint` - Creates simple endpoints with routing rules, similar to Sinatra actions
