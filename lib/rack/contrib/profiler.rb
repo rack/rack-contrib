@@ -4,7 +4,10 @@ module Rack
   # Set the profile=process_time query parameter to download a
   # calltree profile of the request.
   #
-  # Pass the :printer option to pick a different result format.
+  # Pass the :printer option to pick a different result format.  Note that
+  # some printers (such as CallTreePrinter) have broken the
+  # `AbstractPrinter` API, and thus will not work.  Bug reports to
+  # `ruby-prof`, please, not us.
   #
   # You can cause every request to be run multiple times by passing the
   # `:times` option to the `use Rack::Profiler` call.  You can also run a

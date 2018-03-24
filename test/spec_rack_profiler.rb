@@ -25,11 +25,6 @@ begin
       headers.must_equal "Content-Type"=>"text/html"
     end
 
-    specify 'CallTreePrinter has correct headers' do
-      headers = Rack::Profiler.new(app, :printer => :call_tree).call(request)[1]
-      headers.must_equal "Content-Disposition"=>"attachment; filename=\"/.process_time.tree\"", "Content-Type"=>"application/octet-stream"
-    end
-
     specify 'FlatPrinter and GraphPrinter has Content-Type text/plain' do
       %w(flat graph).each do |printer|
         headers = Rack::Profiler.new(app, :printer => printer.to_sym).call(request)[1]

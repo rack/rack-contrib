@@ -50,7 +50,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'nbio-csshttprequest', '~> 1.0'
   s.add_development_dependency 'rake', '~> 10.4', '>= 10.4.2'
   s.add_development_dependency 'rdoc', '~> 5.0'
-  s.add_development_dependency 'ruby-prof', '~> 0.13.0'
+  s.add_development_dependency 'ruby-prof', '~> 0.17'
 
   s.has_rdoc = true
   s.homepage = "http://github.com/rack/rack-contrib/"
