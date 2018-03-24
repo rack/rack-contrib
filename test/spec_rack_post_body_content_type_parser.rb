@@ -33,6 +33,14 @@ begin
       result.must_be_empty
     end
 
+    specify "should apply given block to body" do
+      params = params_for_request '{"key":"value"}', "application/json" do |body|
+        { 'payload' => JSON.parse(body) }
+      end
+      params['payload'].wont_be_nil
+      params['payload']['key'].must_equal "value"
+    end
+
     describe "contradiction between body and type" do
       def assert_failed_to_parse_as_json(response)
         response.wont_be_nil
@@ -52,10 +60,10 @@ begin
     end
   end
 
-  def params_for_request(body, content_type)
+  def params_for_request(body, content_type, &block)
     env = Rack::MockRequest.env_for "/", {:method => "POST", :input => body, "CONTENT_TYPE" => content_type}
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-    Rack::PostBodyContentTypeParser.new(app).call(env).last
+    Rack::PostBodyContentTypeParser.new(app, &block).call(env).last
   end
 
 rescue LoadError => e
