@@ -53,7 +53,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'ruby-prof', '~> 0.17'
 
   s.has_rdoc = true
-  s.homepage = "http://github.com/rack/rack-contrib/"
+  s.homepage = "https://github.com/rack/rack-contrib/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "rack-contrib", "--main", "README"]
   s.require_paths = %w[lib]
   s.rubygems_version = '1.1.1'
