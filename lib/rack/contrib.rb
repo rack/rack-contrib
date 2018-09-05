@@ -36,6 +36,7 @@ module Rack
   autoload :Signals,                    "rack/contrib/signals"
   autoload :SimpleEndpoint,             "rack/contrib/simple_endpoint"
   autoload :TimeZone,                   "rack/contrib/time_zone"
+  autoload :TransformKeys,              "rack/contrib/transform_keys"
   autoload :Evil,                       "rack/contrib/evil"
   autoload :Callbacks,                  "rack/contrib/callbacks"
   autoload :NestedParams,               "rack/contrib/nested_params"

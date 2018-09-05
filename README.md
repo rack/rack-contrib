@@ -32,6 +32,7 @@ interface:
 * `Rack::StaticCache` - Modifies the response headers to facilitiate client and proxy caching for static files that minimizes http requests and improves overall load times for second time visitors.
 * `Rack::TimeZone` - Detects the client's timezone using JavaScript and sets a variable in Rack's environment with the offset from UTC.
 * `Rack::TryStatic` - Tries to match request to a static file
+* `Rack::TransformKeys` - Transform param's hash key's upwards to snake case, downwards to camel case
 
 ### Use
 
@@ -76,7 +77,7 @@ To contribute to the project, begin by cloning the repo and installing the neces
 
     gem install json rack ruby-prof test-spec test-unit
 
-To run the entire test suite, run 
+To run the entire test suite, run
 
     rake test
 
@@ -84,7 +85,7 @@ To run a specific component's tests run
 
     specrb -Ilib:test -w test/spec_rack_thecomponent.rb
 
-This works on ruby 1.8.7 but has problems under ruby 1.9.x. 
+This works on ruby 1.8.7 but has problems under ruby 1.9.x.
 
 TODO: instructions for 1.9.x and include bundler
 
@@ -98,7 +99,7 @@ The criteria for middleware being included in this project are roughly as follow
 These criteria were introduced several years after the start of the project, so some of the included middleware may not meet all of them. In particular, several middleware have external dependencies. It is possible that in some future release of rack-contrib, middleware with external depencies will be removed from the project.
 
 When submitting code keep the above criteria in mind and also see the code
-guidelines in CONTRIBUTING.md. 
+guidelines in CONTRIBUTING.md.
 
 ### Links
 
