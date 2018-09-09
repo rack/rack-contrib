@@ -30,13 +30,12 @@ module Rack
     UNDERSCORE = '_'.freeze
 
     # to_camel_case RegEx's
-    UPPERCASE_FIRST_LETTER = /^(?:(?=a)b(?=\b|[A-Z_])|\w)/.freeze
+    UPPERCASE_FIRST_LETTER      = /^(?:(?=a)b(?=\b|[A-Z_])|\w)/.freeze
     UNDERSCORE_FOLLOWED_BY_WORD = /(?:_|(\/))([a-z\d]*)/i.freeze
 
     # to_snake_case RegEx's
-    MISTERY_REG_EX = /(?:(?<=([A-Za-z\d]))|\b)((?=a)b)(?=\b|[^a-z])/.freeze
     UPPERCASE_FOLLOWED_BY_LOWERCASE_LETTER = /([A-Z\d]+)([A-Z][a-z])/.freeze
-    LOWERCASE_FOLLOWED_UPPERCASE_LETTER = /([a-z\d])([A-Z])/.freeze
+    LOWERCASE_FOLLOWED_UPPERCASE_LETTER    = /([a-z\d])([A-Z])/.freeze
 
     def initialize(app)
       @app = app
@@ -45,8 +44,14 @@ module Rack
     def call(env)
       if content_type_json?(env)
         Rack::Request.new(env).params
-        env['rack.request.query_hash'] = transform_keys(env['rack.request.query_hash'])
-        env['rack.request.form_vars']  = transform_keys(env['rack.request.form_vars'])
+        if env['rack.request.query_hash'] && env['rack.request.query_hash'].size.positive?
+          env['rack.request.query_hash'] = transform_keys(env['rack.request.query_hash'])
+        elsif env['rack.request.form_hash'] && env['rack.request.form_hash'].size.positive?
+          env['rack.request.form_hash'] = transform_keys(env['rack.request.form_hash'])
+        elsif env['rack.input'] && env['rack.input'].size.positive?
+          transformed_keys  = transform_keys(parse_json(env['rack.input'].read)).to_json
+          env['rack.input'] = StringIO.new(transformed_keys)
+        end
       end
 
       status, header, body = @app.call(env)
@@ -54,19 +59,24 @@ module Rack
       if content_type_json?(header)
         new_body = []
         body.each do |b|
-          json_b = JSON.parse(b)
-          new_body.push(json_b[0] => json_b[1])
+          new_body.push(parse_json(b))
         end
         body = transform_keys(new_body, true).map(&:to_json)
       end
-
       Rack::Response.new(body, status, header)
     end
 
     private
 
+    def parse_json(obj)
+      JSON.parse(obj)
+    rescue JSON::ParserError => e
+      raise "JSON Parsing Error! Object seems to be invalid JSON.\n\t#{e}"
+    end
+
     def content_type_json?(obj)
-      obj['Content-Type'] && obj['Content-Type'] == 'application/json'
+      content_type = obj['Content-Type'] || obj['CONTENT_TYPE']
+      content_type && content_type.include?('application/json')
     end
 
     def to_camel_case(str0)
@@ -78,12 +88,9 @@ module Rack
     end
 
     def to_snake_case(str0)
-      str1 = str0.to_s.gsub(MISTERY_REG_EX) do
-        "#{Regexp.last_match(1) && UNDERSCORE}#{Regexp.last_match(2).downcase}"
-      end
-      str2 = str1.gsub(UPPERCASE_FOLLOWED_BY_LOWERCASE_LETTER, '\1_\2'.freeze)
-      str3 = str2.gsub(LOWERCASE_FOLLOWED_UPPERCASE_LETTER, '\1_\2'.freeze)
-      str3.downcase
+      str1 = str0.gsub(UPPERCASE_FOLLOWED_BY_LOWERCASE_LETTER, '\1_\2')
+      str2 = str1.gsub(LOWERCASE_FOLLOWED_UPPERCASE_LETTER, '\1_\2')
+      str2.downcase
     end
 
     def transform_keys(object, camelize = false)
