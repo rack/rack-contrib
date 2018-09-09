@@ -44,11 +44,11 @@ module Rack
     def call(env)
       if content_type_json?(env)
         Rack::Request.new(env).params
-        if env['rack.request.query_hash'] && env['rack.request.query_hash'].size.positive?
+        if env['rack.request.query_hash'] && env['rack.request.query_hash'].size > 0
           env['rack.request.query_hash'] = transform_keys(env['rack.request.query_hash'])
-        elsif env['rack.request.form_hash'] && env['rack.request.form_hash'].size.positive?
+        elsif env['rack.request.form_hash'] && env['rack.request.form_hash'].size > 0
           env['rack.request.form_hash'] = transform_keys(env['rack.request.form_hash'])
-        elsif env['rack.input'] && env['rack.input'].size.positive?
+        elsif env['rack.input'] && env['rack.input'].size > 0
           transformed_keys  = transform_keys(parse_json(env['rack.input'].read)).to_json
           env['rack.input'] = StringIO.new(transformed_keys)
         end
