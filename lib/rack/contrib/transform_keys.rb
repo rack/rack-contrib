@@ -44,12 +44,12 @@ module Rack
     def call(env)
       if content_type_json?(env)
         Rack::Request.new(env).params
-        if env['rack.request.query_hash'] && env['rack.request.query_hash'].size > 0
+        if env['rack.request.query_hash'] && !env['rack.request.query_hash'].empty?
           env['rack.request.query_hash'] = transform_keys(env['rack.request.query_hash'])
-        elsif env['rack.request.form_hash'] && env['rack.request.form_hash'].size > 0
+        elsif env['rack.request.form_hash'] && !env['rack.request.form_hash'].empty?
           env['rack.request.form_hash'] = transform_keys(env['rack.request.form_hash'])
-        elsif env['rack.input'] && env['rack.input'].size > 0
-          transformed_keys  = transform_keys(parse_json(env['rack.input'].read)).to_json
+        elsif env['rack.input'] && !(rack_input = env['rack.input'].read).empty?
+          transformed_keys  = transform_keys(parse_json(rack_input)).to_json
           env['rack.input'] = StringIO.new(transformed_keys)
         end
       end
@@ -76,7 +76,7 @@ module Rack
 
     def content_type_json?(obj)
       content_type = obj['Content-Type'] || obj['CONTENT_TYPE']
-      content_type && content_type.include?('application/json')
+      content_type && content_type == 'application/json'
     end
 
     def to_camel_case(str0)
