@@ -52,7 +52,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rdoc', '~> 5.0'
   s.add_development_dependency 'ruby-prof', '~> 0.17'
 
-  s.has_rdoc = true
   s.homepage = "https://github.com/rack/rack-contrib/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "rack-contrib", "--main", "README"]
   s.require_paths = %w[lib]
