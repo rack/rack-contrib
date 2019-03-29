@@ -40,7 +40,7 @@ module Rack
     end
 
     def bad_request(body = 'Bad Request')
-      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.size.to_s }, [body] ]
+      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.bytesize.to_s }, [body] ]
     end
   end
 end

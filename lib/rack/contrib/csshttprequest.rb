@@ -31,7 +31,7 @@ module Rack
     end
 
     def modify_headers!(headers, encoded_response)
-      headers['Content-Length'] = encoded_response.length.to_s
+      headers['Content-Length'] = encoded_response.bytesize.to_s
       headers['Content-Type'] = 'text/css'
       nil
     end
