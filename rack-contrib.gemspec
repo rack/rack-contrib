@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   #
   s.add_runtime_dependency 'rack', '~> 2.0'
 
-  s.add_development_dependency 'bundler', '~> 1.0'
+  s.add_development_dependency 'bundler', '>= 1.0', '< 3'
   s.add_development_dependency 'git-version-bump', '~> 0.15'
   s.add_development_dependency 'github-release', '~> 0.1'
   s.add_development_dependency 'i18n', '~> 0.6', '>= 0.6.8'
