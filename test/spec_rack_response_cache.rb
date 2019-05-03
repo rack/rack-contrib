@@ -33,6 +33,14 @@ describe Rack::ResponseCache do
     @cache.must_equal('/path/to/blah.html'=>@def_value, '/path/3.html'=>@def_value)
   end
 
+  specify "should run a case-insenstive lookup of the Content-Type header" do
+    body = ['ok']
+    request { |env| [200, {'content-type' => 'text/html'}, body]}
+    @cache.must_equal('/path/to/blah.html'=> body)
+    request { |env| [200, {'ConTENT-TyPe' => 'text/html'}, body]}
+    @cache.must_equal('/path/to/blah.html'=> body)
+  end
+
   specify "should not CACHE RESults if request method is not GET" do
     request(:meth=>:post)
     @cache.must_equal({})

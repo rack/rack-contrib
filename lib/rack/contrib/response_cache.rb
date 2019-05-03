@@ -3,9 +3,12 @@ require 'rack'
 
 # Rack::ResponseCache is a Rack middleware that caches responses for successful
 # GET requests with no query string to disk or any ruby object that has an
-# []= method (so it works with memcached).  When caching to disk, it works similar to
-# Rails' page caching, allowing you to cache dynamic pages to static files that can
-# be served directly by a front end webserver.
+# []= method (so it works with memcached). As with Rails' page caching, this
+# middleware only writes to the cache -- it never reads. The logic of whether a
+# cached response should be served is left either to your web server, via
+# something like the <tt>try_files</tt> directive in nginx, or to your
+# cache-reading middleware of choice, mounted before Rack::ResponseCache in the
+# stack.
 class Rack::ResponseCache
   # The default proc used if a block is not provided to .new
   # It unescapes the PATH_INFO of the environment, and makes sure that it doesn't
@@ -15,7 +18,14 @@ class Rack::ResponseCache
   # of the path to index.html.
   DEFAULT_PATH_PROC = proc do |env, res|
     path = Rack::Utils.unescape(env['PATH_INFO'])
-    if !path.include?('..') and match = /text\/((?:x|ht)ml|css)/o.match(res[1]['Content-Type'])
+    headers = res[1]
+    # Content-Type is almost always at headers['Content-Type'], but to fully
+    # comply with HTTP RFC 7230, we fall back to a case-insensitive lookup
+    content_type = headers.fetch('Content-Type') do |titlecase_key|
+      _, val = headers.find { |key, _| key.casecmp(titlecase_key) == 0 }
+      val
+    end
+    if !path.include?('..') and match = /text\/((?:x|ht)ml|css)/o.match(content_type)
       type = match[1]
       path = "#{path}.#{type}" unless /\.#{type}\z/.match(path)
       path = File.join(File.dirname(path), 'index.html') if type == 'html' and File.basename(path) == '.html'
