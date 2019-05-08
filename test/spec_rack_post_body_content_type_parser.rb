@@ -16,6 +16,11 @@ begin
       params['key'].must_equal "value"
     end
 
+    specify "should parse application/vnd.api+json requests" do
+      params = params_for_request '{"key":"value"}', "application/vnd.api+json"
+      params['key'].must_equal "value"
+    end
+
     specify "should parse 'application/json' requests with empty body" do
       params = params_for_request "", "application/json"
       params.must_equal({})
@@ -24,6 +29,11 @@ begin
     specify "shouldn't affect form-urlencoded requests" do
       params = params_for_request("key=value", "application/x-www-form-urlencoded")
       params['key'].must_equal "value"
+    end
+
+    specify "shouldn't parse or error when CONTENT_TYPE is nil" do
+      params = params_for_request('{"key":"value"}', nil)
+      assert_nil(params['key'])
     end
 
     specify "should not create additions" do
@@ -41,12 +51,31 @@ begin
       params['payload']['key'].must_equal "value"
     end
 
+    describe "should skip parsing for some HTTP verbs" do
+      body = '{"key":"value"}'
+
+      specify "should ignore GET|OPTIONS|HEAD|TRACE requests by default" do
+        %w[GET OPTIONS HEAD CONNECT TRACE].each do |verb|
+          params = params_for_request(body, 'application/json', verb)
+          assert_nil(params['key'])
+        end
+      end
+
+      specify "should allow overriding the HTTP verbs that get parsed" do
+        app = ->(env) { Rack::Request.new(env).POST }
+        parser = Rack::PostBodyContentTypeParser.new(app, verbs: %w[DELETE])
+        env = Rack::MockRequest.env_for '/', method: 'DELETE', input: body, 'CONTENT_TYPE' => 'application/json'
+        params = parser.call(env)
+        params['key'].must_equal 'value'
+      end
+    end
+
     describe "contradiction between body and type" do
       def assert_failed_to_parse_as_json(response)
         response.wont_be_nil
         status, headers, body = response
         status.must_equal 400
-        body.must_equal ["failed to parse body as JSON"]
+        body.each { |part| part.must_equal "failed to parse body as JSON" }
       end
 
       specify "should return bad request with invalid JSON" do
@@ -60,8 +89,8 @@ begin
     end
   end
 
-  def params_for_request(body, content_type, &block)
-    env = Rack::MockRequest.env_for "/", {:method => "POST", :input => body, "CONTENT_TYPE" => content_type}
+  def params_for_request(body, content_type, method = "POST", &block)
+    env = Rack::MockRequest.env_for "/", {:method => method, :input => body, "CONTENT_TYPE" => content_type}
     app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
     Rack::PostBodyContentTypeParser.new(app, &block).call(env).last
   end

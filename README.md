@@ -20,7 +20,7 @@ interface:
 * `Rack::MailExceptions` - Rescues exceptions raised from the app and sends a useful email with the exception, stacktrace, and contents of the environment.
 * `Rack::NestedParams` - parses form params with subscripts (e.g., * "`post[title]=Hello`") into a nested/recursive Hash structure (based on Rails' implementation).
 * `Rack::NotFound` - A default 404 application.
-* `Rack::PostBodyContentTypeParser` - Adds support for JSON request bodies. The Rack parameter hash is populated by deserializing the JSON data provided in the request body when the Content-Type is application/json.
+* `Rack::PostBodyContentTypeParser` - Adds support for JSON request bodies. The Rack parameter hash is populated by deserializing the JSON data provided in the request body when the Content-Type includes `json`.
 * `Rack::Printout` - Prints the environment and the response per request
 * `Rack::ProcTitle` - Displays request information in process title (`$0`) for monitoring/inspection with ps(1).
 * `Rack::Profiler` - Uses ruby-prof to measure request time.
