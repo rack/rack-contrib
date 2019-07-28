@@ -3,94 +3,81 @@
 require 'json'
 
 module Rack
-  # A Rack middleware for making JSON-encoded request bodies available in the
-  # request.params hash. By default it parses POST, PATCH, and PUT requests,
-  # but you can configure it to parse any request type via the :verbs option.
+  # A Rack middleware that makes JSON-encoded request bodies available in the
+  # request.params hash. By default it parses POST, PATCH, and PUT requests
+  # whose media type is <tt>application/json</tt>. You can configure it to match
+  # any verb or media type via the <tt>:verbs</tt> and <tt>:media</tt> options.
   #
-  # Examples:
-  #     # parse POST and GET requests only
-  #     use Rack::JSONBodyParser, verbs: %w[POST GET]
   #
-  #     # parse any request with 'json' in the Content-Type header
-  #     use Rack::JSONBodyParser, media_type_matcher: 'loose'
+  # == Examples:
+  #
+  # === Parse POST and GET requests only
+  #   use Rack::JSONBodyParser, verbs: ['POST', 'GET']
+  #
+  # === Parse POST|PATCH|PUT requests whose Content-Type matches 'json'
+  #   use Rack::JSONBodyParser, media: /json/
+  #
+  # === Parse POST requests whose Content-Type is 'application/json' or 'application/vnd+json'
+  #   use Rack::JSONBodyParser, verbs: ['POST'], media: ['application/json', 'application/vnd.api+json']
+  #
   class JSONBodyParser
-    DEFAULT_VERBS = %w[POST PATCH PUT].freeze
-    DEFAULT_JSON_PARSER = ->(body) { JSON.parse(body, create_additions: false) }
+    CONTENT_TYPE_MATCHERS = {
+      String => lambda { |option, header|
+        Rack::MediaType.type(header) == option
+      },
+      Array => lambda { |options, header|
+        media_type = Rack::MediaType.type(header)
+        options.any? { |opt| media_type == opt }
+      },
+      Regexp => lambda {
+        if //.respond_to?(:match?)
+          # Use Ruby's fast regex matcher when available
+          ->(option, header) { option.match? header }
+        else
+          # Fall back to the slower matcher for rubies older than 2.4
+          ->(option, header) { option.match header }
+        end
+      }.call(),
+    }.freeze
 
-    def initialize(app, config = {}, &json_parser)
+    DEFAULT_PARSER = ->(body) { JSON.parse(body, create_additions: false) }
+
+    def initialize(
+      app,
+      verbs: %w[POST PATCH PUT],
+      media: 'application/json',
+      &block
+    )
       @app = app
-      @verbs = config[:verbs] || DEFAULT_VERBS
-      @media_matcher = MediaTypeMatchers.find(config[:media_type_matcher])
-      @json_parser = json_parser || DEFAULT_JSON_PARSER
+      @verbs, @media = verbs, media
+      @matcher = CONTENT_TYPE_MATCHERS.fetch(@media.class)
+      @parser = block || DEFAULT_PARSER
     end
 
     def call(env)
-      if @verbs.include?(env[Rack::REQUEST_METHOD]) && @media_matcher.call(env)
+      if @verbs.include?(env[Rack::REQUEST_METHOD]) &&
+         @matcher.call(@media, env['CONTENT_TYPE'])
 
-        write_json_body_to(env)
+        update_form_hash_with_json_body(env)
       end
       @app.call(env)
     rescue JSON::ParserError
-      Rack::Response.new('failed to parse body as JSON', 400).finish
+      body = { error: 'Failed to parse body as JSON' }.to_json
+      header = { 'Content-Type' => 'application/json' }
+      Rack::Response.new(body, 400, header).finish
     end
 
     private
 
-    def write_json_body_to(env)
+    def update_form_hash_with_json_body(env)
       body = env[Rack::RACK_INPUT]
       return unless (body_content = body.read) && !body_content.empty?
 
       body.rewind # somebody might try to read this stream
       env.update(
-        Rack::RACK_REQUEST_FORM_HASH => @json_parser.call(body_content),
+        Rack::RACK_REQUEST_FORM_HASH => @parser.call(body_content),
         Rack::RACK_REQUEST_FORM_INPUT => body
       )
     end
-
-    # Strategies for deciding whether a request counts as JSON
-    module MediaTypeMatchers
-      def self.find(matcher)
-        # if the matcher is callable, call it
-        return matcher if matcher.respond_to?(:call)
-
-        MATCHERS.fetch(matcher.to_s.to_sym, MATCHERS[:strict])
-      end
-
-      # Match any Content-Type header that includes "json"
-      module Loose
-        # Backport Ruby 2.4's regexp matcher, so Ruby >= 2.4 runs at top speed
-        unless ''.respond_to?(:match?)
-          refine String do
-            def match?(regex)
-              self =~ regex
-            end
-          end
-        end
-
-        # env['CONTENT_TYPE'] can be nil, so nil must handle #match?
-        refine NilClass do
-          def match?(_)
-            false
-          end
-        end
-
-        using self
-
-        def self.call(env)
-          env['CONTENT_TYPE'].match?(/json/o)
-        end
-      end
-
-      # Match only "application/json", "application/json; charset=utf-8", etc
-      module Strict
-        def self.call(env)
-          Rack::MediaType.type(env['CONTENT_TYPE']) == 'application/json'
-        end
-      end
-
-      MATCHERS = { strict: Strict, loose: Loose }.freeze
-    end
-
-    private_constant :MediaTypeMatchers
   end
 end

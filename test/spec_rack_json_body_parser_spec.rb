@@ -3,112 +3,117 @@ require 'rack/mock'
 require 'rack/contrib/json_body_parser'
 
 describe Rack::JSONBodyParser do
+  APP = ->(env) { Rack::Request.new(env).params }
+
+  def mock_env(input: '{"key": "value"}', type: 'application/json')
+    Rack::MockRequest.env_for '/', input: input, 'REQUEST_METHOD' => 'POST',
+      'CONTENT_TYPE' => type
+  end
+
+  def create_parser(**args, &block)
+    Rack::JSONBodyParser.new(APP, **args, &block)
+  end
+
   def app
     ->(env) { Rack::Request.new(env).POST }
   end
 
-  def echo(body, type:, verb: 'POST', parser: Rack::JSONBodyParser.new(app))
-    env = Rack::MockRequest.env_for '/', method: verb, input: body, 'CONTENT_TYPE' => type
-    parser.call(env)
-  end
-
   specify "should parse 'application/json' requests" do
-    params = echo '{"key":"value"}', type: "application/json"
-    params['key'].must_equal "value"
+    res = create_parser.call(mock_env)
+    res['key'].must_equal "value"
   end
 
   specify "should parse 'application/json; charset=utf-8' requests" do
-    params = echo '{"key":"value"}', type: "application/json; charset=utf-8"
-    params['key'].must_equal "value"
+    env = mock_env(type: 'application/json; charset=utf-8')
+    res = create_parser.call(env)
+    res['key'].must_equal "value"
   end
 
-  specify "should parse 'application/json' requests with empty body" do
-    params = echo "", type: "application/json"
-    params.must_equal({})
+  specify "should parse 'application/json' requests with an empty body" do
+    res = create_parser.call(mock_env(input: ''))
+    res.must_equal({})
   end
 
   specify "shouldn't affect form-urlencoded requests" do
-    params = echo "key=value", type: "application/x-www-form-urlencoded"
-    params['key'].must_equal "value"
+    env = mock_env(input: 'key=value', type: 'application/x-www-form-urlencoded')
+    res = create_parser.call(env)
+    res['key'].must_equal "value"
+  end
+
+  specify "should not parse non-json media types" do
+    env = mock_env(type: 'text/plain')
+    res = create_parser.call(env)
+    res['key'].must_be_nil
   end
 
   specify "shouldn't parse or error when CONTENT_TYPE is nil" do
-    params = echo '{"key":"value"}', type: nil
-    assert_nil(params['key'])
+    env = mock_env(type: nil)
+    res = create_parser.call(env)
+    assert_nil(res['key'])
   end
 
   specify "should not create additions" do
     before = Symbol.all_symbols
-    echo %{{"json_class":"this_should_not_be_added"}}, type: "application/json"
+    env = mock_env(input: %{{"json_class":"this_should_not_be_added"}})
+    res = create_parser.call(env)
     result = Symbol.all_symbols - before
     result.must_be_empty
   end
 
-  specify "should apply given block to a JSON body" do
-    parser = Rack::JSONBodyParser.new(app) do |body|
-      { 'payload' => JSON.parse(body) }
-    end
-    params = echo '{"key":"value"}', type: "application/json", parser: parser
-    params['payload'].wont_be_nil
-    params['payload']['key'].must_equal "value"
-  end
-
-  describe "with a loose media_type_matcher" do
-    specify "should match any header containing 'json'" do
-      loose_parser = Rack::JSONBodyParser.new(app, media_type_matcher: :loose)
-      params = echo(
-        '{"key":"value"}',
-        type: "application/vnd.api+json",
-        parser: loose_parser
-      )
-      params['key'].must_equal "value"
-    end
-
-    specify "shouldn't parse or error when CONTENT_TYPE is nil" do
-      loose_parser = Rack::JSONBodyParser.new(app, media_type_matcher: :loose)
-      params = echo '{"key":"value"}', type: nil, parser: loose_parser
-      assert_nil(params['key'])
-    end
-  end
-
-  specify "should accept a custom media matcher callable" do
-    custom_parser = Rack::JSONBodyParser.new(
-      app,
-      media_type_matcher: ->(env) { env['CONTENT_TYPE'] == 'custom' }
-    )
-    params = echo '{"key":"value"}', type: 'custom', parser: custom_parser
-    params['key'].must_equal "value"
-  end
-
-  describe "should skip parsing for some HTTP verbs" do
-    body = '{"key":"value"}'
-
-    specify "should ignore GET|OPTIONS|HEAD|TRACE requests by default" do
-      %w[GET OPTIONS HEAD CONNECT TRACE].each do |verb|
-        params = echo body, type: 'application/json', verb: verb
-        assert_nil(params['key'])
-      end
-    end
-
-    specify "should allow overriding the HTTP verbs that get parsed" do
-      parser = Rack::JSONBodyParser.new(app, verbs: %w[DELETE])
-      params = echo body, type: 'application/json', verb: 'DELETE', parser: parser
-      params['key'].must_equal 'value'
-    end
-  end
-
   describe "contradiction between body and type" do
-    def assert_failed_to_parse_as_json(response)
-      response.wont_be_nil
-      status, headers, body = response
+    specify "should return bad request with a JSON-encoded error message" do
+      env = mock_env(input: 'This is not JSON')
+      status, headers, body = create_parser.call(env)
       status.must_equal 400
-      body.each { |part| part.must_equal "failed to parse body as JSON" }
+      headers['Content-Type'].must_equal 'application/json'
+      body.each { |part| JSON.parse(part)['error'].wont_be_nil }
+    end
+  end
+
+  describe "with configuration" do
+    specify "should use a given block to parse the JSON body" do
+      parser = create_parser do |body|
+        { 'payload' => JSON.parse(body) }
+      end
+      res = parser.call(mock_env)
+      res['payload'].wont_be_nil
+      res['payload']['key'].must_equal "value"
     end
 
-    specify "should return bad request with invalid JSON" do
-      test_body = '"bar":"foo"}'
-      response = echo test_body, type: 'application/json'
-      assert_failed_to_parse_as_json(response)
+    specify "should accept an array of HTTP verbs to parse" do
+      env = mock_env.merge('REQUEST_METHOD' => 'GET')
+      parser = create_parser(verbs: %w[GET])
+
+      res_via_get = parser.call(env)
+      res_via_post = parser.call(mock_env)
+
+      res_via_get['key'].must_equal 'value'
+      res_via_post['key'].must_be_nil
+    end
+
+    specify "should accept an Array of media-types to parse" do
+      parser = create_parser(media: ['application/json', 'text/plain'])
+      env = mock_env(type: 'text/plain')
+      res = parser.call(env)
+      res['key'].must_equal 'value'
+
+      html_env = mock_env(type: 'text/html')
+      html_res = parser.call(html_env)
+      html_res['key'].must_be_nil
+    end
+
+    specify "should accept a Regexp as a media-type matcher" do
+      parser = create_parser(media: /json/)
+      env = mock_env(type: 'weird/json.odd')
+      res = parser.call(env)
+      res['key'].must_equal 'value'
+    end
+
+    specify "should accept a String as a media-type matcher" do
+      parser = create_parser(media: 'application/vnd.api+json')
+      env = mock_env(type: 'application/vnd.api+json')
+      res = parser.call(env)
+      res['key'].must_equal 'value'
     end
   end
 end

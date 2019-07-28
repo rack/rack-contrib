@@ -13,6 +13,7 @@ interface:
 * `Rack::Deflect` - Helps protect against DoS attacks.
 * `Rack::Evil` - Lets the rack application return a response to the client from any place.
 * `Rack::HostMeta` - Configures `/host-meta` using a block
+* `Rack::JSONBodyParser` - Adds JSON request bodies to the Rack parameters hash.
 * `Rack::JSONP` - Adds JSON-P support by stripping out the callback param and padding the response with the appropriate callback format.
 * `Rack::LazyConditionalGet` - Caches a global `Last-Modified` date and updates it each time there is a request that is not `GET` or `HEAD`.
 * `Rack::LighttpdScriptNameFix` - Fixes how lighttpd sets the `SCRIPT_NAME` and `PATH_INFO` variables in certain configurations.
@@ -20,7 +21,7 @@ interface:
 * `Rack::MailExceptions` - Rescues exceptions raised from the app and sends a useful email with the exception, stacktrace, and contents of the environment.
 * `Rack::NestedParams` - parses form params with subscripts (e.g., * "`post[title]=Hello`") into a nested/recursive Hash structure (based on Rails' implementation).
 * `Rack::NotFound` - A default 404 application.
-* `Rack::PostBodyContentTypeParser` - Adds support for JSON request bodies. The Rack parameter hash is populated by deserializing the JSON data provided in the request body when the Content-Type includes `json`.
+* `Rack::PostBodyContentTypeParser` - [Deprecated]: Adds support for JSON request bodies. The Rack parameter hash is populated by deserializing the JSON data provided in the request body when the Content-Type is application/json
 * `Rack::Printout` - Prints the environment and the response per request
 * `Rack::ProcTitle` - Displays request information in process title (`$0`) for monitoring/inspection with ps(1).
 * `Rack::Profiler` - Uses ruby-prof to measure request time.
