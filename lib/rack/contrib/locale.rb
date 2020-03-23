@@ -22,12 +22,28 @@ module Rack
 
     private
 
-    # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+    # Accept-Language header is covered mainly by RFC 7231
+    # https://tools.ietf.org/html/rfc7231
+    #
+    # Related sections:
+    # * https://tools.ietf.org/html/rfc7231#section-5.3.1
+    # * https://tools.ietf.org/html/rfc7231#section-5.3.5
+    #
+    # There is an obsolete RFC 2616 (https://tools.ietf.org/html/rfc2616)
+    #
+    # Edge cases:
+    #
+    # * Value can be a comma separated list with optional whitespaces:
+    #   Accept-Language: da, en-gb;q=0.8, en;q=0.7
+    #
+    # * Quality value can contain optional whitespaces as well:
+    #   Accept-Language: ru-UA, ru; q=0.8, uk; q=0.6, en-US; q=0.4, en; q=0.2
+    #
     def accept_locale(env)
       accept_langs = env["HTTP_ACCEPT_LANGUAGE"]
       return if accept_langs.nil?
 
-      languages_and_qvalues = accept_langs.split(",").map { |l|
+      languages_and_qvalues = accept_langs.gsub(/\s+/, '').split(",").map { |l|
         l += ';q=1.0' unless l =~ /;q=\d+(?:\.\d+)?$/
         l.split(';q=')
       }

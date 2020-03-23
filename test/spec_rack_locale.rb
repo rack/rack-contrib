@@ -50,6 +50,14 @@ begin
       _(response_with_languages('en;q=0.9,es;q=0.95').body).must_equal('es')
     end
 
+    specify 'should ignore spaces between comma separated field values' do
+      _(response_with_languages('en;q=0.9, es;q=0.95').body).must_equal('es')
+    end
+
+    specify 'should ignore spaces within quality value' do
+      _(response_with_languages('en; q=0.9,es; q=0.95').body).must_equal('es')
+    end
+
     specify 'should retain full language codes' do
       _(response_with_languages('en-gb,en-us;q=0.95;en').body).must_equal('en-gb')
     end
