@@ -50,6 +50,8 @@ module Rack
 
       language_and_qvalue = languages_and_qvalues.sort_by { |(locale, qvalue)|
         qvalue.to_f
+      }.reject { |(_, qvalue)|
+        qvalue.to_f == 0
       }.reverse.detect { |(locale, qvalue)|
         if I18n.enforce_available_locales
           locale == '*' || I18n.available_locales.include?(locale.to_sym)

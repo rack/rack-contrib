@@ -8,9 +8,10 @@ begin
   describe "Rack::Locale" do
     include Minitest::Hooks
 
-    before(:all) do
+    before do
       # Set the locales that will be used at various points in the tests
-      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh]
+      I18n.config.available_locales = [:en, :dk, :'en-gb', :es, :zh]
+      I18n.default_locale = :en
     end
 
     def app
@@ -64,6 +65,10 @@ begin
 
     specify 'should treat a * as "all other languages"' do
       _(response_with_languages('*,en;q=0.5').body).must_equal(I18n.default_locale.to_s)
+    end
+
+    specify 'should ignore languages with q=0' do
+      _(response_with_languages('dk;q=0').body).must_equal(I18n.default_locale.to_s)
     end
 
     specify 'should reset the I18n locale after the response' do
