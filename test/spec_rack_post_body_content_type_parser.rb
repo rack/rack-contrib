@@ -8,45 +8,45 @@ begin
 
     specify "should parse 'application/json' requests" do
       params = params_for_request '{"key":"value"}', "application/json"
-      params['key'].must_equal "value"
+      _(params['key']).must_equal "value"
     end
 
     specify "should parse 'application/json; charset=utf-8' requests" do
       params = params_for_request '{"key":"value"}', "application/json; charset=utf-8"
-      params['key'].must_equal "value"
+      _(params['key']).must_equal "value"
     end
 
     specify "should parse 'application/json' requests with empty body" do
       params = params_for_request "", "application/json"
-      params.must_equal({})
+      _(params).must_equal({})
     end
 
     specify "shouldn't affect form-urlencoded requests" do
       params = params_for_request("key=value", "application/x-www-form-urlencoded")
-      params['key'].must_equal "value"
+      _(params['key']).must_equal "value"
     end
 
     specify "should not create additions" do
       before = Symbol.all_symbols
       params_for_request %{{"json_class":"this_should_not_be_added"}}, "application/json" rescue nil
       result = Symbol.all_symbols - before
-      result.must_be_empty
+      _(result).must_be_empty
     end
 
     specify "should apply given block to body" do
       params = params_for_request '{"key":"value"}', "application/json" do |body|
         { 'payload' => JSON.parse(body) }
       end
-      params['payload'].wont_be_nil
-      params['payload']['key'].must_equal "value"
+      _(params['payload']).wont_be_nil
+      _(params['payload']['key']).must_equal "value"
     end
 
     describe "contradiction between body and type" do
       def assert_failed_to_parse_as_json(response)
-        response.wont_be_nil
+        _(response).wont_be_nil
         status, headers, body = response
-        status.must_equal 400
-        body.must_equal ["failed to parse body as JSON"]
+        _(status).must_equal 400
+        _(body).must_equal ["failed to parse body as JSON"]
       end
 
       specify "should return bad request with invalid JSON" do

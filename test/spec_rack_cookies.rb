@@ -12,7 +12,7 @@ describe "Rack::Cookies" do
     app = Rack::Cookies.new(app)
 
     response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => 'foo=bar;quux=h&m')
-    response.body.must_equal('foo: bar, quux: h&m')
+    _(response.body).must_equal('foo: bar, quux: h&m')
   end
 
   specify "should be able to set new cookies" do
@@ -25,7 +25,7 @@ describe "Rack::Cookies" do
     app = Rack::Cookies.new(app)
 
     response = Rack::MockRequest.new(app).get('/')
-    response.headers['Set-Cookie'].split("\n").sort.must_equal(["foo=bar; path=/","quux=h%26m; path=/"])
+    _(response.headers['Set-Cookie'].split("\n").sort).must_equal(["foo=bar; path=/","quux=h%26m; path=/"])
   end
 
   specify "should be able to set cookie with options" do
@@ -37,7 +37,7 @@ describe "Rack::Cookies" do
     app = Rack::Cookies.new(app)
 
     response = Rack::MockRequest.new(app).get('/')
-    response.headers['Set-Cookie'].must_equal('foo=bar; path=/login; secure')
+    _(response.headers['Set-Cookie']).must_equal('foo=bar; path=/login; secure')
   end
 
   specify "should be able to delete received cookies" do
@@ -50,8 +50,8 @@ describe "Rack::Cookies" do
     app = Rack::Cookies.new(app)
 
     response = Rack::MockRequest.new(app).get('/', 'HTTP_COOKIE' => 'foo=bar;quux=h&m')
-    response.body.must_equal('foo: , quux: h&m')
-    response.headers['Set-Cookie'].must_match(/foo=(;|$)/)
+    _(response.body).must_equal('foo: , quux: h&m')
+    _(response.headers['Set-Cookie']).must_match(/foo=(;|$)/)
 # This test is currently failing; I suspect it is due to a bug in a dependent
 # lib's cookie handling code, but I haven't had time to track it down yet
 #      -- @mpalmer, 2015-06-17

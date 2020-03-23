@@ -10,7 +10,7 @@ describe "Rack::LighttpdScriptNameFix" do
     }
     app = lambda { |_| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
     response = Rack::LighttpdScriptNameFix.new(app).call(env)
-    env['SCRIPT_NAME'].empty?.must_equal(true)
-    env['PATH_INFO'].must_equal '/hello/foo/bar/baz'
+    _(env['SCRIPT_NAME'].empty?).must_equal(true)
+    _(env['PATH_INFO']).must_equal '/hello/foo/bar/baz'
   end
 end

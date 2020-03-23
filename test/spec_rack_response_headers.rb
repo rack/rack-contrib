@@ -9,7 +9,7 @@ describe "Rack::ResponseHeaders" do
     app = Proc.new {[200, orig_headers, []]}
     middleware = Rack::ResponseHeaders.new(app) do |headers|
       assert_instance_of Rack::Utils::HeaderHash, headers
-      orig_headers.must_equal headers
+      _(orig_headers).must_equal headers
     end
     middleware.call({})
   end
@@ -20,7 +20,7 @@ describe "Rack::ResponseHeaders" do
       headers['X-Bar'] = 'bar'
     end
     r = middleware.call({})
-    r[1].must_equal('X-Foo' => 'foo', 'X-Bar' => 'bar')
+    _(r[1]).must_equal('X-Foo' => 'foo', 'X-Bar' => 'bar')
   end
 
   specify "allows deleting headers" do
@@ -29,7 +29,7 @@ describe "Rack::ResponseHeaders" do
       headers.delete('X-Bar')
     end
     r = middleware.call({})
-    r[1].must_equal('X-Foo' => 'foo')
+    _(r[1]).must_equal('X-Foo' => 'foo')
   end
 
 end

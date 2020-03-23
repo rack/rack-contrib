@@ -23,24 +23,24 @@ describe "Rack::TryStatic" do
   describe 'when file cannot be found' do
     it 'should call call app' do
       res = request(build_options(:try => ['html'])).get('/statics')
-      res.ok?.must_equal(true)
-      res.body.must_equal "Hello World"
+      _(res.ok?).must_equal(true)
+      _(res.body).must_equal "Hello World"
     end
   end
 
   describe 'when file can be found' do
     it 'should serve first found' do
       res = request(build_options(:try => ['.html', '/index.html', '/index.htm'])).get('/statics')
-      res.ok?.must_equal(true)
-      res.body.strip.must_equal "index.html"
+      _(res.ok?).must_equal(true)
+      _(res.body.strip).must_equal "index.html"
     end
   end
 
   describe 'when path_info maps directly to file' do
     it 'should serve existing' do
       res = request(build_options(:try => ['/index.html'])).get('/statics/existing.html')
-      res.ok?.must_equal(true)
-      res.body.strip.must_equal "existing.html"
+      _(res.ok?).must_equal(true)
+      _(res.body.strip).must_equal "existing.html"
     end
   end
 
@@ -48,9 +48,9 @@ describe "Rack::TryStatic" do
     it 'should not mutate given options' do
       org_options = build_options  :try => ['/index.html']
       given_options = org_options.dup
-      request(given_options).get('/statics').ok?.must_equal(true)
-      request(given_options).get('/statics').ok?.must_equal(true)
-      given_options.must_equal org_options
+      _(request(given_options).get('/statics').ok?).must_equal(true)
+      _(request(given_options).get('/statics').ok?).must_equal(true)
+      _(given_options).must_equal org_options
     end
   end
 end

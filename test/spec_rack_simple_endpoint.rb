@@ -10,50 +10,50 @@ describe "Rack::SimpleEndpoint" do
   specify "calls downstream app when no match" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/baz'))
-    status.must_equal 200
-    body.body.must_equal ['Downstream app']
+    _(status).must_equal 200
+    _(body.body).must_equal ['Downstream app']
   end
 
   specify "calls downstream app when path matches but method does not" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo' => :get) { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo', :method => 'post'))
-    status.must_equal 200
-    body.body.must_equal ['Downstream app']
+    _(status).must_equal 200
+    _(body.body).must_equal ['Downstream app']
   end
 
   specify "calls downstream app when path matches but block returns :pass" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') { :pass }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo'))
-    status.must_equal 200
-    body.body.must_equal ['Downstream app']
+    _(status).must_equal 200
+    _(body.body).must_equal ['Downstream app']
   end
 
   specify "returns endpoint response when path matches" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo'))
-    status.must_equal 200
-    body.body.must_equal ['bar']
+    _(status).must_equal 200
+    _(body.body).must_equal ['bar']
   end
 
   specify "returns endpoint response when path and single method requirement match" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo' => :get) { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo'))
-    status.must_equal 200
-    body.body.must_equal ['bar']
+    _(status).must_equal 200
+    _(body.body).must_equal ['bar']
   end
 
   specify "returns endpoint response when path and one of multiple method requirements match" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo' => [:get, :post]) { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo', :method => 'post'))
-    status.must_equal 200
-    body.body.must_equal ['bar']
+    _(status).must_equal 200
+    _(body.body).must_equal ['bar']
   end
 
   specify "returns endpoint response when path matches regex" do
     endpoint = Rack::SimpleEndpoint.new(@app, /foo/) { 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/bar/foo'))
-    status.must_equal 200
-    body.body.must_equal ['bar']
+    _(status).must_equal 200
+    _(body.body).must_equal ['bar']
   end
 
   specify "block yields Rack::Request and Rack::Response objects" do
@@ -82,14 +82,14 @@ describe "Rack::SimpleEndpoint" do
   specify "response honors headers set in block" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') {|req, res| res['X-Foo'] = 'bar'; 'baz' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo'))
-    status.must_equal 200
-    headers['X-Foo'].must_equal 'bar'
-    body.body.must_equal ['baz']
+    _(status).must_equal 200
+    _(headers['X-Foo']).must_equal 'bar'
+    _(body.body).must_equal ['baz']
   end
   
   specify "sets Content-Length header" do
     endpoint = Rack::SimpleEndpoint.new(@app, '/foo') {|req, res| 'bar' }
     status, headers, body = endpoint.call(Rack::MockRequest.env_for('/foo'))
-    headers['Content-Length'].must_equal '3'
+    _(headers['Content-Length']).must_equal '3'
   end
 end

@@ -11,10 +11,10 @@ describe "Rack::NotFound" do
       run Rack::NotFound.new('test/404.html')
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal('Custom 404 page content')
-    response.headers['Content-Length'].must_equal('23')
-    response.headers['Content-Type'].must_equal('text/html')
-    response.status.must_equal(404)
+    _(response.body).must_equal('Custom 404 page content')
+    _(response.headers['Content-Length']).must_equal('23')
+    _(response.headers['Content-Type']).must_equal('text/html')
+    _(response.status).must_equal(404)
   end
 
   specify "should render the default response body if no path specified" do
@@ -23,10 +23,10 @@ describe "Rack::NotFound" do
       run Rack::NotFound.new
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal("Not found\n")
-    response.headers['Content-Length'].must_equal('10')
-    response.headers['Content-Type'].must_equal('text/html')
-    response.status.must_equal(404)
+    _(response.body).must_equal("Not found\n")
+    _(response.headers['Content-Length']).must_equal('10')
+    _(response.headers['Content-Type']).must_equal('text/html')
+    _(response.status).must_equal(404)
   end
 
   specify "should accept an alternate content type" do
@@ -35,10 +35,10 @@ describe "Rack::NotFound" do
       run Rack::NotFound.new(nil, 'text/plain')
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal("Not found\n")
-    response.headers['Content-Length'].must_equal('10')
-    response.headers['Content-Type'].must_equal('text/plain')
-    response.status.must_equal(404)
+    _(response.body).must_equal("Not found\n")
+    _(response.headers['Content-Length']).must_equal('10')
+    _(response.headers['Content-Type']).must_equal('text/plain')
+    _(response.status).must_equal(404)
   end
 
   specify "should return correct size" do
@@ -52,7 +52,7 @@ describe "Rack::NotFound" do
         run Rack::NotFound.new(f.path)
       end
       response = Rack::MockRequest.new(app).get('/')
-      response.headers['Content-Length'].must_equal('46')
+      _(response.headers['Content-Length']).must_equal('46')
     end
   end
 end

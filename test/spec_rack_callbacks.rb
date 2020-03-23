@@ -56,11 +56,11 @@ describe "Rack::Callbacks" do
 
     response = Rack::MockRequest.new(app).get("/")
 
-    response.body.must_equal 'F Lifo..with love'
+    _(response.body).must_equal 'F Lifo..with love'
 
-    $old_status.must_equal 200
-    response.status.must_equal 201
+    _($old_status).must_equal 200
+    _(response.status).must_equal 201
 
-    response.headers['last'].must_equal 'TheEnd'
+    _(response.headers['last']).must_equal 'TheEnd'
   end
 end

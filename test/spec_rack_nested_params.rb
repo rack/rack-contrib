@@ -22,25 +22,25 @@ describe Rack::NestedParams do
 
   specify "should handle requests with POST body Content-Type of application/x-www-form-urlencoded" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'})).last
-    req.POST.must_equal({"foo" => { "bar" => { "baz" => "nested" }}})
+    _(req.POST).must_equal({"foo" => { "bar" => { "baz" => "nested" }}})
   end
 
   specify "should not parse requests with other Content-Type" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'}, 'text/plain')).last
-    req.POST.must_equal({})
+    _(req.POST).must_equal({})
   end
 
   specify "should work even after another middleware already parsed the request" do
     app = Rack::MethodOverride.new(middleware)
     req = app.call(form_post({'_method' => 'put', 'foo[bar]' => 'nested'})).last
-    req.POST.must_equal({'_method' => 'put', "foo" => { "bar" => "nested" }})
-    req.put?.must_equal true
+    _(req.POST).must_equal({'_method' => 'put', "foo" => { "bar" => "nested" }})
+    _(req.put?).must_equal true
   end
 
   specify "should make last boolean have precedence even after request already parsed" do
     app = Rack::MethodOverride.new(middleware)
     req = app.call(form_post("foo=1&foo=0")).last
-    req.POST.must_equal({"foo" => "0"})
+    _(req.POST).must_equal({"foo" => "0"})
   end
 
 end
