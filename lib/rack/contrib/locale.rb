@@ -39,19 +39,22 @@ module Rack
     # * Quality value can contain optional whitespaces as well:
     #   Accept-Language: ru-UA, ru; q=0.8, uk; q=0.6, en-US; q=0.4, en; q=0.2
     #
+    # * Quality prefix 'q=' can be in upper case (Q=)
+    #
     def accept_locale(env)
       accept_langs = env["HTTP_ACCEPT_LANGUAGE"]
       return if accept_langs.nil?
 
       languages_and_qvalues = accept_langs.gsub(/\s+/, '').split(",").map { |l|
-        l += ';q=1.0' unless l =~ /;q=\d+(?:\.\d+)?$/
-        l.split(';q=')
+        locale, qvalue = l.split(/;q=/i)
+        qvalue ||= 1.0
+        [locale, qvalue.to_f]
       }
 
       language_and_qvalue = languages_and_qvalues.sort_by { |(locale, qvalue)|
-        qvalue.to_f
+        qvalue
       }.reject { |(_, qvalue)|
-        qvalue.to_f == 0
+        qvalue == 0
       }.reverse.detect { |(locale, qvalue)|
         if I18n.enforce_available_locales
           locale == '*' || I18n.available_locales.include?(locale.to_sym)

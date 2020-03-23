@@ -71,6 +71,10 @@ begin
       _(response_with_languages('dk;q=0').body).must_equal(I18n.default_locale.to_s)
     end
 
+    specify 'should handle Q=' do
+      _(response_with_languages('en;Q=0.9,es;Q=0.95').body).must_equal('es')
+    end
+
     specify 'should reset the I18n locale after the response' do
       I18n.locale = :es
       response_with_languages('en,de;q=0.8')
