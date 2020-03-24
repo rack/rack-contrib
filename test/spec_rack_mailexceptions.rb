@@ -43,7 +43,7 @@ begin
           mail.subject '[ERROR] %s'
           mail.smtp @smtp_settings
         end
-      called.must_equal(true)
+      _(called).must_equal(true)
     end
 
     specify 'generates a Mail object with configured settings' do
@@ -56,12 +56,12 @@ begin
         end
 
       mail = mailer.send(:generate_mail, test_exception, @env)
-      mail.to.must_equal ['foo@example.org']
-      mail.from.must_equal ['bar@example.org']
-      mail.subject.must_equal '[ERROR] Suffering Succotash!'
-      mail.body.wont_equal(nil)
-      mail.body.to_s.must_match(/FOO:\s+"BAR"/)
-      mail.body.to_s.must_match(/^\s*THE BODY\s*$/)
+      _(mail.to).must_equal ['foo@example.org']
+      _(mail.from).must_equal ['bar@example.org']
+      _(mail.subject).must_equal '[ERROR] Suffering Succotash!'
+      _(mail.body).wont_equal(nil)
+      _(mail.body.to_s).must_match(/FOO:\s+"BAR"/)
+      _(mail.body.to_s).must_match(/^\s*THE BODY\s*$/)
     end
 
     specify 'filters HTTP_EXCEPTION body' do
@@ -77,7 +77,7 @@ begin
       env['HTTP_AUTHORIZATION'] = 'Basic xyzzy12345'
 
       mail = mailer.send(:generate_mail, test_exception, env)
-      mail.body.to_s.must_match /HTTP_AUTHORIZATION:\s+"Basic \*filtered\*"/
+      _(mail.body.to_s).must_match /HTTP_AUTHORIZATION:\s+"Basic \*filtered\*"/
     end
 
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
@@ -89,9 +89,9 @@ begin
           mail.smtp @smtp_settings
         end
       mailer.enable_test_mode
-      lambda { mailer.call(@env) }.must_raise(TestError)
-      @env['mail.sent'].must_equal(true)
-      Mail::TestMailer.deliveries.length.must_equal(1)
+      _(lambda { mailer.call(@env) }).must_raise(TestError)
+      _(@env['mail.sent']).must_equal(true)
+      _(Mail::TestMailer.deliveries.length).must_equal(1)
     end
   end
 rescue LoadError => boom

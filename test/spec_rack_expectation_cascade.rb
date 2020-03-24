@@ -7,16 +7,16 @@ describe "Rack::ExpectationCascade" do
     app = Rack::ExpectationCascade.new
     env = {}
     response = app.call(env)
-    response[0].must_equal 404
-    env.must_equal({})
+    _(response[0]).must_equal 404
+    _(env).must_equal({})
   end
 
   specify "with no apps returns a 417 if expectation header was set" do
     app = Rack::ExpectationCascade.new
     env = {"Expect" => "100-continue"}
     response = app.call(env)
-    response[0].must_equal 417
-    env.must_equal({"Expect" => "100-continue"})
+    _(response[0]).must_equal 417
+    _(env).must_equal({"Expect" => "100-continue"})
   end
 
   specify "returns first successful response" do
@@ -25,8 +25,8 @@ describe "Rack::ExpectationCascade" do
       cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["OK"]] }
     end
     response = app.call({})
-    response[0].must_equal 200
-    response[2][0].must_equal "OK"
+    _(response[0]).must_equal 200
+    _(response[2][0]).must_equal "OK"
   end
 
   specify "expectation is set if it has not been already" do
@@ -34,8 +34,8 @@ describe "Rack::ExpectationCascade" do
       cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["Expect: #{env["Expect"]}"]] }
     end
     response = app.call({})
-    response[0].must_equal 200
-    response[2][0].must_equal "Expect: 100-continue"
+    _(response[0]).must_equal 200
+    _(response[2][0]).must_equal "Expect: 100-continue"
   end
 
   specify "returns a 404 if no apps where matched and no expectation header was set" do
@@ -43,8 +43,8 @@ describe "Rack::ExpectationCascade" do
       cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
     end
     response = app.call({})
-    response[0].must_equal 404
-    response[2][0].must_be_nil
+    _(response[0]).must_equal 404
+    _(response[2][0]).must_be_nil
   end
 
   specify "returns a 417 if no apps where matched and a expectation header was set" do
@@ -52,8 +52,8 @@ describe "Rack::ExpectationCascade" do
       cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
     end
     response = app.call({"Expect" => "100-continue"})
-    response[0].must_equal 417
-    response[2][0].must_be_nil
+    _(response[0]).must_equal 417
+    _(response[2][0]).must_be_nil
   end
 
   specify "nests expectation cascades" do
@@ -66,7 +66,7 @@ describe "Rack::ExpectationCascade" do
       end
     end
     response = app.call({})
-    response[0].must_equal 200
-    response[2][0].must_equal "OK"
+    _(response[0]).must_equal 200
+    _(response[2][0]).must_equal "OK"
   end
 end

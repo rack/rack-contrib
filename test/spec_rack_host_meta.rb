@@ -20,31 +20,31 @@ describe "Rack::HostMeta" do
   end
 
   specify "should respond to /host-meta" do
-    @response.status.must_equal 200
+    _(@response.status).must_equal 200
   end
 
   specify "should respond with the correct media type" do
-    @response['Content-Type'].must_equal 'application/host-meta'
+    _(@response['Content-Type']).must_equal 'application/host-meta'
   end
 
   specify "should include a Link entry for each Link item in the config block" do
-    @response.body.must_match(/Link:\s*<\/robots.txt>;.*\n/)
-    @response.body.must_match(/Link:\s*<\/w3c\/p3p.xml>;.*/)
+    _(@response.body).must_match(/Link:\s*<\/robots.txt>;.*\n/)
+    _(@response.body).must_match(/Link:\s*<\/w3c\/p3p.xml>;.*/)
   end
 
   specify "should include a Link-Pattern entry for each Link-Pattern item in the config" do
-    @response.body.must_match(/Link-Pattern:\s*<\{uri\};json_schema>;.*/)
+    _(@response.body).must_match(/Link-Pattern:\s*<\{uri\};json_schema>;.*/)
   end
 
   specify "should include a rel attribute for each Link or Link-Pattern entry where specified" do
-    @response.body.must_match(/rel="robots"/)
-    @response.body.must_match(/rel="privacy"/)
-    @response.body.must_match(/rel="describedby"/)
+    _(@response.body).must_match(/rel="robots"/)
+    _(@response.body).must_match(/rel="privacy"/)
+    _(@response.body).must_match(/rel="describedby"/)
   end
 
   specify "should include a type attribute for each Link or Link-Pattern entry where specified" do
-    @response.body.must_match(/Link:\s*<\/w3c\/p3p.xml>;.*type.*application\/p3p.xml/)
-    @response.body.must_match(/Link-Pattern:\s*<\{uri\};json_schema>;.*type.*application\/x-schema\+json/)
+    _(@response.body).must_match(/Link:\s*<\/w3c\/p3p.xml>;.*type.*application\/p3p.xml/)
+    _(@response.body).must_match(/Link-Pattern:\s*<\{uri\};json_schema>;.*type.*application\/x-schema\+json/)
   end
 
 end

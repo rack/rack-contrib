@@ -12,8 +12,8 @@ describe "Rack::Evil" do
   specify "should enable the app to return the response from anywhere" do
     status, headers, body = Rack::Evil.new(app).call({})
 
-    status.must_equal 404
-    headers['Content-Type'].must_equal 'text/html'
-    body.must_equal 'Never know where it comes from'
+    _(status).must_equal 404
+    _(headers['Content-Type']).must_equal 'text/html'
+    _(body).must_equal 'Never know where it comes from'
   end
 end

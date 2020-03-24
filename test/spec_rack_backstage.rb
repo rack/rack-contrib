@@ -10,8 +10,8 @@ describe "Rack::Backstage" do
       run lambda { |env| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal('Under maintenance.')
-    response.status.must_equal(503)
+    _(response.body).must_equal('Under maintenance.')
+    _(response.status).must_equal(503)
   end
 
   specify "passes on request if page is not present" do
@@ -20,7 +20,7 @@ describe "Rack::Backstage" do
       run lambda { |env| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
     end
     response = Rack::MockRequest.new(app).get('/')
-    response.body.must_equal('Hello, World!')
-    response.status.must_equal(200)
+    _(response.body).must_equal('Hello, World!')
+    _(response.status).must_equal(200)
   end
 end

@@ -12,13 +12,13 @@ describe "Rack::ProcTitle" do
 
   specify "should set the process title when created" do
     Rack::ProcTitle.new(simple_app)
-    $0.must_equal "#{progname} [#{appname}] init ..."
+    _($0).must_equal "#{progname} [#{appname}] init ..."
   end
 
   specify "should set the process title on each request" do
     app = Rack::ProcTitle.new(simple_app)
     req = Rack::MockRequest.new(app)
     10.times { req.get('/hello') }
-    $0.must_equal "#{progname} [#{appname}/80] (10) GET /hello"
+    _($0).must_equal "#{progname} [#{appname}/80] (10) GET /hello"
   end
 end

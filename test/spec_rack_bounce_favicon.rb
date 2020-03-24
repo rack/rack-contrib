@@ -10,11 +10,11 @@ describe Rack::BounceFavicon do
 
   specify 'does nothing when requesting paths other than the favicon' do
     response = Rack::MockRequest.new(app).get('/')
-    response.status.must_equal(200)
+    _(response.status).must_equal(200)
   end
 
   specify 'gives a 404 when requesting the favicon' do
     response = Rack::MockRequest.new(app).get('/favicon.ico')
-    response.status.must_equal(404)
+    _(response.status).must_equal(404)
   end
 end
