@@ -63,8 +63,12 @@ begin
       _(response_with_languages('en-gb,en-us;q=0.95;en').body).must_equal('en-gb')
     end
 
-    specify 'should treat a * as "all other languages"' do
-      _(response_with_languages('*,en;q=0.5').body).must_equal(I18n.default_locale.to_s)
+    specify 'should skip * if it is followed by other languages' do
+      _(response_with_languages('*,dk;q=0.5').body).must_equal('dk')
+    end
+
+    specify 'should use default locale if there is only *' do
+      _(response_with_languages('*').body).must_equal('en')
     end
 
     specify 'should ignore languages with q=0' do
@@ -84,6 +88,12 @@ begin
     specify 'should pick the available language' do
       enforce_available_locales(true) do
         _(response_with_languages('ch,en;q=0.9,es;q=0.95').body).must_equal('es')
+      end
+    end
+
+    specify 'should match languages case insensitively' do
+      enforce_available_locales(true) do
+        _(response_with_languages('EN;q=0.9,ES;q=0.95').body).must_equal('es')
       end
     end
 
