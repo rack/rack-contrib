@@ -7,43 +7,75 @@ module Rack
     end
 
     def call(env)
-      old_locale = I18n.locale
+      locale_to_restore = I18n.locale
 
-      begin
-        locale = accept_locale(env) || I18n.default_locale
-        locale = env['rack.locale'] = I18n.locale = locale.to_s
-        status, headers, body = @app.call(env)
-        headers['Content-Language'] = locale unless headers['Content-Language']
-        [status, headers, body]
-      ensure
-        I18n.locale = old_locale
+      locale = user_preferred_locale(env["HTTP_ACCEPT_LANGUAGE"])
+      locale ||= I18n.default_locale
+
+      env['rack.locale'] = I18n.locale = locale.to_s
+      status, headers, body = @app.call(env)
+
+      unless headers['Content-Language']
+        headers['Content-Language'] = locale.to_s
       end
+
+      [status, headers, body]
+    ensure
+      I18n.locale = locale_to_restore
     end
 
     private
 
-    # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-    def accept_locale(env)
-      accept_langs = env["HTTP_ACCEPT_LANGUAGE"]
-      return if accept_langs.nil?
+    # Accept-Language header is covered mainly by RFC 7231
+    # https://tools.ietf.org/html/rfc7231
+    #
+    # Related sections:
+    #
+    # * https://tools.ietf.org/html/rfc7231#section-5.3.1
+    # * https://tools.ietf.org/html/rfc7231#section-5.3.5
+    # * https://tools.ietf.org/html/rfc4647#section-3.4
+    #
+    # There is an obsolete RFC 2616 (https://tools.ietf.org/html/rfc2616)
+    #
+    # Edge cases:
+    #
+    # * Value can be a comma separated list with optional whitespaces:
+    #   Accept-Language: da, en-gb;q=0.8, en;q=0.7
+    #
+    # * Quality value can contain optional whitespaces as well:
+    #   Accept-Language: ru-UA, ru; q=0.8, uk; q=0.6, en-US; q=0.4, en; q=0.2
+    #
+    # * Quality prefix 'q=' can be in upper case (Q=)
+    #
+    # * Ignore case when match locale with I18n available locales
+    #
+    def user_preferred_locale(header)
+      return if header.nil?
 
-      languages_and_qvalues = accept_langs.split(",").map { |l|
-        l += ';q=1.0' unless l =~ /;q=\d+(?:\.\d+)?$/
-        l.split(';q=')
-      }
+      locales = header.gsub(/\s+/, '').split(",").map do |language_tag|
+        locale, quality = language_tag.split(/;q=/i)
+        quality = quality ? quality.to_f : 1.0
+        [locale, quality]
+      end.reject do |(locale, quality)|
+        locale == '*' || quality == 0
+      end.sort_by do |(_, quality)|
+        quality
+      end.map(&:first)
 
-      language_and_qvalue = languages_and_qvalues.sort_by { |(locale, qvalue)|
-        qvalue.to_f
-      }.reverse.detect { |(locale, qvalue)|
-        if I18n.enforce_available_locales
-          locale == '*' || I18n.available_locales.include?(locale.to_sym)
-        else
-          true
+      return if locales.empty?
+
+      if I18n.enforce_available_locales
+        locale = locales.reverse.find { |locale| I18n.available_locales.any? { |al| match?(al, locale) } }
+        if locale
+          I18n.available_locales.find { |al| match?(al, locale) }
         end
-      }
+      else
+        locales.last
+      end
+    end
 
-      lang = language_and_qvalue && language_and_qvalue.first
-      lang == '*' ? nil : lang
+    def match?(s1, s2)
+      s1.to_s.casecmp(s2.to_s) == 0
     end
   end
 end

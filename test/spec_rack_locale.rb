@@ -8,9 +8,10 @@ begin
   describe "Rack::Locale" do
     include Minitest::Hooks
 
-    before(:all) do
+    before do
       # Set the locales that will be used at various points in the tests
-      I18n.config.available_locales = [I18n.default_locale, :dk, :'en-gb', :es, :zh]
+      I18n.config.available_locales = [:en, :dk, :'en-gb', :es, :zh]
+      I18n.default_locale = :en
     end
 
     def app
@@ -50,12 +51,32 @@ begin
       _(response_with_languages('en;q=0.9,es;q=0.95').body).must_equal('es')
     end
 
+    specify 'should ignore spaces between comma separated field values' do
+      _(response_with_languages('en;q=0.9, es;q=0.95').body).must_equal('es')
+    end
+
+    specify 'should ignore spaces within quality value' do
+      _(response_with_languages('en; q=0.9,es; q=0.95').body).must_equal('es')
+    end
+
     specify 'should retain full language codes' do
       _(response_with_languages('en-gb,en-us;q=0.95;en').body).must_equal('en-gb')
     end
 
-    specify 'should treat a * as "all other languages"' do
-      _(response_with_languages('*,en;q=0.5').body).must_equal(I18n.default_locale.to_s)
+    specify 'should skip * if it is followed by other languages' do
+      _(response_with_languages('*,dk;q=0.5').body).must_equal('dk')
+    end
+
+    specify 'should use default locale if there is only *' do
+      _(response_with_languages('*').body).must_equal('en')
+    end
+
+    specify 'should ignore languages with q=0' do
+      _(response_with_languages('dk;q=0').body).must_equal(I18n.default_locale.to_s)
+    end
+
+    specify 'should handle Q=' do
+      _(response_with_languages('en;Q=0.9,es;Q=0.95').body).must_equal('es')
     end
 
     specify 'should reset the I18n locale after the response' do
@@ -67,6 +88,12 @@ begin
     specify 'should pick the available language' do
       enforce_available_locales(true) do
         _(response_with_languages('ch,en;q=0.9,es;q=0.95').body).must_equal('es')
+      end
+    end
+
+    specify 'should match languages case insensitively' do
+      enforce_available_locales(true) do
+        _(response_with_languages('EN;q=0.9,ES;q=0.95').body).must_equal('es')
       end
     end
 
