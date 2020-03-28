@@ -10,6 +10,48 @@ module Rack
   #
   # A Rack middleware for parsing POST/PUT body data when Content-Type is
   # not one of the standard supported types, like <tt>application/json</tt>.
+  #
+  # === How to use the middleware
+  #
+  # Example of simple +config.ru+ file:
+  #
+  #  require 'rack'
+  #  require 'rack/contrib'
+  #
+  #  use ::Rack::PostBodyContentTypeParser
+  #
+  #  app = lambda do |env|
+  #    request = Rack::Request.new(env)
+  #    body = "Hello #{request.params['name']}"
+  #    [200, {'Content-Type' => 'text/plain'}, [body]]
+  #  end
+  #
+  #  run app
+  #
+  # Example with passing block argument:
+  #
+  #   use ::Rack::PostBodyContentTypeParser do |body|
+  #     { 'params' => JSON.parse(body) }
+  #   end
+  #
+  # Example with passing proc argument:
+  #
+  #   parser = ->(body) { { 'params' => JSON.parse(body) } }
+  #   use ::Rack::PostBodyContentTypeParser, &parser
+  #
+  #
+  # === Failed JSON parsing
+  #
+  # Returns "400 Bad request" response if invalid JSON document was sent:
+  #
+  # Raw HTTP response:
+  #
+  #   HTTP/1.1 400 Bad Request
+  #   Content-Type: text/plain
+  #   Content-Length: 28
+  #
+  #   failed to parse body as JSON
+  #
   class PostBodyContentTypeParser
 
     # Constants
