@@ -53,6 +53,12 @@ describe "Rack::StaticCache" do
       )
     end
 
+    it "should set Expires header based on current UTC time" do
+      Timecop.freeze(DateTime.parse("2020-03-28 23:51 UTC")) do
+        _(get_request("/statics/test").headers['Expires']).must_match("Sun, 28 Mar 2021 23:51:00 GMT") # now + 1 year
+      end
+    end
+
     it "should set Date header with current GMT time" do
       Timecop.freeze(DateTime.parse('2020-03-28 22:51 UTC')) do
         _(get_request("/statics/test").headers['Date']).must_equal 'Sat, 28 Mar 2020 22:51:00 GMT'
