@@ -3,6 +3,7 @@ require 'minitest/autorun'
 require 'rack'
 require 'rack/contrib/static_cache'
 require 'rack/mock'
+require 'timecop'
 
 class DummyApp
   def call(env)
@@ -50,6 +51,12 @@ describe "Rack::StaticCache" do
           "[\s][0-9]{2}[:][0-9]{2}[:][0-9]{2} GMT$"
         )
       )
+    end
+
+    it "should set Date header with current GMT time" do
+      Timecop.freeze(DateTime.parse('2020-03-28 22:51 UTC')) do
+        _(get_request("/statics/test").headers['Date']).must_equal 'Sat, 28 Mar 2020 22:51:00 GMT'
+      end
     end
 
     it "should return 404s if url root is known but it can't find the file" do

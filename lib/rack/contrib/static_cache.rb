@@ -1,3 +1,5 @@
+require 'time'
+
 module Rack
 
   #
@@ -85,6 +87,7 @@ module Rack
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
           headers['Expires'] = @duration_in_words
         end
+        headers['Date'] = Time.now.httpdate
         [status, headers, body]
       end
     end
