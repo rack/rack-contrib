@@ -17,8 +17,12 @@ describe "Rack::StaticCache" do
   end
 
   def request(options)
+    Rack::MockRequest.new(build_middleware(options))
+  end
+
+  def build_middleware(options)
     options = { :root => static_root }.merge(options)
-    Rack::MockRequest.new(Rack::StaticCache.new(DummyApp.new, options))
+    Rack::StaticCache.new(DummyApp.new, options)
   end
 
   describe "with a default app request" do
@@ -56,6 +60,20 @@ describe "Rack::StaticCache" do
     it "should set Expires header based on current UTC time" do
       Timecop.freeze(DateTime.parse("2020-03-28 23:51 UTC")) do
         _(get_request("/statics/test").headers['Expires']).must_match("Sun, 28 Mar 2021 23:51:00 GMT") # now + 1 year
+      end
+    end
+
+    it "should not cache expiration date between requests" do
+      middleware = build_middleware(:urls => ["/statics"])
+
+      Timecop.freeze(DateTime.parse("2020-03-28 23:41 UTC")) do
+        r = Rack::MockRequest.new(middleware)
+        _(r.get("/statics/test").headers["Expires"]).must_equal "Sun, 28 Mar 2021 23:41:00 GMT" # time now + 1 year
+      end
+
+      Timecop.freeze(DateTime.parse("2020-03-28 23:51 UTC")) do
+        r = Rack::MockRequest.new(middleware)
+        _(r.get("/statics/test").headers["Expires"]).must_equal "Sun, 28 Mar 2021 23:51:00 GMT" # time now + 1 year
       end
     end
 
