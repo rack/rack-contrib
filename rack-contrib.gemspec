@@ -51,6 +51,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '~> 10.4', '>= 10.4.2'
   s.add_development_dependency 'rdoc', '~> 5.0'
   s.add_development_dependency 'ruby-prof', '~> 0.17'
+  s.add_development_dependency 'timecop', '~> 0.9'
 
   s.homepage = "https://github.com/rack/rack-contrib/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "rack-contrib", "--main", "README"]

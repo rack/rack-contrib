@@ -1,3 +1,5 @@
+require 'time'
+
 module Rack
 
   #
@@ -68,7 +70,6 @@ module Rack
         @version_regex = options.fetch(:version_regex, /-[\d.]+([.][a-zA-Z][\w]+)?$/)
       end
       @duration_in_seconds = self.duration_in_seconds
-      @duration_in_words    = self.duration_in_words
     end
 
     def call(env)
@@ -83,14 +84,15 @@ module Rack
         status, headers, body = @file_server.call(env)
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
-          headers['Expires'] = @duration_in_words
+          headers['Expires'] = duration_in_words
         end
+        headers['Date'] = Time.now.httpdate
         [status, headers, body]
       end
     end
 
     def duration_in_words
-      (Time.now + self.duration_in_seconds).strftime '%a, %d %b %Y %H:%M:%S GMT'
+      (Time.now.utc + self.duration_in_seconds).httpdate
     end
 
     def duration_in_seconds
