@@ -6,11 +6,10 @@ end
 
 module Rack
 
+  # <b>DEPRECATED:</b> <tt>JSONBodyParser</tt> is a drop-in replacement that is faster and more configurable.
+  #
   # A Rack middleware for parsing POST/PUT body data when Content-Type is
   # not one of the standard supported types, like <tt>application/json</tt>.
-  #
-  # TODO: Find a better name.
-  #
   class PostBodyContentTypeParser
 
     # Constants
@@ -25,6 +24,7 @@ module Rack
     APPLICATION_JSON = 'application/json'.freeze
 
     def initialize(app, &block)
+      warn "[DEPRECATION] `PostBodyContentTypeParser` is deprecated. Use `JSONBodyParser` as a drop-in replacement."
       @app = app
       @block = block || Proc.new { |body| JSON.parse(body, :create_additions => false) }
     end

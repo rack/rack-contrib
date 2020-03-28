@@ -24,6 +24,7 @@ module Rack
   autoload :HostMeta,                   "rack/contrib/host_meta"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
+  autoload :JSONBodyParser,             "rack/contrib/json_body_parser"
   autoload :LazyConditionalGet,         "rack/contrib/lazy_conditional_get"
   autoload :LighttpdScriptNameFix,      "rack/contrib/lighttpd_script_name_fix"
   autoload :Locale,                     "rack/contrib/locale"
