@@ -46,14 +46,14 @@ begin
         _(response).wont_be_nil
         status, headers, body = response
         _(status).must_equal 400
-        _(body).must_equal ["failed to parse body as JSON"]
+        _(body.to_enum.to_a).must_equal ["failed to parse body as JSON"]
       end
 
       specify "should return bad request with invalid JSON" do
         test_body = '"bar":"foo"}'
         env = Rack::MockRequest.env_for "/", {:method => "POST", :input => test_body, "CONTENT_TYPE" => 'application/json'}
-        app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-        response = Rack::PostBodyContentTypeParser.new(app).call(env)
+        app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, []] }
+        response = Rack::Lint.new(Rack::PostBodyContentTypeParser.new(app)).call(env)
 
         assert_failed_to_parse_as_json(response)
       end
@@ -61,9 +61,11 @@ begin
   end
 
   def params_for_request(body, content_type, &block)
+    params = nil
     env = Rack::MockRequest.env_for "/", {:method => "POST", :input => body, "CONTENT_TYPE" => content_type}
-    app = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST] }
-    Rack::PostBodyContentTypeParser.new(app, &block).call(env).last
+    app = lambda { |env| params = Rack::Request.new(env).POST; [200, {'Content-Type' => 'text/plain'}, []] }
+    Rack::Lint.new(Rack::PostBodyContentTypeParser.new(app, &block)).call(env)
+    params
   end
 
 rescue LoadError => e

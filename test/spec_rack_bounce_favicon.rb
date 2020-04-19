@@ -3,10 +3,12 @@ require 'rack/mock'
 require 'rack/contrib/bounce_favicon'
 
 describe Rack::BounceFavicon do
-  app = Rack::Builder.new do
-    use Rack::BounceFavicon
-    run lambda { |env| [200, {}, []] }
-  end
+  app = Rack::Lint.new(
+    Rack::Builder.new do
+      use Rack::BounceFavicon
+      run lambda { |env| [200, {}, []] }
+    end
+  )
 
   specify 'does nothing when requesting paths other than the favicon' do
     response = Rack::MockRequest.new(app).get('/')

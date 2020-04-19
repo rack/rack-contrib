@@ -16,139 +16,149 @@ describe "Rack::Access" do
     Rack::MockRequest.env_for(path, { 'REMOTE_ADDR' => remote_addr })
   end
 
-  def middleware(options = {})
-    Rack::Access.new(@app, options)
+  def access(app, options = {})
+    Rack::Lint.new(Rack::Access.new(app, options))
   end
 
   specify "default configuration should deny non-local requests" do
-    app = middleware
-    status, headers, body = app.call(mock_env(@mock_addr_1))
-    _(status).must_equal 403
-    _(body).must_equal []
+    req = Rack::MockRequest.new(access(@app))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_1)
+
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
   end
 
   specify "default configuration should allow requests from 127.0.0.1" do
-    app = middleware
-    status, headers, body = app.call(mock_env(@mock_addr_localhost))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    req = Rack::MockRequest.new(access(@app))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_localhost)
+
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
   end
 
   specify "should allow remote addresses in allow_ipmasking" do
-    app = middleware('/' => [@mock_addr_1])
-    status, headers, body = app.call(mock_env(@mock_addr_1))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_1]))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_1)
+
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
   end
 
   specify "should deny remote addresses not in allow_ipmasks" do
-    app = middleware('/' => [@mock_addr_1])
-    status, headers, body = app.call(mock_env(@mock_addr_2))
-    _(status).must_equal 403
-    _(body).must_equal []
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_1]))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_2)
+
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
   end
 
   specify "should allow remote addresses in allow_ipmasks range" do
-    app = middleware('/' => [@mock_addr_range])
-    status, headers, body = app.call(mock_env(@mock_addr_2))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_range]))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_2)
+
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
   end
 
   specify "should deny remote addresses not in allow_ipmasks range" do
-    app = middleware('/' => [@mock_addr_range])
-    status, headers, body = app.call(mock_env(@mock_addr_1))
-    _(status).must_equal 403
-    _(body).must_equal []
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_range]))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_1)
+
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
   end
 
   specify "should allow remote addresses in one of allow_ipmasking" do
-    app = middleware('/' => [@mock_addr_range, @mock_addr_localhost])
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_range, @mock_addr_localhost]))
 
-    status, headers, body = app.call(mock_env(@mock_addr_2))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_2)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_localhost))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
   end
 
   specify "should deny remote addresses not in one of allow_ipmasks" do
-    app = middleware('/' => [@mock_addr_range, @mock_addr_localhost])
-    status, headers, body = app.call(mock_env(@mock_addr_1))
-    _(status).must_equal 403
-    _(body).must_equal []
+    req = Rack::MockRequest.new(access(@app, '/' => [@mock_addr_range, @mock_addr_localhost]))
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_1)
+
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
   end
 
   specify "handles paths correctly" do
-    app = middleware({
-      'http://foo.org/bar' => [@mock_addr_localhost],
-      '/foo' => [@mock_addr_localhost],
-      '/foo/bar' => [@mock_addr_range, @mock_addr_localhost]
-    })
+    req = Rack::MockRequest.new(
+      access(
+        @app,
+        'http://foo.org/bar' => [@mock_addr_localhost],
+        '/foo'               => [@mock_addr_localhost],
+        '/foo/bar'           => [@mock_addr_range, @mock_addr_localhost]
+      )
+    )
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/qux"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/qux', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo/', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo/', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/bar"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/bar"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
-    status, headers, body = app.call(mock_env(@mock_addr_2, "/foo/bar"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo/bar', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo/bar', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
+    res = req.get('/foo/bar', 'REMOTE_ADDR' => @mock_addr_2)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/bar/"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/bar/"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo/bar/', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo/bar/', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo///bar//quux"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo///bar//quux"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo///bar//quux', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo///bar//quux', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/foo/quux"))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/foo/quux"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/foo/quux', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/foo/quux', 'REMOTE_ADDR' => @mock_addr_localhost)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
 
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/bar"))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
-    status, headers, body = app.call(mock_env(@mock_addr_1, "/bar").merge('HTTP_HOST' => 'foo.org'))
-    _(status).must_equal 403
-    _(body).must_equal []
-    status, headers, body = app.call(mock_env(@mock_addr_localhost, "/bar").merge('HTTP_HOST' => 'foo.org'))
-    _(status).must_equal 200
-    _(body).must_equal ['hello']
+    res = req.get('/bar', 'REMOTE_ADDR' => @mock_addr_1)
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
+    res = req.get('/bar', 'REMOTE_ADDR' => @mock_addr_1, 'HTTP_HOST' => 'foo.org')
+    _(res.status).must_equal 403
+    _(res.body).must_equal ''
+    res = req.get('/bar', 'REMOTE_ADDR' => @mock_addr_localhost, 'HTTP_HOST' => 'foo.org')
+    _(res.status).must_equal 200
+    _(res.body).must_equal 'hello'
   end
 end

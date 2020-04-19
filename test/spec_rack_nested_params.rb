@@ -5,7 +5,8 @@ require 'rack/method_override'
 
 describe Rack::NestedParams do
 
-  App = lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env)] }
+  request_object = nil
+  App = lambda { |env| request_object = Rack::Request.new(env); [200, {'Content-Type' => 'text/plain'}, []] }
 
   def env_for_post_with_headers(path, headers, body)
     Rack::MockRequest.env_for(path, {:method => "POST", :input => body}.merge(headers))
@@ -17,30 +18,30 @@ describe Rack::NestedParams do
   end
 
   def middleware
-    Rack::NestedParams.new(App)
+    Rack::Lint.new(Rack::NestedParams.new(App))
   end
 
   specify "should handle requests with POST body Content-Type of application/x-www-form-urlencoded" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'})).last
-    _(req.POST).must_equal({"foo" => { "bar" => { "baz" => "nested" }}})
+    _(request_object.POST).must_equal({"foo" => { "bar" => { "baz" => "nested" }}})
   end
 
   specify "should not parse requests with other Content-Type" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'}, 'text/plain')).last
-    _(req.POST).must_equal({})
+    _(request_object.POST).must_equal({})
   end
 
   specify "should work even after another middleware already parsed the request" do
     app = Rack::MethodOverride.new(middleware)
     req = app.call(form_post({'_method' => 'put', 'foo[bar]' => 'nested'})).last
-    _(req.POST).must_equal({'_method' => 'put', "foo" => { "bar" => "nested" }})
-    _(req.put?).must_equal true
+    _(request_object.POST).must_equal({'_method' => 'put', "foo" => { "bar" => "nested" }})
+    _(request_object.put?).must_equal true
   end
 
   specify "should make last boolean have precedence even after request already parsed" do
     app = Rack::MethodOverride.new(middleware)
     req = app.call(form_post("foo=1&foo=0")).last
-    _(req.POST).must_equal({"foo" => "0"})
+    _(request_object.POST).must_equal({"foo" => "0"})
   end
 
 end

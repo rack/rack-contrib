@@ -22,7 +22,7 @@ describe "Rack::StaticCache" do
 
   def build_middleware(options)
     options = { :root => static_root }.merge(options)
-    Rack::StaticCache.new(DummyApp.new, options)
+    Rack::Lint.new(Rack::StaticCache.new(DummyApp.new, options))
   end
 
   describe "with a default app request" do

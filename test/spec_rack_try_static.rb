@@ -14,9 +14,10 @@ end
 def request(options = {})
   @request =
     Rack::MockRequest.new(
-      Rack::TryStatic.new(
-        lambda { |_| [200, {}, ["Hello World"]]},
-        options))
+      Rack::Lint.new(
+        Rack::TryStatic.new(
+          lambda { |_| [200, {}, ["Hello World"]]},
+          options)))
 end
 
 describe "Rack::TryStatic" do

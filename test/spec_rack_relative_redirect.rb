@@ -7,7 +7,7 @@ describe Rack::RelativeRedirect do
   def request(opts={}, &block)
     @def_status = opts[:status] if opts[:status]
     @def_location = opts[:location] if opts[:location]
-    yield Rack::MockRequest.new(Rack::RelativeRedirect.new(@def_app, &opts[:block])).get(opts[:path]||@def_path, opts[:headers]||{})
+    yield Rack::MockRequest.new(Rack::Lint.new(Rack::RelativeRedirect.new(@def_app, &opts[:block]))).get(opts[:path]||@def_path, opts[:headers]||{})
   end
 
   before do

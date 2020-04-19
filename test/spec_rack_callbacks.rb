@@ -50,9 +50,11 @@ describe "Rack::Callbacks" do
       after TheEnd
     end
 
-    app = Rack::Builder.new do
-      run callback_app
-    end.to_app
+    app = Rack::Lint.new(
+      Rack::Builder.new do
+        run callback_app
+      end.to_app
+    )
 
     response = Rack::MockRequest.new(app).get("/")
 
