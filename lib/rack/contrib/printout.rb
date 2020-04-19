@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   #prints the environment and request for simple debugging
   class Printout

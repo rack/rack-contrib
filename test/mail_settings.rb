@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TEST_SMTP = nil
 
 # Enable SMTP tests by providing the following for your SMTP server.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/lazy_conditional_get'

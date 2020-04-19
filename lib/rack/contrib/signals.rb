@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Installs signal handlers that are safely processed after a request
   #

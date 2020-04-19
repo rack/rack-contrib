@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 begin
   require 'git-version-bump'
 rescue LoadError

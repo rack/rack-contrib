@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
 
   # The Rack::TryStatic middleware delegates requests to Rack::Static middleware

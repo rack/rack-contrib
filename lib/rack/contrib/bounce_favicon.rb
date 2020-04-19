@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Bounce those annoying favicon.ico requests
   class BounceFavicon

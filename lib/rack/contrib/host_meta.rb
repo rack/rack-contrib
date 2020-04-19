@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
 
   # Rack middleware implementing the IETF draft: "Host Metadata for the Web"

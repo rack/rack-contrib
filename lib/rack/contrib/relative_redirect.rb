@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack'
 
 # Rack::RelativeRedirect is a simple middleware that converts relative paths in

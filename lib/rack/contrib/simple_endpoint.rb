@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Create simple endpoints with routing rules, similar to Sinatra actions.
   #

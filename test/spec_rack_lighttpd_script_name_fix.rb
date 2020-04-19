@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'minitest/autorun'
 require 'rack/mock'
 require 'rack/contrib/lighttpd_script_name_fix'

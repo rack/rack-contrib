@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   class Evil
     # Lets you return a response to the client immediately from anywhere ( M V or C ) in the code.

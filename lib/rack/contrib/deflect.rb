@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'thread'
 
 # TODO: optional stats

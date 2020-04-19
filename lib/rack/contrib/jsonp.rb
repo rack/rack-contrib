@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
 
   # A Rack middleware for providing JSON-P support.
