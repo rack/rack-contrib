@@ -27,9 +27,8 @@ module Rack
         !(/\.chr$/.match(env['PATH_INFO'])).nil? || Rack::Request.new(env).params['_format'] == 'chr'
     end
 
-    def encode(response, assembled_body="")
-      response.each { |s| assembled_body << s.to_s } # call down the stack
-      return ::CSSHTTPRequest.encode(assembled_body)
+    def encode(body)
+      ::CSSHTTPRequest.encode(body.to_enum.to_a.join)
     end
 
     def modify_headers!(headers, encoded_response)
