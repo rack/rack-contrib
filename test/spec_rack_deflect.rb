@@ -67,7 +67,7 @@ describe "Rack::Deflect" do
     _(body.to_enum.to_a).must_equal []
 
     # Move to the future so the block will expire
-    Time.stub :now, Time.now + 3 do
+    Timecop.travel(Time.now + 3) do
       # Another 5 is fine now
       5.times do
         status, headers, body = app.call env
