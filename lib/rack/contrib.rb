@@ -33,7 +33,6 @@ module Rack
   autoload :ProcTitle,                  "rack/contrib/proctitle"
   autoload :Profiler,                   "rack/contrib/profiler"
   autoload :ResponseHeaders,            "rack/contrib/response_headers"
-  autoload :Runtime,                    "rack/contrib/runtime"
   autoload :Signals,                    "rack/contrib/signals"
   autoload :SimpleEndpoint,             "rack/contrib/simple_endpoint"
   autoload :TimeZone,                   "rack/contrib/time_zone"
