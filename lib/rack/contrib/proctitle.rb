@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Middleware to update the process title ($0) with information about the
   # current request. Based loosely on:

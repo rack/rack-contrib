@@ -1,4 +1,5 @@
 # -*- encoding : us-ascii -*-
+# frozen_string_literal: true
 
 require 'minitest/autorun'
 require 'rack/contrib/enforce_valid_encoding'

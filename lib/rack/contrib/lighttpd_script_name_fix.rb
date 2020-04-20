@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Lighttpd sets the wrong SCRIPT_NAME and PATH_INFO if you mount your
   # FastCGI app at "/". This middleware fixes this issue.

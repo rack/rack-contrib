@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Allows you to tap into the response headers. Yields a Rack::Utils::HeaderHash
   # of current response headers to the block. Example:

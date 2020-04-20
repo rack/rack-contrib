@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'time'
 
 module Rack
@@ -57,10 +59,12 @@ module Rack
       @no_cache = {}
       @urls.collect! do |url|
         if url  =~ /\*$/
-          url.sub!(/\*$/, '')
-          @no_cache[url] = 1
+          url_prefix = url.sub(/\*$/, '')
+          @no_cache[url_prefix] = 1
+          url_prefix
+        else
+          url
         end
-        url
       end
       root = options[:root] || Dir.pwd
       @file_server = Rack::File.new(root)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Rack middleware to use common cookies across domain and subdomains.
   class CommonCookies

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Forces garbage collection after each request.
   class GarbageCollector

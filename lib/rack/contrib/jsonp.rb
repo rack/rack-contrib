@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
 
   # A Rack middleware for providing JSON-P support.
@@ -87,8 +89,8 @@ module Rack
     # method of combining all of the data into a single string makes sense
     # since JSON is returned as a full string.
     #
-    def pad(callback, response, body = "")
-      response.each do |s|
+    def pad(callback, response)
+      body = response.to_enum.map do |s|
         # U+2028 and U+2029 are allowed inside strings in JSON (as all literal
         # Unicode characters) but JavaScript defines them as newline
         # seperators. Because no literal newlines are allowed in a string, this
@@ -96,8 +98,8 @@ module Rack
         # replacing them with the escaped version. This should be safe because
         # according to the JSON spec, these characters are *only* valid inside
         # a string and should therefore not be present any other places.
-        body << s.to_s.gsub(U2028, '\u2028').gsub(U2029, '\u2029')
-      end
+        s.gsub(U2028, '\u2028').gsub(U2029, '\u2029')
+      end.join
 
       # https://github.com/rack/rack-contrib/issues/46
       response.close if response.respond_to?(:close)

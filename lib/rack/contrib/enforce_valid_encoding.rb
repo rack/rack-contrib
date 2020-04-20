@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Ensure that the path and query string presented to the application
   # contains only valid characters.  If the validation fails, then a

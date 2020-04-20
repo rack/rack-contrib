@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rack
   # Rack::NotFound is a default endpoint. Optionally initialize with the
   # path to a custom 404 page, to override the standard response body.
