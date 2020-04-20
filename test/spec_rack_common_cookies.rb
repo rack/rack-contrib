@@ -6,10 +6,12 @@ require 'rack/contrib/common_cookies'
 describe Rack::CommonCookies do
 
   before do
-    @app = Rack::Builder.new do
-      use Rack::CommonCookies
-      run lambda {|env| [200, {'Set-Cookie' => env['HTTP_COOKIE']}, []] }
-    end
+    @app = Rack::Lint.new(
+      Rack::Builder.new do
+        use Rack::CommonCookies
+        run lambda {|env| [200, {'Set-Cookie' => env['HTTP_COOKIE']}, []] }
+      end
+    )
   end
 
   def request

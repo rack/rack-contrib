@@ -15,6 +15,13 @@ begin
   end
 
   describe 'Rack::MailExceptions' do
+    def mail_exception(app, options = {}, &block)
+      middleware = Rack::MailExceptions.new(@app, &block)
+      if options[:test_mode]
+        middleware.enable_test_mode
+      end
+      Rack::Lint.new(middleware)
+    end
 
     before do
       @app = lambda { |env| raise TestError, 'Why, I say' }
@@ -36,7 +43,7 @@ begin
     specify 'yields a configuration object to the block when created' do
       called = false
       mailer =
-        Rack::MailExceptions.new(@app) do |mail|
+        mail_exception(@app) do |mail|
           called = true
           mail.to 'foo@example.org'
           mail.from 'bar@example.org'
@@ -47,6 +54,7 @@ begin
     end
 
     specify 'generates a Mail object with configured settings' do
+      # Don't use Rack::Lint because we the private method `generate_mail` is tested here
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
           mail.to 'foo@example.org'
@@ -65,6 +73,7 @@ begin
     end
 
     specify 'filters HTTP_EXCEPTION body' do
+      # Don't use Rack::Lint because we the private method `generate_mail` is tested here
       mailer =
         Rack::MailExceptions.new(@app) do |mail|
           mail.to 'foo@example.org'
@@ -82,13 +91,12 @@ begin
 
     specify 'catches exceptions raised from app, sends mail, and re-raises' do
       mailer =
-        Rack::MailExceptions.new(@app) do |mail|
+        mail_exception(@app, test_mode: true) do |mail|
           mail.to 'foo@example.org'
           mail.from 'bar@example.org'
           mail.subject '[ERROR] %s'
           mail.smtp @smtp_settings
         end
-      mailer.enable_test_mode
       _(lambda { mailer.call(@env) }).must_raise(TestError)
       _(@env['mail.sent']).must_equal(true)
       _(Mail::TestMailer.deliveries.length).must_equal(1)

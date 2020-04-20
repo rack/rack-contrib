@@ -5,7 +5,7 @@ require 'fileutils'
 
 describe Rack::ResponseCache do
   def request(opts={}, &block)
-    Rack::MockRequest.new(Rack::ResponseCache.new(block||@def_app, opts[:cache]||@cache, &opts[:rc_block])).send(opts[:meth]||:get, opts[:path]||@def_path, opts[:headers]||{})
+    Rack::MockRequest.new(Rack::Lint.new(Rack::ResponseCache.new(block||@def_app, opts[:cache]||@cache, &opts[:rc_block]))).send(opts[:meth]||:get, opts[:path]||@def_path, opts[:headers]||{})
   end
 
   before do
@@ -136,7 +136,7 @@ describe Rack::ResponseCache do
   end
 
   specify "should raise an error if a cache argument is not provided" do
-    app = Rack::Builder.new{use Rack::ResponseCache; run lambda { |env| [200, {'Content-Type' => 'text/plain'}, Rack::Request.new(env).POST]}}
+    app = Rack::Lint.new(Rack::Builder.new{use Rack::ResponseCache; run lambda { |env| [200, {'Content-Type' => 'text/plain'}, []]}})
     _(proc{Rack::MockRequest.new(app).get('/')}).must_raise(ArgumentError)
   end
 

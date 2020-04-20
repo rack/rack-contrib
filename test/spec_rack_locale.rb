@@ -15,14 +15,20 @@ begin
     end
 
     def app
-      @app ||= Rack::Builder.new do
-        use Rack::Locale
-        run lambda { |env| [ 200, {}, [ I18n.locale.to_s ] ] }
-      end
+      @app ||= Rack::Lint.new(
+        Rack::Builder.new do
+          use Rack::Locale
+          run lambda { |env| [ 200, {}, [ I18n.locale.to_s ] ] }
+        end
+      )
     end
 
     def response_with_languages(accept_languages)
-      Rack::MockRequest.new(app).get('/', { 'HTTP_ACCEPT_LANGUAGE' => accept_languages } )
+      if accept_languages
+        Rack::MockRequest.new(app).get('/', { 'HTTP_ACCEPT_LANGUAGE' => accept_languages } )
+      else
+        Rack::MockRequest.new(app).get('/', {})
+      end
     end
 
     def enforce_available_locales(enforce)

@@ -16,14 +16,14 @@ describe "Rack::Deflect" do
   end
 
   def mock_deflect options = {}
-    Rack::Deflect.new @app, options
+    Rack::Lint.new(Rack::Deflect.new(@app, options))
   end
 
   specify "should allow regular requests to follow through" do
     app = mock_deflect
     status, headers, body = app.call mock_env(@mock_addr_1)
     _(status).must_equal 200
-    _(body).must_equal ['cookies']
+    _(body.to_enum.to_a).must_equal ['cookies']
   end
 
   specify "should deflect requests exceeding the request threshold" do
@@ -35,14 +35,14 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body).must_equal ['cookies']
+      _(body.to_enum.to_a).must_equal ['cookies']
     end
 
     # Remaining requests should fail for 10 seconds
     10.times do
       status, headers, body = app.call env
       _(status).must_equal 403
-      _(body).must_equal []
+      _(body.to_enum.to_a).must_equal []
     end
 
     # Log should reflect that we have blocked an address
@@ -58,21 +58,21 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body).must_equal ['cookies']
+      _(body.to_enum.to_a).must_equal ['cookies']
     end
 
     # Exceeds request threshold
     status, headers, body = app.call env
     _(status).must_equal 403
-    _(body).must_equal []
+    _(body.to_enum.to_a).must_equal []
 
     # Move to the future so the block will expire
-    Time.stub :now, Time.now + 3 do
+    Timecop.travel(Time.now + 3) do
       # Another 5 is fine now
       5.times do
         status, headers, body = app.call env
         _(status).must_equal 200
-        _(body).must_equal ['cookies']
+        _(body.to_enum.to_a).must_equal ['cookies']
       end
     end
 
@@ -88,7 +88,7 @@ describe "Rack::Deflect" do
     10.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body).must_equal ['cookies']
+      _(body.to_enum.to_a).must_equal ['cookies']
     end
   end
 
@@ -97,11 +97,11 @@ describe "Rack::Deflect" do
 
     status, headers, body = app.call mock_env(@mock_addr_1)
     _(status).must_equal 200
-    _(body).must_equal ['cookies']
+    _(body.to_enum.to_a).must_equal ['cookies']
 
     status, headers, body = app.call mock_env(@mock_addr_2)
     _(status).must_equal 403
-    _(body).must_equal []
+    _(body.to_enum.to_a).must_equal []
   end
 
 end

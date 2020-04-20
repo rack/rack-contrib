@@ -12,9 +12,13 @@ if "a string".respond_to?(:valid_encoding?)
 
   describe "Rack::EnforceValidEncoding" do
     before do
-      @app = Rack::EnforceValidEncoding.new(lambda { |env|
-        [200, {'Content-Type'=>'text/plain'}, ['Hello World']]
-      })
+      @app = Rack::Lint.new(
+        Rack::EnforceValidEncoding.new(
+          lambda do |env|
+            [200, {'Content-Type'=>'text/plain'}, ['Hello World']]
+          end
+        )
+      )
     end
 
     describe "contstant assertions" do

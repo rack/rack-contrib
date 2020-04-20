@@ -34,7 +34,7 @@ describe 'Rack::LazyConditionalGet' do
   let(:rack_lazy_conditional_get) { 'yes' }
 
   let(:app) {
-    Rack::LazyConditionalGet.new core_app, $lazy_conditional_get_cache
+    Rack::Lint.new(Rack::LazyConditionalGet.new core_app, $lazy_conditional_get_cache)
   }
 
   let(:env) {
