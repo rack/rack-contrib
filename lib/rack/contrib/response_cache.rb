@@ -21,12 +21,8 @@ class Rack::ResponseCache
   DEFAULT_PATH_PROC = proc do |env, res|
     path = Rack::Utils.unescape(env['PATH_INFO'])
     headers = res[1]
-    # Content-Type is almost always at headers['Content-Type'], but to fully
-    # comply with HTTP RFC 7230, we fall back to a case-insensitive lookup
-    content_type = headers.fetch('Content-Type') do |titlecase_key|
-      _, val = headers.find { |key, _| key.casecmp(titlecase_key) == 0 }
-      val
-    end
+    content_type = headers['Content-Type']
+
     if !path.include?('..') and match = /text\/((?:x|ht)ml|css)/o.match(content_type)
       type = match[1]
       path = "#{path}.#{type}" unless /\.#{type}\z/.match(path)
@@ -56,16 +52,19 @@ class Rack::ResponseCache
   # If the cache is a string, create any necessary middle directories, and cache the file in the appropriate
   # subdirectory of cache.  Otherwise, cache the body of the response as the value with the path as the key.
   def call(env)
-    res = @app.call(env)
-    if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and res[0] == 200 and path = @path_proc.call(env, res)
+    status, headers, body = @app.call(env)
+    headers = Rack::Utils::HeaderHash.new(headers)
+
+    if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and status == 200 and path = @path_proc.call(env, [status, headers, body])
       if @cache.is_a?(String)
         path = File.join(@cache, path) if @cache
         FileUtils.mkdir_p(File.dirname(path))
-        File.open(path, 'wb'){|f| res[2].each{|c| f.write(c)}}
+        File.open(path, 'wb'){|f| body.each{|c| f.write(c)}}
       else
-        @cache[path] = res[2]
+        @cache[path] = body
       end
     end
-    res
+
+    [status, headers, body]
   end
 end
