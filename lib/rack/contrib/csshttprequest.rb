@@ -16,8 +16,9 @@ module Rack
     def call(env)
       status, headers, response = @app.call(env)
       if chr_request?(env)
-        response = encode(response)
-        modify_headers!(headers, response)
+        encoded_response = encode(response)
+        modify_headers!(headers, encoded_response)
+        response = [encoded_response]
       end
       [status, headers, response]
     end
