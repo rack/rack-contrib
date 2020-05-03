@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
+require 'timecop'
 require 'rack/mock'
 require 'rack/contrib/deflect'
 

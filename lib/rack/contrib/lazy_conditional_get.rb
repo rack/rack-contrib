@@ -45,6 +45,10 @@ module Rack
   # know for sure that it does not modify the cached content, you can set the
   # `Rack-Lazy-Conditional-Get` on response to `skip`. This will not update the
   # global modification date.
+  #
+  # NOTE: This will not work properly in a multi-threaded environment with
+  # default cache object. A provided cache object should ensure thread-safety
+  # of the `get`/`set`/`[]`/`[]=` methods.
 
   class LazyConditionalGet
 

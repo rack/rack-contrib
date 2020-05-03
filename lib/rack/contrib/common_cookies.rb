@@ -13,20 +13,20 @@ module Rack
 
     def call(env)
       @app.call(env).tap do |(status, headers, response)|
-        @host = env['HTTP_HOST'].sub PORT, ''
-        share_cookie headers
+        host = env['HTTP_HOST'].sub PORT, ''
+        share_cookie(headers, host)
       end
     end
 
     private
 
-    def domain
-      @host =~ DOMAIN_REGEXP
+    def domain(host)
+      host =~ DOMAIN_REGEXP
       ".#{$1}.#{$2}"
     end
 
-    def share_cookie(headers)
-      headers['Set-Cookie'] &&= common_cookie(headers) if @host !~ LOCALHOST_OR_IP_REGEXP
+    def share_cookie(headers, host)
+      headers['Set-Cookie'] &&= common_cookie(headers, host) if host !~ LOCALHOST_OR_IP_REGEXP
     end
 
     def cookie(headers)
@@ -34,8 +34,8 @@ module Rack
       cookies.is_a?(Array) ? cookies.join("\n") : cookies
     end
 
-    def common_cookie(headers)
-      cookie(headers).gsub(/; domain=[^;]*/, '').gsub(/$/, "; domain=#{domain}")
+    def common_cookie(headers, host)
+      cookie(headers).gsub(/; domain=[^;]*/, '').gsub(/$/, "; domain=#{domain(host)}")
     end
   end
 end
