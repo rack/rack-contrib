@@ -8,7 +8,6 @@ interface:
 * `Rack::BounceFavicon` - Returns a 404 for requests to `/favicon.ico`
 * `Rack::CSSHTTPRequest` - Adds CSSHTTPRequest support by encoding responses as CSS for cross-site AJAX-style data loading
 * `Rack::Callbacks` - Implements DSL for pure before/after filter like Middlewares.
-* `Rack::Config` - Shared configuration for cooperative middleware.
 * `Rack::Cookies` - Adds simple cookie jar hash to env
 * `Rack::Deflect` - Helps protect against DoS attacks.
 * `Rack::Evil` - Lets the rack application return a response to the client from any place.
