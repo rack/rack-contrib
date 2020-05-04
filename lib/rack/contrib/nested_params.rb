@@ -26,7 +26,7 @@ module Rack
         post_body = env[POST_BODY]
         env[FORM_INPUT] = post_body
         env[FORM_HASH] = Rack::Utils.parse_nested_query(post_body.read)
-        post_body.rewind if post_body.respond_to?(:rewind)
+        post_body.rewind
       end
       @app.call(env)
     end
