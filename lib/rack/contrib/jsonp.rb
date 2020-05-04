@@ -38,7 +38,7 @@ module Rack
 
       status, headers, response = @app.call(env)
 
-      if STATUS_WITH_NO_ENTITY_BODY.include?(status)
+      if STATUS_WITH_NO_ENTITY_BODY.include?(status.to_i)
         return status, headers, response
       end
 

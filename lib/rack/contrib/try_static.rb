@@ -30,7 +30,7 @@ module Rack
       found = nil
       @try.each do |path|
         resp = @static.call(env.merge!({'PATH_INFO' => orig_path + path}))
-        break if !(403..405).include?(resp[0]) && found = resp
+        break if !(403..405).include?(resp[0].to_i) && found = resp
       end
       found or @app.call(env.merge!('PATH_INFO' => orig_path))
     end

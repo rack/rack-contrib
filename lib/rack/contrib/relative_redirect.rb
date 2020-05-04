@@ -35,7 +35,7 @@ class Rack::RelativeRedirect
     status, headers, body = @app.call(env)
     headers = Rack::Utils::HeaderHash.new(headers)
 
-    if [301,302,303, 307,308].include?(status) and loc = headers['Location'] and !%r{\Ahttps?://}o.match(loc)
+    if [301,302,303, 307,308].include?(status.to_i) and loc = headers['Location'] and !%r{\Ahttps?://}o.match(loc)
       absolute = @absolute_proc.call(env, [status, headers, body])
       headers['Location'] = if %r{\A/}.match(loc)
         "#{absolute}#{loc}"

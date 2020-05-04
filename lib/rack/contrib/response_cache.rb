@@ -55,7 +55,7 @@ class Rack::ResponseCache
     status, headers, body = @app.call(env)
     headers = Rack::Utils::HeaderHash.new(headers)
 
-    if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and status == 200 and path = @path_proc.call(env, [status, headers, body])
+    if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and status.to_i == 200 and path = @path_proc.call(env, [status, headers, body])
       if @cache.is_a?(String)
         path = File.join(@cache, path) if @cache
         FileUtils.mkdir_p(File.dirname(path))
