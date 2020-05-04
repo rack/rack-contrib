@@ -50,9 +50,9 @@ module Rack
     end
 
     def call(env)
-      @original_request = Request.new(env)
+      request = Request.new(env)
       ipmasks = ipmasks_for_path(env)
-      return forbidden! unless ip_authorized?(ipmasks)
+      return forbidden! unless ip_authorized?(request, ipmasks)
       status, headers, body = @app.call(env)
       [status, headers, body]
     end
@@ -75,11 +75,11 @@ module Rack
       [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
     end
 
-    def ip_authorized?(ipmasks)
+    def ip_authorized?(request, ipmasks)
       return true if ipmasks.nil?
 
       ipmasks.any? do |ip_mask|
-        ip_mask.include?(IPAddr.new(@original_request.ip))
+        ip_mask.include?(IPAddr.new(request.ip))
       end
     end
 

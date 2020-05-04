@@ -69,10 +69,10 @@ module Rack
     end
 
     def deflect? env
-      @remote_addr = env['REMOTE_ADDR']
-      return false if options[:whitelist].include? @remote_addr
-      return true  if options[:blacklist].include? @remote_addr
-      sync { watch }
+      remote_addr = env['REMOTE_ADDR']
+      return false if options[:whitelist].include? remote_addr
+      return true  if options[:blacklist].include? remote_addr
+      sync { watch(remote_addr) }
     end
 
     def log message
@@ -84,55 +84,55 @@ module Rack
       @mutex.synchronize(&block)
     end
 
-    def map
-      @remote_addr_map[@remote_addr] ||= {
+    def map(remote_addr)
+      @remote_addr_map[remote_addr] ||= {
         :expires => Time.now + options[:interval],
         :requests => 0
       }
     end
 
-    def watch
-      increment_requests
-      clear! if watch_expired? and not blocked?
-      clear! if blocked? and block_expired?
-      block! if watching? and exceeded_request_threshold?
-      blocked?
+    def watch(remote_addr)
+      increment_requests(remote_addr)
+      clear!(remote_addr) if watch_expired?(remote_addr) and not blocked?(remote_addr)
+      clear!(remote_addr) if blocked?(remote_addr) and block_expired?(remote_addr)
+      block!(remote_addr) if watching?(remote_addr) and exceeded_request_threshold?(remote_addr)
+      blocked?(remote_addr)
     end
 
-    def block!
-      return if blocked?
-      log "blocked #{@remote_addr}"
-      map[:block_expires] = Time.now + options[:block_duration]
+    def block!(remote_addr)
+      return if blocked?(remote_addr)
+      log "blocked #{remote_addr}"
+      map(remote_addr)[:block_expires] = Time.now + options[:block_duration]
     end
 
-    def blocked?
-      map.has_key? :block_expires
+    def blocked?(remote_addr)
+      map(remote_addr).has_key? :block_expires
     end
 
-    def block_expired?
-      map[:block_expires] < Time.now rescue false
+    def block_expired?(remote_addr)
+      map(remote_addr)[:block_expires] < Time.now rescue false
     end
 
-    def watching?
-      @remote_addr_map.has_key? @remote_addr
+    def watching?(remote_addr)
+      @remote_addr_map.has_key? remote_addr
     end
 
-    def clear!
-      return unless watching?
-      log "released #{@remote_addr}" if blocked?
-      @remote_addr_map.delete @remote_addr
+    def clear!(remote_addr)
+      return unless watching?(remote_addr)
+      log "released #{remote_addr}" if blocked?(remote_addr)
+      @remote_addr_map.delete remote_addr
     end
 
-    def increment_requests
-      map[:requests] += 1
+    def increment_requests(remote_addr)
+      map(remote_addr)[:requests] += 1
     end
 
-    def exceeded_request_threshold?
-      map[:requests] > options[:request_threshold]
+    def exceeded_request_threshold?(remote_addr)
+      map(remote_addr)[:requests] > options[:request_threshold]
     end
 
-    def watch_expired?
-      map[:expires] <= Time.now
+    def watch_expired?(remote_addr)
+      map(remote_addr)[:expires] <= Time.now
     end
 
   end
