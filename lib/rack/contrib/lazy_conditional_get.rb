@@ -76,7 +76,10 @@ module Rack
       if reading? env and fresh? env
         return [304, {'Last-Modified' => env['HTTP_IF_MODIFIED_SINCE']}, []]
       end
+
       status, headers, body = @app.call env
+      headers = Utils::HeaderHash.new(headers)
+
       update_cache unless (reading?(env) or skipping?(headers))
       headers['Last-Modified'] = cached_value if stampable? headers
       [status, headers, body]

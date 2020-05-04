@@ -16,6 +16,7 @@ module Rack
 
       env['rack.locale'] = I18n.locale = locale.to_s
       status, headers, body = @app.call(env)
+      headers = Utils::HeaderHash.new(headers)
 
       unless headers['Content-Language']
         headers['Content-Language'] = locale.to_s

@@ -32,15 +32,18 @@ class Rack::RelativeRedirect
   # and use that to make the Location header an absolute url.  If the Location
   # does not start with a slash, make location relative to the path requested.
   def call(env)
-    res = @app.call(env)
-    if [301,302,303, 307,308].include?(res[0]) and loc = res[1]['Location'] and !%r{\Ahttps?://}o.match(loc)
-      absolute = @absolute_proc.call(env, res)
-      res[1]['Location'] = if %r{\A/}.match(loc)
+    status, headers, body = @app.call(env)
+    headers = Rack::Utils::HeaderHash.new(headers)
+
+    if [301,302,303, 307,308].include?(status) and loc = headers['Location'] and !%r{\Ahttps?://}o.match(loc)
+      absolute = @absolute_proc.call(env, [status, headers, body])
+      headers['Location'] = if %r{\A/}.match(loc)
         "#{absolute}#{loc}"
       else
         "#{absolute}#{File.dirname(Rack::Utils.unescape(env['PATH_INFO']))}/#{loc}"
       end
     end
-    res
+
+    [status, headers, body]
   end
 end

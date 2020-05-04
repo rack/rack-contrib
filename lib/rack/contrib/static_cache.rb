@@ -85,7 +85,10 @@ module Rack
         if @versioning_enabled
           path.sub!(@version_regex, '\1')
         end
+
         status, headers, body = @file_server.call(env)
+        headers = Utils::HeaderHash.new(headers)
+
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
           headers['Expires'] = duration_in_words

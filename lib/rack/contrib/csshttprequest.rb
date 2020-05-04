@@ -15,6 +15,8 @@ module Rack
     # the CSSHTTPRequest encoder
     def call(env)
       status, headers, response = @app.call(env)
+      headers = Utils::HeaderHash.new(headers)
+
       if chr_request?(env)
         encoded_response = encode(response)
         modify_headers!(headers, encoded_response)

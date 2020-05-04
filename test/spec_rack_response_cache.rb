@@ -91,7 +91,7 @@ describe Rack::ResponseCache do
 
   specify "should pass the environment and response to the block" do
     e, r = nil, nil
-    request(:rc_block=>proc{|env,res| e, r = env, res; nil})
+    request(:rc_block=>proc{|env,res| e, r = env, [res[0], res[1].dup, res[2].dup]; nil})
     _(e['PATH_INFO']).must_equal @def_path
     _(e['REQUEST_METHOD']).must_equal 'GET'
     _(e['QUERY_STRING']).must_equal ''

@@ -12,10 +12,13 @@ module Rack
     end
 
     def call(env)
-      @app.call(env).tap do |(status, headers, response)|
-        host = env['HTTP_HOST'].sub PORT, ''
-        share_cookie(headers, host)
-      end
+      status, headers, body = @app.call(env)
+      headers = Utils::HeaderHash.new(headers)
+
+      host = env['HTTP_HOST'].sub PORT, ''
+      share_cookie(headers, host)
+
+      [status, headers, body]
     end
 
     private
