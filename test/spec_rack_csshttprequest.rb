@@ -46,6 +46,11 @@ begin
           'csshttprequest.chr' => true, :fatal => true)
       end
 
+      specify "should return encoded body" do
+        body = css_httl_request(@app).call(@request)[2]
+        _(body.to_enum.to_a.join).must_equal @encoded_body
+      end
+
       specify "should modify the content length to the correct value" do
         headers = css_httl_request(@app).call(@request)[1]
         _(headers['Content-Length']).must_equal @encoded_body.length.to_s
