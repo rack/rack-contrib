@@ -2,7 +2,7 @@
 
 module Rack
   class ExpectationCascade
-    Expect = "Expect".freeze
+    Expect = "HTTP_EXPECT".freeze
     ContinueExpectation = "100-continue".freeze
 
     ExpectationFailed = [417, {"Content-Type" => "text/html"}, []].freeze

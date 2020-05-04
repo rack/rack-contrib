@@ -19,10 +19,10 @@ describe "Rack::ExpectationCascade" do
 
   specify "with no apps returns a 417 if expectation header was set" do
     app = expectation_cascade
-    env = Rack::MockRequest.env_for('', "Expect" => "100-continue")
+    env = Rack::MockRequest.env_for('', "HTTP_EXPECT" => "100-continue")
     response = app.call(env)
     _(response[0]).must_equal 417
-    _(env['Expect']).must_equal('100-continue')
+    _(env['HTTP_EXPECT']).must_equal('100-continue')
   end
 
   specify "returns first successful response" do
@@ -38,7 +38,7 @@ describe "Rack::ExpectationCascade" do
 
   specify "expectation is set if it has not been already" do
     app = expectation_cascade do |cascade|
-      cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["Expect: #{env["Expect"]}"]] }
+      cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["Expect: #{env["HTTP_EXPECT"]}"]] }
     end
     env = Rack::MockRequest.env_for
     response = app.call(env)
@@ -60,7 +60,7 @@ describe "Rack::ExpectationCascade" do
     app = expectation_cascade do |cascade|
       cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
     end
-    env = Rack::MockRequest.env_for('', "Expect" => "100-continue")
+    env = Rack::MockRequest.env_for('', "HTTP_EXPECT" => "100-continue")
     response = app.call(env)
     _(response[0]).must_equal 417
     _(response[2].to_enum.to_a).must_equal []
