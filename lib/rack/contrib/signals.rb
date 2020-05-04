@@ -26,6 +26,10 @@ module Rack
         @body.each(&block)
         @callback.call
       end
+
+      def close
+        @body.close if @body.respond_to?(:close)
+      end
     end
 
     def initialize(app, &block)
