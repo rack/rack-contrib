@@ -106,7 +106,7 @@ module Rack
 
     def extract_body(env)
       if io = env['rack.input']
-        io.rewind if io.respond_to?(:rewind)
+        io.rewind
         io.read
       end
     end
