@@ -55,16 +55,18 @@ module Rack
     end
 
     def call(env)
-      if @verbs.include?(env[Rack::REQUEST_METHOD]) &&
-         @matcher.call(@media, env['CONTENT_TYPE'])
+      begin
+        if @verbs.include?(env[Rack::REQUEST_METHOD]) &&
+           @matcher.call(@media, env['CONTENT_TYPE'])
 
-        update_form_hash_with_json_body(env)
+          update_form_hash_with_json_body(env)
+        end
+      rescue JSON::ParserError
+        body = { error: 'Failed to parse body as JSON' }.to_json
+        header = { 'Content-Type' => 'application/json' }
+        return Rack::Response.new(body, 400, header).finish
       end
       @app.call(env)
-    rescue JSON::ParserError
-      body = { error: 'Failed to parse body as JSON' }.to_json
-      header = { 'Content-Type' => 'application/json' }
-      Rack::Response.new(body, 400, header).finish
     end
 
     private
