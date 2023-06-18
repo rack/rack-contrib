@@ -61,7 +61,7 @@ module Rack
 
           update_form_hash_with_json_body(env)
         end
-      rescue JSON::ParserError
+      rescue ParserError
         body = { error: 'Failed to parse body as JSON' }.to_json
         header = { 'Content-Type' => 'application/json' }
         return Rack::Response.new(body, 400, header).finish
@@ -71,13 +71,22 @@ module Rack
 
     private
 
+    class ParserError < StandardError; end
+
     def update_form_hash_with_json_body(env)
       body = env[Rack::RACK_INPUT]
       return unless (body_content = body.read) && !body_content.empty?
 
       body.rewind # somebody might try to read this stream
+
+      begin
+        parsed_body = @parser.call(body_content)
+      rescue StandardError
+        raise ParserError
+      end
+
       env.update(
-        Rack::RACK_REQUEST_FORM_HASH => @parser.call(body_content),
+        Rack::RACK_REQUEST_FORM_HASH => parsed_body,
         Rack::RACK_REQUEST_FORM_INPUT => body
       )
     end
