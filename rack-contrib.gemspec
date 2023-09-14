@@ -35,9 +35,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.2.2'
 
-  # REMINDER: If you modify any dependencies, please ensure you
-  # update `test/gemfiles/minimum_versions`!
-  #
   s.add_runtime_dependency 'rack', '~> 2.0'
 
   s.add_development_dependency 'bundler', '>= 1.0', '< 3'
