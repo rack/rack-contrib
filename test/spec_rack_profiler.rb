@@ -21,9 +21,10 @@ begin
     end
 
     specify 'called multiple times via query params' do
-      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=4")
+      runs = 4
+      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=#{runs}")
       body = profiler(app).call(req)[2]
-      _(body.to_enum.to_a.join).must_match(/Time#initialize \[4 calls, 4 total\]/)
+      _(body.to_enum.to_a.join).must_match(/\[#{runs} calls, #{runs} total\]/)
     end
 
     specify 'CallStackPrinter has Content-Type test/html' do
