@@ -17,3 +17,7 @@ gem 'rake'
 gem 'rdoc', '~> 5.0'
 gem 'ruby-prof', '~> 0.17'
 gem 'timecop', '~> 0.9'
+
+# See https://github.com/ruby/cgi/pull/29
+# Needed to have passing tests on Ruby 2.7, Ruby 3.0
+gem 'cgi', '>= 0.3.6' if RUBY_VERSION >= '2.7.0' && RUBY_VERSION <= '3.1.0'
