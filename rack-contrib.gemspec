@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-begin
-  require 'git-version-bump'
-rescue LoadError
-  nil
-end
+require 'git-version-bump'
 
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
@@ -33,7 +29,7 @@ Gem::Specification.new do |s|
 
   s.extra_rdoc_files = %w[README.md COPYING]
 
-  s.required_ruby_version = '>= 2.2.2'
+  s.required_ruby_version = '>= 2.3.8'
 
   s.add_runtime_dependency 'rack', '~> 2.0'
 
