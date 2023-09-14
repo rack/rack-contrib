@@ -40,7 +40,7 @@ module Rack
           raise ArgumentError, "paths need to start with /"
         end
         location = location.chomp('/')
-        match = Regexp.new("^#{Regexp.quote(location).gsub('/', '/+')}(.*)", nil, 'n')
+        match = Regexp.new("^#{Regexp.quote(location).gsub('/', '/+')}(.*)", Regexp::NOENCODING)
 
         ipmasks.collect! do |ipmask|
           ipmask.is_a?(IPAddr) ? ipmask : IPAddr.new(ipmask)
