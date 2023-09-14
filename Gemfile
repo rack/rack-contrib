@@ -15,7 +15,7 @@ gem 'mail', '~> 2.3', '>= 2.6.4'
 gem 'nbio-csshttprequest', '~> 1.0'
 gem 'rake'
 gem 'rdoc', '~> 5.0'
-gem 'ruby-prof', '~> 0.17'
+gem 'ruby-prof'
 gem 'timecop', '~> 0.9'
 
 # See https://github.com/ruby/cgi/pull/29
