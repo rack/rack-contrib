@@ -32,6 +32,7 @@ module Rack
     # option defaulting to :call_stack.
     def initialize(app, options = {})
       @app = app
+      @profile = nil
       @printer = parse_printer(options[:printer] || DEFAULT_PRINTER)
       @times = (options[:times] || 1).to_i
     end
@@ -46,27 +47,27 @@ module Rack
 
     private
       def profiling?(env)
-        unless ::RubyProf.running?
-          request = Rack::Request.new(env.clone)
-          if mode = request.params.delete('profile')
-            if ::RubyProf.const_defined?(mode.upcase)
-              mode
-            else
-              env['rack.errors'].write "Invalid RubyProf measure_mode: " +
-                "#{mode}. Use one of #{MODES.to_a.join(', ')}"
-              false
-            end
+        return if @profile && @profile.running?
+
+        request = Rack::Request.new(env.clone)
+        if mode = request.params.delete('profile')
+          if ::RubyProf.const_defined?(mode.upcase)
+            mode
+          else
+            env['rack.errors'].write "Invalid RubyProf measure_mode: " +
+              "#{mode}. Use one of #{MODES.to_a.join(', ')}"
+            false
           end
         end
       end
 
       def profile(env, mode)
-        ::RubyProf.measure_mode = ::RubyProf.const_get(mode.upcase)
+        @profile = ::RubyProf::Profile.new(measure_mode: ::RubyProf.const_get(mode.upcase))
 
         GC.enable_stats if GC.respond_to?(:enable_stats)
         request = Rack::Request.new(env.clone)
         runs = (request.params['profiler_runs'] || @times).to_i
-        result = ::RubyProf.profile do
+        result = @profile.profile do
           runs.times { @app.call(env) }
         end
         GC.disable_stats if GC.respond_to?(:disable_stats)
