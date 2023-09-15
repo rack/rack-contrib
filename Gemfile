@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'git-version-bump', '~> 0.15' if RUBY_VERSION >= '2.3.0'
+gem 'git-version-bump', '~> 0.15'
 gem 'github-release', '~> 0.1'
 gem 'i18n', '~> 0.6', '>= 0.6.8'
 gem 'json', '~> 2.0'
