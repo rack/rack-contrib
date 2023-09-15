@@ -7,7 +7,7 @@ require 'rack/contrib/access'
 describe "Rack::Access" do
 
   before do
-    @app = lambda { |env| [200, { 'Content-Type' => 'text/plain' }, ['hello']] }
+    @app = lambda { |env| [200, { 'content-type' => 'text/plain' }, ['hello']] }
     @mock_addr_1 = '111.111.111.111'
     @mock_addr_2 = '192.168.1.222'
     @mock_addr_localhost = '127.0.0.1'

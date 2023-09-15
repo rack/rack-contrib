@@ -13,7 +13,7 @@ module Rack
       if File.exist?(@file)
         content = File.read(@file)
         length = content.bytesize.to_s
-        [503, {'Content-Type' => 'text/html', 'Content-Length' => length}, [content]]
+        [503, {'content-type' => 'text/html', 'content-length' => length}, [content]]
       else
         @app.call(env)
       end

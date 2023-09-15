@@ -16,7 +16,8 @@ module Rack
 
       env['rack.locale'] = I18n.locale = locale.to_s
       status, headers, body = @app.call(env)
-      headers = Utils::HeaderHash.new(headers)
+      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
+      headers = headers_klass.new.merge(headers)
 
       unless headers['Content-Language']
         headers['Content-Language'] = locale.to_s

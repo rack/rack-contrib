@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require 'rack/mock'
+require 'rack'
 require 'rack/contrib/bounce_favicon'
 
 describe Rack::BounceFavicon do

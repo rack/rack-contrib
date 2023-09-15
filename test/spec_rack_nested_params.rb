@@ -8,7 +8,7 @@ require 'rack/method_override'
 describe Rack::NestedParams do
 
   request_object = nil
-  App = lambda { |env| request_object = Rack::Request.new(env); [200, {'Content-Type' => 'text/plain'}, []] }
+  App = lambda { |env| request_object = Rack::Request.new(env); [200, {'content-type' => 'text/plain'}, []] }
 
   def env_for_post_with_headers(path, headers, body)
     Rack::MockRequest.env_for(path, {:method => "POST", :input => body}.merge(headers))
@@ -20,15 +20,16 @@ describe Rack::NestedParams do
   end
 
   def middleware
-    Rack::Lint.new(Rack::NestedParams.new(App))
+    # Rack::Lint can't be used because it does not rewind the body
+    Rack::NestedParams.new(App)
   end
 
-  specify "should handle requests with POST body Content-Type of application/x-www-form-urlencoded" do
+  specify "should handle requests with POST body content-type of application/x-www-form-urlencoded" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'})).last
     _(request_object.POST).must_equal({"foo" => { "bar" => { "baz" => "nested" }}})
   end
 
-  specify "should not parse requests with other Content-Type" do
+  specify "should not parse requests with other content-type" do
     req = middleware.call(form_post({'foo[bar][baz]' => 'nested'}, 'text/plain')).last
     _(request_object.POST).must_equal({})
   end

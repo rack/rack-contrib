@@ -13,7 +13,8 @@ module Rack
 
     def call(env)
       status, headers, body = @app.call(env)
-      headers = Utils::HeaderHash.new(headers)
+      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
+      headers = headers_klass.new.merge(headers)
 
       host = env['HTTP_HOST'].sub PORT, ''
       share_cookie(headers, host)

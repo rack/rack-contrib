@@ -42,7 +42,8 @@ module Rack
         return status, headers, response
       end
 
-      headers = HeaderHash.new(headers)
+      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
+      headers = headers_klass.new.merge(headers)
 
       if is_json?(headers) && has_callback?(request)
         callback = request.params['callback']
@@ -108,7 +109,7 @@ module Rack
     end
 
     def bad_request(body = "Bad Request")
-      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.bytesize.to_s }, [body] ]
+      [ 400, { 'content-type' => 'text/plain', 'content-length' => body.bytesize.to_s }, [body] ]
     end
 
   end

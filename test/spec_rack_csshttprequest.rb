@@ -14,7 +14,11 @@ begin
 
     before(:each) do
       @test_body = '{"bar":"foo"}'
-      @test_headers = {'Content-Type' => 'text/plain'}
+      @test_headers = if Rack.release < "3"
+        {'Content-Type' => 'text/plain'}
+      else
+        {'content-type' => 'text/plain'}
+      end
       @encoded_body = CSSHTTPRequest.encode(@test_body)
       @app = lambda { |env| [200, @test_headers, [@test_body]] }
     end
@@ -63,10 +67,17 @@ begin
 
       specify "should not modify any other headers" do
         headers = css_httl_request(@app).call(@request)[1]
-        _(headers).must_equal @test_headers.merge({
-          'Content-Type' => 'text/css',
-          'Content-Length' => @encoded_body.length.to_s
-        })
+        if Rack.release < "3"
+          _(headers).must_equal @test_headers.merge({
+            'Content-Type' => 'text/css',
+            'Content-Length' => @encoded_body.length.to_s
+          })
+        else
+          _(headers).must_equal @test_headers.merge({
+            'content-type' => 'text/css',
+            'content-length' => @encoded_body.length.to_s
+          })
+        end
       end
     end
 

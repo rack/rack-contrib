@@ -11,6 +11,7 @@ gem 'minitest', '~> 5.6'
 gem 'minitest-hooks', '~> 1.0'
 gem 'mail', '~> 2.3', '>= 2.6.4'
 gem 'nbio-csshttprequest', '~> 1.0'
+gem 'rack', ENV['RACK_VERSION']
 gem 'rake'
 gem 'rdoc', '~> 5.0'
 gem 'ruby-prof'

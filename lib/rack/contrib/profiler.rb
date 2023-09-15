@@ -83,10 +83,10 @@ module Rack
       end
 
       def headers(printer, env, mode)
-        headers = { 'Content-Type' => CONTENT_TYPES[printer.name] }
+        headers = { 'content-type' => CONTENT_TYPES[printer.name] }
         if printer == ::RubyProf::CallTreePrinter
           filename = ::File.basename(env['PATH_INFO'])
-          headers['Content-Disposition'] =
+          headers['content-disposition'] =
             %(attachment; filename="#{filename}.#{mode}.tree")
         end
         headers

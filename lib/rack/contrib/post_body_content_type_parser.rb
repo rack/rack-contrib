@@ -75,7 +75,7 @@ module Rack
 
     def call(env)
       if Rack::Request.new(env).media_type == APPLICATION_JSON && (body = env[POST_BODY].read).length != 0
-        env[POST_BODY].rewind # somebody might try to read this stream
+        env[POST_BODY].rewind if env[POST_BODY].respond_to?(:rewind) # somebody might try to read this stream
         env.update(FORM_HASH => @block.call(body), FORM_INPUT => env[POST_BODY])
       end
       @app.call(env)
@@ -84,7 +84,7 @@ module Rack
     end
 
     def bad_request(body = 'Bad Request')
-      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.bytesize.to_s }, [body] ]
+      [ 400, { 'content-type' => 'text/plain', 'content-length' => body.bytesize.to_s }, [body] ]
     end
   end
 end

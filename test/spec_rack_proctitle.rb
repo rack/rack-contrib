@@ -13,7 +13,7 @@ describe "Rack::ProcTitle" do
   end
 
   def simple_app(body=['Hello World!'])
-    lambda { |env| [200, {'Content-Type' => 'text/plain'}, body] }
+    lambda { |env| [200, {'content-type' => 'text/plain'}, body] }
   end
 
   specify "should set the process title when created" do
