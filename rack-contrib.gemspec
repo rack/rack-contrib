@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
 
   s.extra_rdoc_files = %w[README.md COPYING]
 
-  s.required_ruby_version = '>= 2.3.8'
+  s.required_ruby_version = '>= 2.2.2'
 
   s.add_runtime_dependency 'rack', '~> 2.0'
 
