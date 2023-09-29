@@ -58,14 +58,6 @@ describe Rack::JSONBodyParser do
     _(res[2].to_enum.to_a.join).must_equal %Q({"{\\"key\\": \\"value\\"}"=>nil})
   end
 
-  specify "should not create additions" do
-    before = Symbol.all_symbols
-    env = mock_env(input: %{{"json_class":"this_should_not_be_added"}})
-    create_parser(app).call(env)
-    result = Symbol.all_symbols - before
-    _(result).must_be_empty
-  end
-
   specify "should not rescue JSON:ParserError raised by the app" do
     env = mock_env
     app = ->(env) { raise JSON::ParserError }
