@@ -11,6 +11,9 @@ module Rack
   #   end
   #
   class ResponseHeaders
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app, &block)
       @app = app
       @block = block
@@ -18,8 +21,7 @@ module Rack
 
     def call(env)
       response = @app.call(env)
-      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
-      headers = headers_klass.new.merge(response[1])
+      headers = HEADERS_KLASS.new.merge(response[1])
       @block.call(headers)
       response[1] = headers
       response

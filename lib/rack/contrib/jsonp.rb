@@ -23,6 +23,9 @@ module Rack
     # "\342\200\251" # => "\u2029"
     U2028, U2029 = ("\u2028" == 'u2028') ? ["\342\200\250", "\342\200\251"] : ["\u2028", "\u2029"]
 
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app)
       @app = app
     end
@@ -42,8 +45,7 @@ module Rack
         return status, headers, response
       end
 
-      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
-      headers = headers_klass.new.merge(headers)
+      headers = HEADERS_KLASS.new.merge(headers)
 
       if is_json?(headers) && has_callback?(request)
         callback = request.params['callback']

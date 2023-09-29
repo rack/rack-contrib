@@ -52,6 +52,8 @@ module Rack
 
 
   class StaticCache
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
 
     def initialize(app, options={})
       @app = app
@@ -87,8 +89,7 @@ module Rack
         end
 
         status, headers, body = @file_server.call(env)
-        headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
-        headers = headers_klass.new.merge(headers)
+        headers = HEADERS_KLASS.new.merge(headers)
 
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"

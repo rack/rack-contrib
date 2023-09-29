@@ -6,6 +6,8 @@ module Rack
 
   # A Rack middleware for providing CSSHTTPRequest responses.
   class CSSHTTPRequest
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
 
     def initialize(app)
       @app = app
@@ -15,8 +17,7 @@ module Rack
     # the CSSHTTPRequest encoder
     def call(env)
       status, headers, response = @app.call(env)
-      headers_klass = Rack.release < "3" ? Utils::HeaderHash : Headers
-      headers = headers_klass.new.merge(headers)
+      headers = HEADERS_KLASS.new.merge(headers)
 
       if chr_request?(env)
         encoded_response = encode(response)
