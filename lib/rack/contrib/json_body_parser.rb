@@ -14,10 +14,10 @@ module Rack
   # === Parse POST and GET requests only
   #   use Rack::JSONBodyParser, verbs: ['POST', 'GET']
   #
-  # === Parse POST|PATCH|PUT requests whose Content-Type matches 'json'
+  # === Parse POST|PATCH|PUT requests whose content-type matches 'json'
   #   use Rack::JSONBodyParser, media: /json/
   #
-  # === Parse POST requests whose Content-Type is 'application/json' or 'application/vnd+json'
+  # === Parse POST requests whose content-type is 'application/json' or 'application/vnd+json'
   #   use Rack::JSONBodyParser, verbs: ['POST'], media: ['application/json', 'application/vnd.api+json']
   #
   class JSONBodyParser
@@ -63,7 +63,7 @@ module Rack
         end
       rescue JSON::ParserError
         body = { error: 'Failed to parse body as JSON' }.to_json
-        header = { 'Content-Type' => 'application/json' }
+        header = { 'content-type' => 'application/json' }
         return Rack::Response.new(body, 400, header).finish
       end
       @app.call(env)
@@ -75,7 +75,7 @@ module Rack
       body = env[Rack::RACK_INPUT]
       return unless (body_content = body.read) && !body_content.empty?
 
-      body.rewind # somebody might try to read this stream
+      body.rewind if body.respond_to?(:rewind) # somebody might try to read this stream
       env.update(
         Rack::RACK_REQUEST_FORM_HASH => @parser.call(body_content),
         Rack::RACK_REQUEST_FORM_INPUT => body

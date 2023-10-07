@@ -87,7 +87,12 @@ describe Rack::CommonCookies do
   specify 'should work with multiple cookies' do
     response = make_request 'sub.domain.bz', "key=value\nkey1=value2"
     _(response.headers['Set-Cookie']).must_equal "key=value; domain=.domain.bz\nkey1=value2; domain=.domain.bz"
-  end
+  end if Rack.release < "3"
+
+  specify 'should not work with multiple cookies' do
+    error = _ { make_request 'sub.domain.bz', "key=value\nkey1=value2" }.must_raise(Rack::Lint::LintError)
+    _(error.message).must_match(/invalid header value/)
+  end if Rack.release > "3"
 
   specify 'should work with cookies which have explicit domain' do
     response = make_request 'sub.domain.bz', "key=value; domain=domain.bz"

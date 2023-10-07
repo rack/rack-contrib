@@ -30,7 +30,7 @@ module Rack
 
     def call(env)
       if env['PATH_INFO'] == '/host-meta'
-        [200, {'Content-Type' => 'application/host-meta'}, [@response]]
+        [200, {'content-type' => 'application/host-meta'}, [@response]]
       else
         @app.call(env)
       end

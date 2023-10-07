@@ -4,6 +4,9 @@ require 'i18n'
 
 module Rack
   class Locale
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app)
       @app = app
     end
@@ -16,7 +19,7 @@ module Rack
 
       env['rack.locale'] = I18n.locale = locale.to_s
       status, headers, body = @app.call(env)
-      headers = Utils::HeaderHash.new(headers)
+      headers = HEADERS_KLASS.new.merge(headers)
 
       unless headers['Content-Language']
         headers['Content-Language'] = locale.to_s

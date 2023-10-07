@@ -16,7 +16,7 @@ if "a string".respond_to?(:valid_encoding?)
       @app = Rack::Lint.new(
         Rack::EnforceValidEncoding.new(
           lambda do |env|
-            [200, {'Content-Type'=>'text/plain'}, ['Hello World']]
+            [200, {'content-type'=>'text/plain'}, ['Hello World']]
           end
         )
       )

@@ -8,7 +8,7 @@ require 'rack/contrib/deflect'
 describe "Rack::Deflect" do
 
   before do
-    @app = lambda { |env| [200, { 'Content-Type' => 'text/plain' }, ['cookies']] }
+    @app = lambda { |env| [200, { 'content-type' => 'text/plain' }, ['cookies']] }
     @mock_addr_1 = '111.111.111.111'
     @mock_addr_2 = '222.222.222.222'
     @mock_addr_3 = '333.333.333.333'
@@ -38,7 +38,11 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body.to_enum.to_a).must_equal ['cookies']
+      if Rack.release < "3"
+        _(body.to_enum.to_a).must_equal ['cookies']
+      else
+        _(body.to_ary).must_equal ['cookies']
+      end
     end
 
     # Remaining requests should fail for 10 seconds
@@ -61,7 +65,11 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body.to_enum.to_a).must_equal ['cookies']
+      if Rack.release < "3"
+        _(body.to_enum.to_a).must_equal ['cookies']
+      else
+        _(body.to_ary).must_equal ['cookies']
+      end
     end
 
     # Exceeds request threshold
@@ -91,7 +99,11 @@ describe "Rack::Deflect" do
     10.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      _(body.to_enum.to_a).must_equal ['cookies']
+      if Rack.release < "3"
+        _(body.to_enum.to_a).must_equal ['cookies']
+      else
+        _(body.to_ary).must_equal ['cookies']
+      end
     end
   end
 

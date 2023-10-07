@@ -72,7 +72,7 @@ module Rack
     end
 
     def forbidden!
-      [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
+      [403, { 'content-type' => 'text/html', 'content-length' => '0' }, []]
     end
 
     def ip_authorized?(request, ipmasks)

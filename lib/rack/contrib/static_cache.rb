@@ -52,6 +52,8 @@ module Rack
 
 
   class StaticCache
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
 
     def initialize(app, options={})
       @app = app
@@ -67,7 +69,7 @@ module Rack
         end
       end
       root = options[:root] || Dir.pwd
-      @file_server = Rack::File.new(root)
+      @file_server = Rack::Files.new(root)
       @cache_duration = options[:duration] || 1
       @versioning_enabled = options.fetch(:versioning, true)
       if @versioning_enabled
@@ -87,7 +89,7 @@ module Rack
         end
 
         status, headers, body = @file_server.call(env)
-        headers = Utils::HeaderHash.new(headers)
+        headers = HEADERS_KLASS.new.merge(headers)
 
         if @no_cache[url].nil?
           headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"

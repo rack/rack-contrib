@@ -18,7 +18,7 @@ module Rack
          Rack::Utils.unescape(full_path).valid_encoding?
         @app.call env
       else
-        [400, {'Content-Type'=>'text/plain'}, ['Bad Request']]
+        [400, {'content-type'=>'text/plain'}, ['Bad Request']]
       end
     end
   end

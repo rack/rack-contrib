@@ -13,12 +13,17 @@ describe "Rack::ResponseHeaders" do
     Rack::MockRequest.env_for('', {})
   end
 
-  specify "yields a HeaderHash of response headers" do
+  specify "yields a HeaderHash (rack 2) or Headers (rack 3) of response headers" do
     orig_headers = {'X-Foo' => 'foo', 'X-Bar' => 'bar'}
     app = Proc.new {[200, orig_headers, []]}
+    headers_klass = Rack.release < "3" ? Rack::Utils::HeaderHash : Rack::Headers
     middleware = response_header(app) do |headers|
-      assert_instance_of Rack::Utils::HeaderHash, headers
-      _(orig_headers).must_equal headers
+      assert_instance_of headers_klass, headers
+      if Rack.release < "3"
+        _(orig_headers).must_equal headers
+      else
+        _(orig_headers).must_equal({'X-Foo' => 'foo', 'X-Bar' => 'bar'})
+      end
     end
     middleware.call(env)
   end
@@ -29,7 +34,11 @@ describe "Rack::ResponseHeaders" do
       headers['X-Bar'] = 'bar'
     end
     r = middleware.call(env)
-    _(r[1]).must_equal('X-Foo' => 'foo', 'X-Bar' => 'bar')
+    if Rack.release < "3"
+      _(r[1]).must_equal('X-Foo' => 'foo', 'X-Bar' => 'bar')
+    else
+      _(r[1]).must_equal('x-foo' => 'foo', 'x-bar' => 'bar')
+    end
   end
 
   specify "allows deleting headers" do
@@ -38,7 +47,11 @@ describe "Rack::ResponseHeaders" do
       headers.delete('X-Bar')
     end
     r = middleware.call(env)
-    _(r[1]).must_equal('X-Foo' => 'foo')
+    if Rack.release < "3"
+      _(r[1]).must_equal('X-Foo' => 'foo')
+    else
+      _(r[1]).must_equal('x-foo' => 'foo')
+    end
   end
 
 end

@@ -27,8 +27,8 @@ describe "Rack::ExpectationCascade" do
 
   specify "returns first successful response" do
     app = expectation_cascade do |cascade|
-      cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
-      cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["OK"]] }
+      cascade << lambda { |env| [417, {"content-type" => "text/plain"}, []] }
+      cascade << lambda { |env| [200, {"content-type" => "text/plain"}, ["OK"]] }
     end
     env = Rack::MockRequest.env_for
     response = app.call(env)
@@ -38,7 +38,7 @@ describe "Rack::ExpectationCascade" do
 
   specify "expectation is set if it has not been already" do
     app = expectation_cascade do |cascade|
-      cascade << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["Expect: #{env["HTTP_EXPECT"]}"]] }
+      cascade << lambda { |env| [200, {"content-type" => "text/plain"}, ["Expect: #{env["HTTP_EXPECT"]}"]] }
     end
     env = Rack::MockRequest.env_for
     response = app.call(env)
@@ -48,7 +48,7 @@ describe "Rack::ExpectationCascade" do
 
   specify "returns a 404 if no apps where matched and no expectation header was set" do
     app = expectation_cascade do |cascade|
-      cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
+      cascade << lambda { |env| [417, {"content-type" => "text/plain"}, []] }
     end
     env = Rack::MockRequest.env_for
     response = app.call(env)
@@ -58,7 +58,7 @@ describe "Rack::ExpectationCascade" do
 
   specify "returns a 417 if no apps where matched and a expectation header was set" do
     app = expectation_cascade do |cascade|
-      cascade << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
+      cascade << lambda { |env| [417, {"content-type" => "text/plain"}, []] }
     end
     env = Rack::MockRequest.env_for('', "HTTP_EXPECT" => "100-continue")
     response = app.call(env)
@@ -69,10 +69,10 @@ describe "Rack::ExpectationCascade" do
   specify "nests expectation cascades" do
     app = expectation_cascade do |c1|
       c1 << expectation_cascade do |c2|
-        c2 << lambda { |env| [417, {"Content-Type" => "text/plain"}, []] }
+        c2 << lambda { |env| [417, {"content-type" => "text/plain"}, []] }
       end
       c1 << expectation_cascade do |c2|
-        c2 << lambda { |env| [200, {"Content-Type" => "text/plain"}, ["OK"]] }
+        c2 << lambda { |env| [200, {"content-type" => "text/plain"}, ["OK"]] }
       end
     end
     env = Rack::MockRequest.env_for

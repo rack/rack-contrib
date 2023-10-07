@@ -2,7 +2,8 @@
 
 module Rack
   # Allows you to tap into the response headers. Yields a Rack::Utils::HeaderHash
-  # of current response headers to the block. Example:
+  # (Rack 2) or a Rack::Headers (Rack 3) of current response headers to the block.
+  # Example:
   #
   #   use Rack::ResponseHeaders do |headers|
   #     headers['X-Foo'] = 'bar'
@@ -10,6 +11,9 @@ module Rack
   #   end
   #
   class ResponseHeaders
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app, &block)
       @app = app
       @block = block
@@ -17,7 +21,7 @@ module Rack
 
     def call(env)
       response = @app.call(env)
-      headers = Utils::HeaderHash.new(response[1])
+      headers = HEADERS_KLASS.new.merge(response[1])
       @block.call(headers)
       response[1] = headers
       response
