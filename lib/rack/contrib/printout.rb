@@ -8,7 +8,7 @@ module Rack
     end
 
     def call(env)
-      # See http://rack.rubyforge.org/doc/SPEC.html for details
+      # See https://github.com/rack/rack/blob/main/SPEC.rdoc for details
       puts "**********\n Environment\n **************"
       puts env.inspect
       

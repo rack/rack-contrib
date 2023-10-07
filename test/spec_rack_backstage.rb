@@ -10,7 +10,7 @@ describe "Rack::Backstage" do
     app = Rack::Lint.new(
       Rack::Builder.new do
         use Rack::Backstage, 'test/Maintenance.html'
-        run lambda { |env| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
+        run lambda { |env| [200, {'content-type' => 'text/plain'}, ["Hello, World!"]] }
       end
     )
     response = Rack::MockRequest.new(app).get('/')
@@ -22,7 +22,7 @@ describe "Rack::Backstage" do
     app = Rack::Lint.new(
       Rack::Builder.new do
         use Rack::Backstage, 'test/Nonsense.html'
-        run lambda { |env| [200, {'Content-Type' => 'text/plain'}, ["Hello, World!"]] }
+        run lambda { |env| [200, {'content-type' => 'text/plain'}, ["Hello, World!"]] }
       end
     )
     response = Rack::MockRequest.new(app).get('/')

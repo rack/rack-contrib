@@ -9,7 +9,7 @@ module Rack
 
     def call(env)
       if env["PATH_INFO"] == "/favicon.ico"
-        [404, {"Content-Type" => "text/html", "Content-Length" => "0"}, []]
+        [404, {"content-type" => "text/html", "content-length" => "0"}, []]
       else
         @app.call(env)
       end

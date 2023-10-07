@@ -14,7 +14,7 @@ describe "Rack::Config" do
         env['greeting'] = 'hello'
       end
       run lambda { |env|
-        [200, {'Content-Type' => 'text/plain'}, [env['greeting'] || '']]
+        [200, {'content-type' => 'text/plain'}, [env['greeting'] || '']]
       }
     end
     response = Rack::MockRequest.new(app).get('/')

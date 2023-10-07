@@ -27,7 +27,7 @@ module Rack
     end
 
     def call(env)
-      [404, {'Content-Type' => @content_type, 'Content-Length' => @length}, [@content]]
+      [404, {'content-type' => @content_type, 'content-length' => @length}, [@content]]
     end
   end
 end

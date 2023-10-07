@@ -7,7 +7,7 @@ begin
   require 'rack/contrib/profiler'
 
   describe 'Rack::Profiler' do
-    app = lambda { |env| Time.new; [200, {'Content-Type' => 'text/plain'}, ['Oh hai der']] }
+    app = lambda { |env| Time.new; [200, {'content-type' => 'text/plain'}, ['Oh hai der']] }
     request = Rack::MockRequest.env_for("/", :params => "profile=process_time")
 
     def profiler(app, options = {})
@@ -21,26 +21,27 @@ begin
     end
 
     specify 'called multiple times via query params' do
-      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=4")
+      runs = 4
+      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=#{runs}")
       body = profiler(app).call(req)[2]
-      _(body.to_enum.to_a.join).must_match(/Time#initialize \[4 calls, 4 total\]/)
+      _(body.to_enum.to_a.join).must_match(/\[#{runs} calls, #{runs} total\]/)
     end
 
-    specify 'CallStackPrinter has Content-Type test/html' do
+    specify 'CallStackPrinter has content-type test/html' do
       headers = profiler(app, :printer => :call_stack).call(request)[1]
-      _(headers).must_equal "Content-Type"=>"text/html"
+      _(headers).must_equal "content-type"=>"text/html"
     end
 
-    specify 'FlatPrinter and GraphPrinter has Content-Type text/plain' do
+    specify 'FlatPrinter and GraphPrinter has content-type text/plain' do
       %w(flat graph).each do |printer|
         headers = profiler(app, :printer => printer.to_sym).call(request)[1]
-        _(headers).must_equal "Content-Type"=>"text/plain"
+        _(headers).must_equal "content-type"=>"text/plain"
       end
     end
 
-    specify 'GraphHtmlPrinter has Content-Type text/html' do
+    specify 'GraphHtmlPrinter has content-type text/html' do
       headers = profiler(app, :printer => :graph_html).call(request)[1]
-      _(headers).must_equal "Content-Type"=>"text/html"
+      _(headers).must_equal "content-type"=>"text/html"
     end
   end
 

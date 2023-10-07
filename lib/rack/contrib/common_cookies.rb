@@ -7,13 +7,16 @@ module Rack
     LOCALHOST_OR_IP_REGEXP = /^([\d.]+|localhost)$/
     PORT = /:\d+$/
 
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app)
       @app = app
     end
 
     def call(env)
       status, headers, body = @app.call(env)
-      headers = Utils::HeaderHash.new(headers)
+      headers = HEADERS_KLASS.new.merge(headers)
 
       host = env['HTTP_HOST'].sub PORT, ''
       share_cookie(headers, host)

@@ -23,6 +23,9 @@ module Rack
     # "\342\200\251" # => "\u2029"
     U2028, U2029 = ("\u2028" == 'u2028') ? ["\342\200\250", "\342\200\251"] : ["\u2028", "\u2029"]
 
+    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
+    private_constant :HEADERS_KLASS
+
     def initialize(app)
       @app = app
     end
@@ -42,7 +45,7 @@ module Rack
         return status, headers, response
       end
 
-      headers = HeaderHash.new(headers)
+      headers = HEADERS_KLASS.new.merge(headers)
 
       if is_json?(headers) && has_callback?(request)
         callback = request.params['callback']
@@ -108,7 +111,7 @@ module Rack
     end
 
     def bad_request(body = "Bad Request")
-      [ 400, { 'Content-Type' => 'text/plain', 'Content-Length' => body.bytesize.to_s }, [body] ]
+      [ 400, { 'content-type' => 'text/plain', 'content-length' => body.bytesize.to_s }, [body] ]
     end
 
   end
