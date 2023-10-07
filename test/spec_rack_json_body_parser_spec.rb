@@ -64,6 +64,17 @@ describe Rack::JSONBodyParser do
     _( -> { create_parser(app).call(env) }).must_raise JSON::ParserError
   end
 
+  specify "should rescue StandardError subclasses raised by the parser" do
+    class CustomParserError < StandardError; end
+
+    parser = create_parser(app) do |_body|
+      raise CustomParserError.new
+    end
+
+    res = parser.call(mock_env)
+    _(res[0]).must_equal 400
+  end
+
   describe "contradiction between body and type" do
     specify "should return bad request with a JSON-encoded error message" do
       env = mock_env(input: 'This is not JSON')
