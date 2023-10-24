@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-begin
-  require 'git-version-bump'
-rescue LoadError
-  nil
-end
+require_relative 'lib/rack/contrib/version'
 
 Gem::Specification.new do |s|
   s.specification_version = 2 if s.respond_to? :specification_version=
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
 
   s.name    = 'rack-contrib'
-  s.version = GVB.version rescue "0.0.0.1.ENOTAG"
-  s.date    = GVB.date    rescue Time.now.strftime("%F")
+  s.version = Rack::Contrib::VERSION
 
   s.licenses = ['MIT']
 

@@ -2,8 +2,8 @@
 
 source 'https://rubygems.org'
 
-gem 'git-version-bump', '~> 0.15'
-gem 'github-release', '~> 0.1'
+gemspec
+
 gem 'i18n', '~> 0.6', '>= 0.6.8'
 gem 'json', '~> 2.0'
 gem 'mime-types', '~> 3.0'
@@ -21,4 +21,7 @@ gem 'timecop', '~> 0.9'
 # Needed to have passing tests on Ruby 2.7, Ruby 3.0
 gem 'cgi', '>= 0.3.6' if RUBY_VERSION >= '2.7.0' && RUBY_VERSION <= '3.1.0'
 
-gemspec
+group :maintenance, optional: true do
+  gem "bake"
+  gem "bake-gem"
+end

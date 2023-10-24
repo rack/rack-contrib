@@ -1,14 +1,4 @@
 # frozen_string_literal: true
-# -*-ruby-*-
-exec(*(["bundle", "exec", $PROGRAM_NAME] + ARGV)) if ENV['BUNDLE_GEMFILE'].nil?
-
-begin
-	Bundler.setup(:default, :development)
-rescue Bundler::BundlerError => ex
-	$stderr.puts e.message
-	$stderr.puts "Run `bundle install` to install missing gems"
-	exit e.status_code
-end
 
 require 'rdoc/task'
 require 'rake/testtask'
@@ -32,13 +22,4 @@ RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include 'README.rdoc'
   rdoc.rdoc_files.include('lib/rack/*.rb')
   rdoc.rdoc_files.include('lib/rack/*/*.rb')
-end
-
-
-# PACKAGING =================================================================
-
-Bundler::GemHelper.install_tasks
-
-task :release do
-	sh "git release"
 end
