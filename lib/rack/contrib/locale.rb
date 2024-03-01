@@ -71,25 +71,17 @@ module Rack
       return if locales.empty?
 
       if I18n.enforce_available_locales
-        found_locale = find_locale(locales, :match?) || find_locale(locales, :variant_match?)
-        found_locale && I18n.available_locales.find { |al| send(:match?, al, found_locale) || send(:variant_match?, al, found_locale) }
+        locale = locales.reverse.find { |locale| I18n.available_locales.any? { |al| match?(al, locale) } }
+        if locale
+          I18n.available_locales.find { |al| match?(al, locale) }
+        end
       else
         locales.last
       end
     end
 
-    def find_locale(locales, match_method)
-      locales.reverse.find do |locale|
-        I18n.available_locales.any? { |al| send(match_method, al, locale) }
-      end
-    end
-
     def match?(s1, s2)
-      s1.to_s.casecmp(s2.to_s).zero?
-    end
-
-    def variant_match?(s1, s2)
-      s1.to_s.casecmp(s2[0,2].to_s).zero?
+      s1.to_s.casecmp(s2.to_s) == 0
     end
   end
 end
