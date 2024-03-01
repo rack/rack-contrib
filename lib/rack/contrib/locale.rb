@@ -81,7 +81,7 @@ module Rack
     end
 
     def match?(s1, s2)
-      s1.to_s.casecmp(s2.to_s) == 0
+      s1.to_s.casecmp(s2.to_s) == 0 || s1.to_s.casecmp(s2.split('-').first.to_s) == 0
     end
   end
 end
