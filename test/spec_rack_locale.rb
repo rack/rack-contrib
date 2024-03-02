@@ -12,7 +12,7 @@ begin
 
     before do
       # Set the locales that will be used at various points in the tests
-      I18n.config.available_locales = [:en, :dk, :'en-gb', :es, :'es-CL', :zh]
+      I18n.config.available_locales = [:en, :dk, :'en-gb', :es, :zh]
       I18n.default_locale = :en
     end
 
@@ -71,6 +71,10 @@ begin
       _(response_with_languages('en-gb,en-us;q=0.95;en').body).must_equal('en-gb')
     end
 
+    specify 'should match languages with variants' do
+      _(response_with_languages('pt;Q=0.9,es-CL').body).must_equal('es')
+    end
+
     specify 'should skip * if it is followed by other languages' do
       _(response_with_languages('*,dk;q=0.5').body).must_equal('dk')
     end
@@ -85,10 +89,6 @@ begin
 
     specify 'should handle Q=' do
       _(response_with_languages('en;Q=0.9,es;Q=0.95').body).must_equal('es')
-    end
-
-    specify 'should match languages with variants' do
-      _(response_with_languages('en;Q=0.9,es-CL;Q=0.95').body).must_equal('es')
     end
 
     specify 'should reset the I18n locale after the response' do
