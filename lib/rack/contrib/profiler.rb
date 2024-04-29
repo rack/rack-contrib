@@ -35,7 +35,10 @@ module Rack
       @profile = nil
       @printer = parse_printer(options[:printer] || DEFAULT_PRINTER)
       @times = (options[:times] || 1).to_i
+      @maximum_runs = options.fetch(:maximum_runs, 10)
     end
+
+    attr :maximum_runs
 
     def call(env)
       if mode = profiling?(env)
@@ -61,14 +64,32 @@ module Rack
         end
       end
 
+      # How many times to run the request within the profiler.
+      # If the profiler_runs query parameter is set, use that.
+      # Otherwise, use the :times option passed to `#initialize`.
+      # If the profiler_runs query parameter is greater than the
+      # :maximum option passed to `#initialize`, use the :maximum
+      # option.
+      def runs(request)
+        if profiler_runs = request.params['profiler_runs']
+          profiler_runs = profiler_runs.to_i
+          if profiler_runs > @maximum_runs
+            return @maximum_runs
+          else
+            return profiler_runs
+          end
+        else
+          return @times
+        end
+      end
+
       def profile(env, mode)
         @profile = ::RubyProf::Profile.new(measure_mode: ::RubyProf.const_get(mode.upcase))
 
         GC.enable_stats if GC.respond_to?(:enable_stats)
         request = Rack::Request.new(env.clone)
-        runs = (request.params['profiler_runs'] || @times).to_i
         result = @profile.profile do
-          runs.times { @app.call(env) }
+          runs(request).times { @app.call(env) }
         end
         GC.disable_stats if GC.respond_to?(:disable_stats)
 
