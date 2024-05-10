@@ -76,7 +76,7 @@ To contribute to the project, begin by cloning the repo and installing the neces
 
     gem install json rack ruby-prof test-spec test-unit
 
-To run the entire test suite, run 
+To run the entire test suite, run
 
     rake test
 
@@ -84,7 +84,7 @@ To run a specific component's tests run
 
     specrb -Ilib:test -w test/spec_rack_thecomponent.rb
 
-This works on ruby 1.8.7 but has problems under ruby 1.9.x. 
+This works on ruby 1.8.7 but has problems under ruby 1.9.x.
 
 TODO: instructions for 1.9.x and include bundler
 
@@ -98,10 +98,16 @@ The criteria for middleware being included in this project are roughly as follow
 These criteria were introduced several years after the start of the project, so some of the included middleware may not meet all of them. In particular, several middleware have external dependencies. It is possible that in some future release of rack-contrib, middleware with external depencies will be removed from the project.
 
 When submitting code keep the above criteria in mind and also see the code
-guidelines in CONTRIBUTING.md. 
+guidelines in CONTRIBUTING.md.
 
 ### Links
 
 * rack-contrib on GitHub:: <https://github.com/rack/rack-contrib>
 * Rack:: <https://rack.github.io/>
 * Rack On GitHub:: <https://github.com/rack/rack>
+
+
+### Security Reporting
+
+To report a security vulnerability, please use the [Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure.
