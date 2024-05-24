@@ -27,6 +27,13 @@ begin
       _(body.to_enum.to_a.join).must_match(/\[#{runs} calls, #{runs} total\]/)
     end
 
+    specify 'called more than the default maximum times via query params' do
+      runs = 20
+      req = Rack::MockRequest.env_for("/", :params => "profile=process_time&profiler_runs=#{runs}")
+      body = profiler(app).call(req)[2]
+      _(body.to_enum.to_a.join).must_match(/\[10 calls, 10 total\]/)
+    end
+
     specify 'CallStackPrinter has content-type test/html' do
       headers = profiler(app, :printer => :call_stack).call(request)[1]
       _(headers).must_equal "content-type"=>"text/html"
