@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'helper'
-
-separate_testing do
-  require_relative '../lib/rack/set_x_forwarded_proto_header'
-  require_relative '../lib/rack/lint'
-  require_relative '../lib/rack/mock_request'
-end
+require 'minitest/autorun'
+require 'rack/contrib/runtime'
 
 
 describe Rack::SetXForwardedProtoHeader do
@@ -46,7 +41,5 @@ describe Rack::SetXForwardedProtoHeader do
     Rack::Lint.new(Rack::SetXForwardedProtoHeader.new(response, "Vendor-Forwarded-Proto-Header")).call env
 
     env["HTTP_X_FORWARDED_PROTO"].must_equal "https"
-  end
-
-  
+  end  
 end
