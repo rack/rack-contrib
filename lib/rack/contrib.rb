@@ -35,6 +35,7 @@ module Rack
   autoload :ProcTitle,                  "rack/contrib/proctitle"
   autoload :Profiler,                   "rack/contrib/profiler"
   autoload :ResponseHeaders,            "rack/contrib/response_headers"
+  autoload :SetXForwardedProtoHeader,   "rack/contrib/set_x_forwarded_proto_header"
   autoload :Signals,                    "rack/contrib/signals"
   autoload :SimpleEndpoint,             "rack/contrib/simple_endpoint"
   autoload :TimeZone,                   "rack/contrib/time_zone"
