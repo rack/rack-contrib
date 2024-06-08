@@ -3,41 +3,42 @@
 require 'minitest/autorun'
 require 'rack/contrib/runtime'
 
-describe Rack::SetXForwardedProtoHeader do
+describe Rack::HeaderNameTransformer do
   response = ->(_e) { [200, {}, []] }
 
-  it 'leaves the value of X_FORWARDED_PROTO intact if there is no vendor header passed in the request' do
-    vendor_forwarded_header = 'not passed in the request'
+  it 'leaves the value of headers intact if there is no matching vendor header passed to override it in the request' do
+    vendor_header = 'not passed in the request'
     env = Rack::MockRequest.env_for('/', 'HTTP_X_FORWARDED_PROTO' => 'http')
 
-    Rack::Lint.new(Rack::SetXForwardedProtoHeader.new(response, vendor_forwarded_header)).call env
+    Rack::Lint.new(Rack::HeaderNameTransformer.new(response, vendor_header, "bar")).call env
 
     env['HTTP_X_FORWARDED_PROTO'].must_equal 'http'
   end
 
-  it 'does not set X-Forwarded-Proto when there is no vendor header passed in the request' do
-    vendor_forwarded_header = 'not passed in the request'
-    env = Rack::MockRequest.env_for('/', 'FOO' => 'bar')
+  it 'copies the value of the vendor header to a newly named header' do
+    env = Rack::MockRequest.env_for('/', {'HTTP_VENDOR' => 'value', 'HTTP_FOO' => 'foo'})
 
-    Rack::Lint.new(Rack::SetXForwardedProtoHeader.new(response, vendor_forwarded_header)).call env
+    Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Vendor', 'Standard')).call env
+    Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Foo', 'Bar')).call env
 
-    env['FOO'].must_equal 'bar'
-    assert_nil(env['HTTP_X_FORWARDED_PROTO'])
+    env['HTTP_STANDARD'].must_equal 'value'
+    env['HTTP_BAR'].must_equal 'foo'
   end
 
-  it 'copies the value of the header to X-Forwarded-Proto' do
+  # Real world headers and use cases
+  it 'copies the value of a vendor forward proto header to the standardised formward proto header' do
     env = Rack::MockRequest.env_for('/', 'HTTP_VENDOR_FORWARDED_PROTO_HEADER' => 'https')
 
-    Rack::Lint.new(Rack::SetXForwardedProtoHeader.new(response, 'Vendor-Forwarded-Proto-Header')).call env
+    Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Vendor-Forwarded-Proto-Header', 'X-Forwarded-Proto')).call env
 
     env['HTTP_X_FORWARDED_PROTO'].must_equal 'https'
   end
 
-  it 'copies the value of the header to X-Forwarded-Proto overwriting an existing X-Forwarded-Proto' do
+  it 'copies the value of a vendor forward proto header to the standardised formward proto header, overwriting an old value in the request' do
     env = Rack::MockRequest.env_for('/', 'HTTP_VENDOR_FORWARDED_PROTO_HEADER' => 'https',
                                          'HTTP_X_FORWARDED_PROTO' => 'http')
 
-    Rack::Lint.new(Rack::SetXForwardedProtoHeader.new(response, 'Vendor-Forwarded-Proto-Header')).call env
+    Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Vendor-Forwarded-Proto-Header', 'X-Forwarded-Proto')).call env
 
     env['HTTP_X_FORWARDED_PROTO'].must_equal 'https'
   end
