@@ -11,6 +11,7 @@ interface:
 * `Rack::Cookies` - Adds simple cookie jar hash to env
 * `Rack::Deflect` - Helps protect against DoS attacks.
 * `Rack::Evil` - Lets the rack application return a response to the client from any place.
+* `Rack::HeaderNameTransformer` - Change the name of a Header.
 * `Rack::HostMeta` - Configures `/host-meta` using a block
 * `Rack::JSONBodyParser` - Adds JSON request bodies to the Rack parameters hash.
 * `Rack::JSONP` - Adds JSON-P support by stripping out the callback param and padding the response with the appropriate callback format.
