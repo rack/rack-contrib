@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+require 'logger'
+
+module Rack
+  # Sets up rack.logger to write to rack.errors stream
+  class Logger
+    RACK_ERRORS = 'rack.errors'
+    RACK_LOGGER = 'rack.logger'
+    
+    def initialize(app, level = ::Logger::INFO)
+      @app, @level = app, level
+    end
+
+    def call(env)
+      logger = ::Logger.new(env[RACK_ERRORS])
+      logger.level = @level
+
+      env[RACK_LOGGER] = logger
+      @app.call(env)
+    end
+  end
+end
