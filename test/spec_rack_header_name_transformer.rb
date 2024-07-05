@@ -16,17 +16,17 @@ describe Rack::HeaderNameTransformer do
   end
 
   it 'copy the value of the vendor header to a newly named header' do
-    env = Rack::MockRequest.env_for('/', { 'HTTP_VENDOR' => 'value', 'HTTP_FOO' => 'foo' })
+    env = Rack::MockRequest.env_for('/', { 'HTTP_VENDOR' => 'value', 'HTTP_FOO' => 'foo, bar' })
 
     Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Vendor', 'Standard')).call env
     Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Foo', 'Bar')).call env
 
     _(env['HTTP_STANDARD']).must_equal 'value'
-    _(env['HTTP_BAR']).must_equal 'foo'
+    _(env['HTTP_BAR']).must_equal 'foo, bar'
 
     # This is a copy operation, so the original headers are still preserved
     _(env['HTTP_VENDOR']).must_equal 'value'
-    _(env['HTTP_FOO']).must_equal 'foo'
+    _(env['HTTP_FOO']).must_equal 'foo, bar'
   end
 
   # Real world headers and use cases
