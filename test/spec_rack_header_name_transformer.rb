@@ -12,7 +12,7 @@ describe Rack::HeaderNameTransformer do
 
     Rack::Lint.new(Rack::HeaderNameTransformer.new(response, vendor_header, 'bar')).call env
 
-    env['HTTP_X_FORWARDED_PROTO'].must_equal 'http'
+    _(env['HTTP_X_FORWARDED_PROTO']).must_equal 'http'
   end
 
   it 'copy the value of the vendor header to a newly named header' do
@@ -21,12 +21,12 @@ describe Rack::HeaderNameTransformer do
     Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Vendor', 'Standard')).call env
     Rack::Lint.new(Rack::HeaderNameTransformer.new(response, 'Foo', 'Bar')).call env
 
-    env['HTTP_STANDARD'].must_equal 'value'
-    env['HTTP_BAR'].must_equal 'foo'
+    _(env['HTTP_STANDARD']).must_equal 'value'
+    _(env['HTTP_BAR']).must_equal 'foo'
 
     # This is a copy operation, so the original headers are still preserved
-    env['HTTP_VENDOR'].must_equal 'value'
-    env['HTTP_FOO'].must_equal 'foo'
+    _(env['HTTP_VENDOR']).must_equal 'value'
+    _(env['HTTP_FOO']).must_equal 'foo'
   end
 
   # Real world headers and use cases
@@ -41,7 +41,7 @@ describe Rack::HeaderNameTransformer do
       )
     ).call env
 
-    env['HTTP_X_FORWARDED_PROTO'].must_equal 'https'
+    _(env['HTTP_X_FORWARDED_PROTO']).must_equal 'https'
   end
 
   it 'copy the value of a vendor forward proto header to the standardised header, overwriting existing request value' do
@@ -59,6 +59,6 @@ describe Rack::HeaderNameTransformer do
       )
     ).call env
 
-    env['HTTP_X_FORWARDED_PROTO'].must_equal 'https'
+    _(env['HTTP_X_FORWARDED_PROTO']).must_equal 'https'
   end
 end
