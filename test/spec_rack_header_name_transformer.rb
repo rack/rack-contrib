@@ -26,7 +26,7 @@ describe Rack::HeaderNameTransformer do
   end
 
   # Real world headers and use cases
-  it 'copy the value of a vendor forward proto header to the standardised formward proto header' do
+  it 'copy the value of a vendor forward proto header to the standardised forward proto header' do
     env = Rack::MockRequest.env_for('/', 'HTTP_VENDOR_FORWARDED_PROTO_HEADER' => 'https')
 
     Rack::Lint.new(
