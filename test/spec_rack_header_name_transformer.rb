@@ -23,6 +23,10 @@ describe Rack::HeaderNameTransformer do
 
     env['HTTP_STANDARD'].must_equal 'value'
     env['HTTP_BAR'].must_equal 'foo'
+
+    # This is a copy operation, so the original headers are still preserved
+    env['HTTP_VENDOR'].must_equal 'value'
+    env['HTTP_FOO'].must_equal 'foo'
   end
 
   # Real world headers and use cases
