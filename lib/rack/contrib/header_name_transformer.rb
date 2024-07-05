@@ -4,7 +4,7 @@ module Rack
   # Middleware to change the name of a header
   #
   # So, if a server upstream of Rack sends {'X-Header-Name': "value"}
-  #  you can change header to {'Whatever-You-Want': "value"}
+  # you can change header to {'Whatever-You-Want': "value"}
   #
   # There is a specific use case when ensuring the scheme matches when
   # comparing request.origin and request.base_url for CSRF checking,
