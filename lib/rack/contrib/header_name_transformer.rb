@@ -12,7 +12,7 @@ module Rack
   #
   # Example Rails usage:
   # If you use a vendor managed proxy or CDN which sends the proto in a header add
-  # `config.middleware.use Rack::SetXForwardedProtoHeader, 'Vendor-Forwarded-Proto-Header', 'X-Forwarded-Proto'`
+  # `config.middleware.use Rack::HeaderNameTransformer, 'Vendor-Forwarded-Proto-Header', 'X-Forwarded-Proto'`
   # to your application.rb file
 
   class HeaderNameTransformer
