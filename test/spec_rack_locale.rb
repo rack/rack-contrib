@@ -75,6 +75,10 @@ begin
       _(response_with_languages('pt;Q=0.9,es-CL').body).must_equal('es')
     end
 
+    specify 'should match languages with variants case insensitively' do
+      _(response_with_languages('pt;Q=0.9,ES-CL').body).must_equal('es')
+    end
+
     specify 'should skip * if it is followed by other languages' do
       _(response_with_languages('*,dk;q=0.5').body).must_equal('dk')
     end

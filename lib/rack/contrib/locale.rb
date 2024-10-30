@@ -75,7 +75,7 @@ module Rack
         matched_locale = I18n.available_locales.find { |al| match?(al, locale) } if locale
         if !locale && !matched_locale
           matched_locale = locales.reverse.find { |locale| I18n.available_locales.any? { |al| variant_match?(al, locale) } }
-          matched_locale = matched_locale[0,2] if matched_locale
+          matched_locale = matched_locale[0,2].downcase if matched_locale
         end
         matched_locale
       else
