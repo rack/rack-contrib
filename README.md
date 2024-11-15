@@ -65,7 +65,7 @@ This package is [semver compliant](https://semver.org); you should use a
 pessimistic version constraint (`~>`) against the relevant `2.x` version of
 this gem.
 
-This version of `rack-contrib` is only compatible with `rack` 2.x.  If you
+This version of `rack-contrib` is compatible with `rack` 2.x and 3.x.  If you
 are using `rack` 1.x, you will need to use `rack-contrib` 1.x.  A suitable
 pessimistic version constraint (`~>`) is recommended.
 
@@ -74,19 +74,16 @@ pessimistic version constraint (`~>`) is recommended.
 
 To contribute to the project, begin by cloning the repo and installing the necessary gems:
 
-    gem install json rack ruby-prof test-spec test-unit
+    gem install bundler
+    bundle install
 
-To run the entire test suite, run
+To run the entire test suite, run:
 
-    rake test
+    bundle exec rake test
 
-To run a specific component's tests run
+To run a specific component's tests, use the `TEST` environment variable:
 
-    specrb -Ilib:test -w test/spec_rack_thecomponent.rb
-
-This works on ruby 1.8.7 but has problems under ruby 1.9.x.
-
-TODO: instructions for 1.9.x and include bundler
+    TEST=test/spec_rack_thecomponent.rb bundle exec rake test
 
 ### Criteria for inclusion
 The criteria for middleware being included in this project are roughly as follows:
