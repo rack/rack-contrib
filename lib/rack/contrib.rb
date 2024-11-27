@@ -23,6 +23,7 @@ module Rack
   autoload :Deflect,                    "rack/contrib/deflect"
   autoload :EnforceValidEncoding,       "rack/contrib/enforce_valid_encoding"
   autoload :ExpectationCascade,         "rack/contrib/expectation_cascade"
+  autoload :HeaderNameTransformer,      "rack/contrib/header_name_transformer"
   autoload :HostMeta,                   "rack/contrib/host_meta"
   autoload :GarbageCollector,           "rack/contrib/garbagecollector"
   autoload :JSONP,                      "rack/contrib/jsonp"
