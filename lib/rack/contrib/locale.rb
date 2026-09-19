@@ -63,7 +63,7 @@ module Rack
         quality = quality ? quality.to_f : 1.0
         [locale, quality]
       end.reject do |(locale, quality)|
-        locale == '*' || quality == 0
+        locale.to_s.empty? || locale == '*' || quality == 0
       end.sort_by do |(_, quality)|
         quality
       end.map(&:first)
