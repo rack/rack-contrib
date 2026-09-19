@@ -125,6 +125,18 @@ begin
         _(response_with_languages('ch,en;q=0.9').body).must_equal('ch')
       end
     end
+
+    specify 'should ignore empty entries produced by a leading comma without raising' do
+      enforce_available_locales(true) do
+        _(response_with_languages(',ja;q=0.8').body).must_equal('en')
+      end
+    end
+
+    specify 'should ignore empty entries produced by a double comma without raising' do
+      enforce_available_locales(true) do
+        _(response_with_languages('ja,,ko;q=0.8').body).must_equal('en')
+      end
+    end
   end
 rescue LoadError
   STDERR.puts "WARN: Skipping Rack::Locale tests (i18n not installed)"
