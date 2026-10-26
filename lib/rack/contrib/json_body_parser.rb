@@ -40,7 +40,7 @@ module Rack
       }.call(),
     }.freeze
 
-    DEFAULT_PARSER = ->(body) { JSON.parse(body, create_additions: false) }
+    DEFAULT_PARSER = ->(body) { JSON.parse(body) }
 
     def initialize(
       app,

@@ -47,9 +47,8 @@ have before they can be landed:
   place, but if you diverge from how things are done at the moment the patch
   won't get accepted as-is.
 
-* Support Ruby 2.2 and higher.  We maintain the same Ruby version
-  compatibility as Rack itself.  We use [Travis CI test
-  runs](https://travis-ci.org/rack/rack-contrib) to validate this.
+* Support Ruby 2.7 and higher.  We maintain the same Ruby version
+  compatibility as Rack itself.
 
 * Require no external dependencies.  Some existing middleware depends on
   additional gems in order to function; we feel that this is an

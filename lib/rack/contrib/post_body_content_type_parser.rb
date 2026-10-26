@@ -70,7 +70,7 @@ module Rack
     def initialize(app, &block)
       warn "[DEPRECATION] `PostBodyContentTypeParser` is deprecated. Use `JSONBodyParser` as a drop-in replacement."
       @app = app
-      @block = block || Proc.new { |body| JSON.parse(body, :create_additions => false) }
+      @block = block || Proc.new { |body| JSON.parse(body) }
     end
 
     def call(env)

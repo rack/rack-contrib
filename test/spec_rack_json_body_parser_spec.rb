@@ -26,36 +26,36 @@ describe Rack::JSONBodyParser do
 
   specify "should parse 'application/json' requests" do
     res = create_parser(app).call(mock_env)
-    _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+    _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
   end
 
   specify "should parse 'application/json; charset=utf-8' requests" do
     env = mock_env(type: 'application/json; charset=utf-8')
     res = create_parser(app).call(env)
-    _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+    _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
   end
 
   specify "should parse 'application/json' requests with an empty body" do
     res = create_parser(app).call(mock_env(input: ''))
-    _(res[2].to_enum.to_a.join).must_equal '{}'
+    _(res[2].to_enum.to_a.join).must_equal({}.inspect)
   end
 
   specify "shouldn't affect form-urlencoded requests" do
     env = mock_env(input: 'key=value', type: 'application/x-www-form-urlencoded')
     res = create_parser(app).call(env)
-    _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+    _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
   end
 
   specify "should not parse non-json media types" do
     env = mock_env(type: 'text/plain')
     res = create_parser(app).call(env)
-    _(res[2].to_enum.to_a.join).must_equal '{}'
+    _(res[2].to_enum.to_a.join).must_equal({}.inspect)
   end
 
   specify "shouldn't parse or error when CONTENT_TYPE is nil" do
     env = mock_env(type: nil)
     res = create_parser(app).call(env)
-    _(res[2].to_enum.to_a.join).must_equal %Q({"{\\"key\\": \\"value\\"}"=>nil})
+    _(res[2].to_enum.to_a.join).must_equal({'{"key": "value"}' => nil}.inspect)
   end
 
   specify "should not rescue JSON:ParserError raised by the app" do
@@ -91,7 +91,7 @@ describe Rack::JSONBodyParser do
         { 'payload' => JSON.parse(body) }
       end
       res = parser.call(mock_env)
-      _(res[2].to_enum.to_a.join).must_equal '{"payload"=>{"key"=>"value"}}'
+      _(res[2].to_enum.to_a.join).must_equal({"payload"=>{"key"=>"value"}}.inspect)
     end
 
     specify "should accept an array of HTTP verbs to parse" do
@@ -99,35 +99,35 @@ describe Rack::JSONBodyParser do
       parser = create_parser(app, verbs: %w[GET])
 
       res = parser.call(env)
-      _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+      _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
 
       res = parser.call(mock_env)
-      _(res[2].to_enum.to_a.join).must_equal '{}'
+      _(res[2].to_enum.to_a.join).must_equal({}.inspect)
     end
 
     specify "should accept an Array of media-types to parse" do
       parser = create_parser(app, media: ['application/json', 'text/plain'])
       env = mock_env(type: 'text/plain')
       res = parser.call(env)
-      _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+      _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
 
       html_env = mock_env(type: 'text/html')
       res = parser.call(html_env)
-      _(res[2].to_enum.to_a.join).must_equal '{}'
+      _(res[2].to_enum.to_a.join).must_equal({}.inspect)
     end
 
     specify "should accept a Regexp as a media-type matcher" do
       parser = create_parser(app, media: /json/)
       env = mock_env(type: 'weird/json.odd')
       res = parser.call(env)
-      _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+      _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
     end
 
     specify "should accept a String as a media-type matcher" do
       parser = create_parser(app, media: 'application/vnd.api+json')
       env = mock_env(type: 'application/vnd.api+json')
       res = parser.call(env)
-      _(res[2].to_enum.to_a.join).must_equal '{"key"=>"value"}'
+      _(res[2].to_enum.to_a.join).must_equal({"key"=>"value"}.inspect)
     end
   end
 end

@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'i18n', '~> 0.6', '>= 0.6.8'
-gem 'json', '~> 2.0'
+gem 'json', '> 3.0'
 gem 'mime-types', '~> 3.0'
 gem 'minitest', '~> 5.6'
 gem 'minitest-hooks', '~> 1.0'
