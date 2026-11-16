@@ -40,7 +40,14 @@ module Rack
       }.call(),
     }.freeze
 
-    DEFAULT_PARSER = ->(body) { JSON.parse(body, create_additions: false) }
+    JSON_VERSION = Gem::Specification.find_by_name("json").version
+    DEFAULT_PARSER = ->(body) {
+      if JSON_VERSION < Gem::Version.new('3')
+        JSON.parse(body, create_additions: false)
+      else
+        JSON.parse(body)
+      end
+    }
 
     def initialize(
       app,

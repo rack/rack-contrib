@@ -67,10 +67,19 @@ module Rack
     #
     APPLICATION_JSON = 'application/json'.freeze
 
+    JSON_VERSION = Gem::Specification.find_by_name("json").version
+    DEFAULT_PARSER = ->(body) {
+      if JSON_VERSION < Gem::Version.new('3')
+        JSON.parse(body, create_additions: false)
+      else
+        JSON.parse(body)
+      end
+    }
+
     def initialize(app, &block)
       warn "[DEPRECATION] `PostBodyContentTypeParser` is deprecated. Use `JSONBodyParser` as a drop-in replacement."
       @app = app
-      @block = block || Proc.new { |body| JSON.parse(body, :create_additions => false) }
+      @block = block || DEFAULT_PARSER
     end
 
     def call(env)
