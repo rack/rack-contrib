@@ -29,15 +29,7 @@ module Rack
         media_type = Rack::MediaType.type(header)
         options.any? { |opt| media_type == opt }
       },
-      Regexp => lambda {
-        if //.respond_to?(:match?)
-          # Use Ruby's fast regex matcher when available
-          ->(option, header) { option.match? header }
-        else
-          # Fall back to the slower matcher for rubies older than 2.4
-          ->(option, header) { option.match header }
-        end
-      }.call(),
+      Regexp => ->(option, header) { option.match? header },
     }.freeze
 
     DEFAULT_PARSER = ->(body) { JSON.parse(body, create_additions: false) }

@@ -11,18 +11,6 @@ module Rack
 
     VALID_CALLBACK = /\A[a-zA-Z_$](?:\.?[\w$])*\z/
 
-    # These hold the Unicode characters \u2028 and \u2029.
-    #
-    # They are defined in constants for Ruby 1.8 compatibility.
-    #
-    # In 1.8
-    # "\u2028" # => "u2028"
-    # "\u2029" # => "u2029"
-    # In 1.9
-    # "\342\200\250" # => "\u2028"
-    # "\342\200\251" # => "\u2029"
-    U2028, U2029 = ("\u2028" == 'u2028') ? ["\342\200\250", "\342\200\251"] : ["\u2028", "\u2029"]
-
     HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
     private_constant :HEADERS_KLASS
 
@@ -101,7 +89,7 @@ module Rack
         # replacing them with the escaped version. This should be safe because
         # according to the JSON spec, these characters are *only* valid inside
         # a string and should therefore not be present any other places.
-        s.gsub(U2028, '\u2028').gsub(U2029, '\u2029')
+        s.gsub("\u2028", '\u2028').gsub("\u2029", '\u2029')
       end.join
 
       # https://github.com/rack/rack-contrib/issues/46
