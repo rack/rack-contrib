@@ -78,7 +78,6 @@ module Rack
       end
 
       status, headers, body = @app.call env
-      headers = Rack.release < "3" ? Utils::HeaderHash.new(headers) : headers
 
       update_cache unless (reading?(env) or skipping?(headers))
       headers['last-modified'] = cached_value if stampable? headers

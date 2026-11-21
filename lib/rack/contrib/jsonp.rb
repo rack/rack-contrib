@@ -11,9 +11,6 @@ module Rack
 
     VALID_CALLBACK = /\A[a-zA-Z_$](?:\.?[\w$])*\z/
 
-    HEADERS_KLASS = Rack.release < "3" ? Utils::HeaderHash : Headers
-    private_constant :HEADERS_KLASS
-
     def initialize(app)
       @app = app
     end
@@ -33,7 +30,7 @@ module Rack
         return status, headers, response
       end
 
-      headers = HEADERS_KLASS.new.merge(headers)
+      headers = Headers[headers]
 
       if is_json?(headers) && has_callback?(request)
         callback = request.params['callback']

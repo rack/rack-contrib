@@ -33,11 +33,7 @@ describe "Rack::Cookies" do
     )
 
     response = Rack::MockRequest.new(app).get('/')
-    if Rack.release < "3"
-      _(response.headers['Set-Cookie'].split("\n").sort).must_equal(["foo=bar; path=/","quux=h%26m; path=/"])
-    else
-      _(response.headers['Set-Cookie'].sort).must_equal(["foo=bar; path=/","quux=h%26m; path=/"])
-    end
+    _(response.headers['Set-Cookie'].sort).must_equal(["foo=bar; path=/","quux=h%26m; path=/"])
   end
 
   specify "should be able to set cookie with options" do
