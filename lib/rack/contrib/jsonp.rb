@@ -42,12 +42,12 @@ module Rack
         response = pad(callback, response)
 
         # No longer json, its javascript!
-        headers['Content-Type'] = headers['Content-Type'].gsub('json', 'javascript')
+        headers['content-type'] = headers['content-type'].gsub('json', 'javascript')
 
         # Set new Content-Length, if it was set before we mutated the response body
-        if headers['Content-Length']
+        if headers['content-length']
           length = response.map(&:bytesize).reduce(0, :+)
-          headers['Content-Length'] = length.to_s
+          headers['content-length'] = length.to_s
         end
       end
 
@@ -57,7 +57,7 @@ module Rack
     private
 
     def is_json?(headers)
-      headers.key?('Content-Type') && headers['Content-Type'].include?('application/json')
+      headers.key?('content-type') && headers['content-type'].include?('application/json')
     end
 
     def has_callback?(request)

@@ -21,7 +21,7 @@ class Rack::ResponseCache
   DEFAULT_PATH_PROC = proc do |env, res|
     path = Rack::Utils.unescape(env['PATH_INFO'])
     headers = res[1]
-    content_type = headers['Content-Type']
+    content_type = headers['content-type']
 
     if !path.include?('..') and match = /text\/((?:x|ht)ml|css)/o.match(content_type)
       type = match[1]

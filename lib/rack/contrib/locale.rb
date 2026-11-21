@@ -21,8 +21,8 @@ module Rack
       status, headers, body = @app.call(env)
       headers = HEADERS_KLASS.new.merge(headers)
 
-      unless headers['Content-Language']
-        headers['Content-Language'] = locale.to_s
+      unless headers['content-language']
+        headers['content-language'] = locale.to_s
       end
 
       [status, headers, body]
