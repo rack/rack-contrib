@@ -47,7 +47,7 @@ have before they can be landed:
   place, but if you diverge from how things are done at the moment the patch
   won't get accepted as-is.
 
-* Support Ruby 2.2 and higher.  We maintain the same Ruby version
+* Support Ruby 2.4 and higher.  We maintain the same Ruby version
   compatibility as Rack itself.  We use [GitHub Actions
   runs](https://github.com/rack/rack-contrib/actions) to validate this.
 
