@@ -38,11 +38,7 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      if Rack.release < "3"
-        _(body.to_enum.to_a).must_equal ['cookies']
-      else
-        _(body.to_ary).must_equal ['cookies']
-      end
+      _(body.to_ary).must_equal ['cookies']
     end
 
     # Remaining requests should fail for 10 seconds
@@ -65,11 +61,7 @@ describe "Rack::Deflect" do
     5.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      if Rack.release < "3"
-        _(body.to_enum.to_a).must_equal ['cookies']
-      else
-        _(body.to_ary).must_equal ['cookies']
-      end
+      _(body.to_ary).must_equal ['cookies']
     end
 
     # Exceeds request threshold
@@ -99,11 +91,7 @@ describe "Rack::Deflect" do
     10.times do
       status, headers, body = app.call env
       _(status).must_equal 200
-      if Rack.release < "3"
-        _(body.to_enum.to_a).must_equal ['cookies']
-      else
-        _(body.to_ary).must_equal ['cookies']
-      end
+      _(body.to_ary).must_equal ['cookies']
     end
   end
 

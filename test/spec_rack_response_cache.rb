@@ -95,11 +95,7 @@ describe Rack::ResponseCache do
     _(e['PATH_INFO']).must_equal @def_path
     _(e['REQUEST_METHOD']).must_equal 'GET'
     _(e['QUERY_STRING']).must_equal ''
-    if Rack.release < "3"
-      _(r).must_equal([200, {"Content-Type"=>"text/html"}, ["rack-response-cache"]])
-    else
-      _(r).must_equal([200, {"content-type"=>"text/html"}, ["rack-response-cache"]])
-    end
+    _(r).must_equal([200, {"content-type"=>"text/html"}, ["rack-response-cache"]])
   end
 
   specify "should unescape the path by default" do

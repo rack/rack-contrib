@@ -53,8 +53,7 @@ class Rack::ResponseCache
   # subdirectory of cache.  Otherwise, cache the body of the response as the value with the path as the key.
   def call(env)
     status, headers, body = @app.call(env)
-    headers_klass = Rack.release < "3" ? Rack::Utils::HeaderHash : Rack::Headers
-    headers = headers_klass.new.merge(headers)
+    headers = Rack::Headers[headers]
 
     if env['REQUEST_METHOD'] == 'GET' and env['QUERY_STRING'] == '' and status == 200 and path = @path_proc.call(env, [status, headers, body])
       if @cache.is_a?(String)

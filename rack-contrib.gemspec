@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.4'
 
-  s.add_runtime_dependency 'rack', '< 4'
+  s.add_runtime_dependency 'rack', '>= 3.0', '< 4'
 
   s.homepage = "https://github.com/rack/rack-contrib/"
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "rack-contrib", "--main", "README"]
