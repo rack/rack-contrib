@@ -48,8 +48,8 @@ have before they can be landed:
   won't get accepted as-is.
 
 * Support Ruby 2.2 and higher.  We maintain the same Ruby version
-  compatibility as Rack itself.  We use [Travis CI test
-  runs](https://travis-ci.org/rack/rack-contrib) to validate this.
+  compatibility as Rack itself.  We use [GitHub Actions
+  runs](https://github.com/rack/rack-contrib/actions) to validate this.
 
 * Require no external dependencies.  Some existing middleware depends on
   additional gems in order to function; we feel that this is an
