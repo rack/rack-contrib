@@ -92,10 +92,10 @@ module Rack
         headers = HEADERS_KLASS.new.merge(headers)
 
         if @no_cache[url].nil?
-          headers['Cache-Control'] ="max-age=#{@duration_in_seconds}, public"
-          headers['Expires'] = duration_in_words
+          headers['cache-control'] = "max-age=#{@duration_in_seconds}, public"
+          headers['expires'] = duration_in_words
         end
-        headers['Date'] = Time.now.httpdate
+        headers['date'] = Time.now.httpdate
         [status, headers, body]
       end
     end

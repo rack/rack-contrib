@@ -36,9 +36,9 @@ class Rack::RelativeRedirect
     headers_klass = Rack.release < "3" ? Rack::Utils::HeaderHash : Rack::Headers
     headers = headers_klass.new.merge(headers)
 
-    if [301,302,303, 307,308].include?(status) and loc = headers['Location'] and !%r{\Ahttps?://}o.match(loc)
+    if [301,302,303, 307,308].include?(status) and loc = headers['location'] and !%r{\Ahttps?://}o.match(loc)
       absolute = @absolute_proc.call(env, [status, headers, body])
-      headers['Location'] = if %r{\A/}.match(loc)
+      headers['location'] = if %r{\A/}.match(loc)
         "#{absolute}#{loc}"
       else
         "#{absolute}#{File.dirname(Rack::Utils.unescape(env['PATH_INFO']))}/#{loc}"

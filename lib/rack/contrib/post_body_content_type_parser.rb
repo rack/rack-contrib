@@ -25,7 +25,7 @@ module Rack
   #  app = lambda do |env|
   #    request = Rack::Request.new(env)
   #    body = "Hello #{request.params['name']}"
-  #    [200, {'Content-Type' => 'text/plain'}, [body]]
+  #    [200, {'content-type' => 'text/plain'}, [body]]
   #  end
   #
   #  run app
